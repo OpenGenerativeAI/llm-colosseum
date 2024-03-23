@@ -56,7 +56,7 @@ def get_actions_from_llm(
     # Validate the completion format
     if llm_response not in MOVES.keys():
         logger.warning(f"Invalid completion: {llm_response}")
-        prompt_with_correction = build_main_prompt(wrong_answer=llm_response)
+        prompt_with_correction = build_main_prompt(context_prompt, wrong_answer=llm_response)
 
         start_time = time.time()
 

@@ -13,6 +13,7 @@ class Robot:
     observations: List[Optional[dict]] = None  # memory
     next_steps: List[int]  # action plan
     actions: dict  # actions of the agents during a step of the game
+    reward: float  # reward of the agent
 
     action_space: spaces.Space
     character: Optional[str] = None  # character name
@@ -115,7 +116,7 @@ class Robot:
         #         ]
         #     )
 
-    def observe(self, observation: dict, actions: dict):
+    def observe(self, observation: dict, actions: dict ,reward: float):
         """
         The robot will observe the environment by calling this method.
 
@@ -136,6 +137,7 @@ class Robot:
             self.observations.pop(0)
 
         self.actions = actions
+        self.reward = reward
 
     def context_prompt(self):
         """
@@ -145,6 +147,7 @@ class Robot:
         "The observation for the opponent is Left+Up"
         "The action history is Up"
         """
+
         side = self.side
         if side == 0:
             player_id = "P1"
@@ -167,12 +170,14 @@ class Robot:
         act_opp = self.actions["agent_" + str(abs(1 - side))]
         str_act_own = INDEX_TO_MOVE[act_own]
         str_act_opp = INDEX_TO_MOVE[act_opp]
+        reward = self.reward
 
         context = f"""
         Your last action was {str_act_own}
         The opponent's last action was {str_act_opp}
         The opponent location is {obs_opp}
-        Your position is {obs_own} 
+        Your position is {obs_own}
+        Your current score is {reward}. You need to maximize it.
         """
 
         logger.debug(f"Context: {context}")

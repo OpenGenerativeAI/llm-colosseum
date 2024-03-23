@@ -158,8 +158,8 @@ class Game:
         Runs the game with the given settings.
         """
 
-        self.player_1.robot.observe(self.observation, {})
-        self.player_2.robot.observe(self.observation, {})
+        self.player_1.robot.observe(self.observation, {}, 0.0)
+        self.player_2.robot.observe(self.observation, {}, 0.0)
 
         while True:
             if self.render:
@@ -192,7 +192,7 @@ class Game:
                 break
 
             # Observe the environment
-            self.player_1.robot.observe(observation, actions)
-            self.player_2.robot.observe(observation, actions)
+            self.player_1.robot.observe(observation, actions, reward)
+            self.player_2.robot.observe(observation, actions, -reward)
         self.env.close()
         return 0
