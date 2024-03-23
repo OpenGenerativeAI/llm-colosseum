@@ -13,7 +13,6 @@ def main():
         splash_screen=True,
         characters=["Ryu", "Ken"],
         outfits=[2, 2],
-        render_mode="human",
         seed=42,
     )
 
