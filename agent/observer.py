@@ -23,11 +23,9 @@ def detect_position_from_color(
     if save_frame:
         np.save("observation.npy", frame)
 
-    frame = frame[80:200, :]
+    frame = frame[100:200, :]
 
     # Detect the red color of Ken
-    # !!! THIS DOESNT WORK BECAUSE THE COLOR ISNT RIGHT!!
-
     diff = np.linalg.norm(np.array(frame) - np.array(color), axis=2)
     print("diff", diff)
     mask = diff < epsilon
@@ -40,6 +38,6 @@ def detect_position_from_color(
         return None
 
     # Add back the vertical offset
-    first_match = (coordinates[1][0], coordinates[0][0] + 80)
+    first_match = (coordinates[1][0], coordinates[0][0] + 100)
 
     return first_match
