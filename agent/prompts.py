@@ -1,4 +1,4 @@
-from .robot import MOVES
+from .config import MOVES
 
 
 def build_system_prompt() -> str:
@@ -10,13 +10,15 @@ def build_system_prompt() -> str:
     return prompt
 
 
-def build_main_prompt(wrong_answer="") -> str:
+def build_main_prompt(context: str, wrong_answer="") -> str:
     """
     TODO: Takes as argument an observation of the world and returns a prompt for the language model
     wrong_answer: str, the wrong answer, to inject in the prompt to ask for a regenrated answer
     """
 
-    prompt = "Choose randomly a move to make. "
+    prompt = "The context of the game is as follows: \n"
+    prompt += context
+    prompt += "\n"
     prompt += "Only respond with the move you want to make. It must be only the name of the move in the list of mooves."
 
     if wrong_answer:

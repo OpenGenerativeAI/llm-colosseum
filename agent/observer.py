@@ -27,12 +27,10 @@ def detect_position_from_color(
 
     # Detect the red color of Ken
     diff = np.linalg.norm(np.array(frame) - np.array(color), axis=2)
-    print("diff", diff)
     mask = diff < epsilon
 
     # Return the index where the red color is detected
     coordinates = mask.nonzero()
-    print("coordinates", coordinates)
 
     if len(coordinates[0]) == 0:
         return None

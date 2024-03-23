@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from eval.game import Game
 
 
@@ -7,6 +11,7 @@ def main():
 
     game = Game(
         render=True,
+        save_game=True,
     )
 
     game.run()

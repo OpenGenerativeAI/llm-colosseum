@@ -1,39 +1,18 @@
 import abc
 from typing import List, Optional, Literal
 from gymnasium import spaces
+from loguru import logger
 
 from .observer import detect_position_from_color, KEN_RED, KEN_GREEN
+from .actions import get_actions_from_llm
 
-MOVES = {
-    "No-Move": 0,
-    "Left": 1,
-    "Left+Up": 2,
-    "Up+Left": 2,
-    "Up": 3,
-    "Up+Right": 4,
-    "Right+Up": 4,
-    "Right": 5,
-    "Right+Down": 6,
-    "Down+Right": 6,
-    "Down": 7,
-    "Down+Left": 8,
-    "Left+Down": 8,
-    "Low Punch": 9,
-    "Medium Punch": 10,
-    "High Punch": 11,
-    "Low Kick": 12,
-    "Medium Kick": 13,
-    "High Kick": 14,
-    "Low Punch+Low Kick": 15,
-    "Medium Punch+Medium Kick": 16,
-    "High Punch+High Kick": 17,
-}
-INDEX_TO_MOVE = {v: k for k, v in MOVES.items()}
+from .config import MOVES, INDEX_TO_MOVE
 
 
 class Robot:
     observations: List[Optional[dict]] = None  # memory
     next_steps: List[int]  # action plan
+    actions: dict  # actions of the agents during a step of the game
 
     action_space: spaces.Space
     character: Optional[str] = None  # character name
@@ -60,8 +39,6 @@ class Robot:
         self.character_color = character_color
         self.ennemy_color = ennemy_color
         self.side = side
-
-
 
     def act(self) -> int:
         """
@@ -103,34 +80,42 @@ class Robot:
 
         # Note: at the beginning of the game, the position is None
 
-        # Later we will call get_actions_from_llm from `actions.py`
-
-        # Just add a random action to the next steps
-        # self.next_steps.append(self.action_space.sample())
+        # If we already have a next step, we don't need to plan
         if len(self.next_steps) > 0:
             return
 
-        # Do a Hadouken
-        if self.current_direction == "Right":
-            self.next_steps.extend(
-                [
-                    MOVES["Down"],
-                    MOVES["Right+Down"],
-                    MOVES["Right"],
-                    MOVES["High Punch"],
-                ]
-            )
-        elif self.current_direction == "Left":
-            self.next_steps.extend(
-                [
-                    MOVES["Down"],
-                    MOVES["Down+Left"],
-                    MOVES["Left"],
-                    MOVES["High Punch"],
-                ]
-            )
+        # Get the context
+        context = self.context_prompt()
 
-    def observe(self, observation: dict):
+        logger.debug(f"Context: {context}")
+
+        # Call the LLM to get the next steps
+        next_step = get_actions_from_llm(context)
+        logger.debug(f"Next step: {next_step}")
+
+        self.next_steps.append(MOVES[next_step])
+
+        # Do a Hadouken
+        # if self.current_direction == "Right":
+        #     self.next_steps.extend(
+        #         [
+        #             MOVES["Down"],
+        #             MOVES["Right+Down"],
+        #             MOVES["Right"],
+        #             MOVES["High Punch"],
+        #         ]
+        #     )
+        # elif self.current_direction == "Left":
+        #     self.next_steps.extend(
+        #         [
+        #             MOVES["Down"],
+        #             MOVES["Down+Left"],
+        #             MOVES["Left"],
+        #             MOVES["High Punch"],
+        #         ]
+        #     )
+
+    def observe(self, observation: dict, actions: dict):
         """
         The robot will observe the environment by calling this method.
 
@@ -144,24 +129,24 @@ class Robot:
         observation["ennemy_position"] = detect_position_from_color(
             observation, self.ennemy_color
         )
-        print("observation", observation)
 
         self.observations.append(observation)
         # we delete the oldest observation if we have more than 10 observations
         if len(self.observations) > 10:
             self.observations.pop(0)
 
+        self.actions = actions
 
-    def context_prompt(self, observation: dict, action: dict):
+    def context_prompt(self):
         """
-        Return a str of the context 
-        
+        Return a str of the context
+
         "The observation for you is Left"
         "The observation for the opponent is Left+Up"
         "The action history is Up"
         """
         side = self.side
-        if side==0:
+        if side == 0:
             player_id = "P1"
             opp_id = "P2"
         else:
@@ -170,12 +155,18 @@ class Robot:
         obs_own = self.observations[-1]["character_position"]
         obs_opp = self.observations[-1]["ennemy_position"]
 
-        act_own = action["agent_" + str(side)]
-        act_opp = action["agent_" + str(abs(1-side))]
+        # Handle the first observation setting, if self.actions == {}
+        if self.actions == {}:
+            return f"""
+            It's the first observation of the game, the game just started.
+            The observation for {player_id} is {obs_own}
+            The observation for {opp_id} is {obs_opp}
+            """
+
+        act_own = self.actions["agent_" + str(side)]
+        act_opp = self.actions["agent_" + str(abs(1 - side))]
         str_act_own = INDEX_TO_MOVE[act_own]
         str_act_opp = INDEX_TO_MOVE[act_opp]
-
-
 
         context = f"""
         Your last action was {str_act_own}
@@ -184,7 +175,5 @@ class Robot:
         Your position is {obs_own} 
         """
 
-        print(context)
-
-
-
+        logger.debug(f"Context: {context}")
+        return context
