@@ -10,12 +10,16 @@ def build_system_prompt() -> str:
     return prompt
 
 
-def build_main_prompt() -> str:
+def build_main_prompt(wrong_answer="") -> str:
     """
     TODO: Takes as argument an observation of the world and returns a prompt for the language model
+    wrong_answer: str, the wrong answer, to inject in the prompt to ask for a regenrated answer
     """
 
     prompt = "Choose randomly a move to make. "
     prompt += "Only respond with the move you want to make. It must be only the name of the move in the list of mooves."
+
+    if wrong_answer:
+        prompt += f"Your previous answer was {wrong_answer}. It was wrong because you didn't answered with only a moove from the list of mooves. Please provide a move from the list of moves."
 
     return prompt

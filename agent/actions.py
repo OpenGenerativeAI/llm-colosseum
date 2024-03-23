@@ -5,6 +5,7 @@ Take observations and return actions for the Robot to use
 from agent.language_models import get_sync_client  # Change to async later
 
 from .prompts import build_system_prompt, build_main_prompt
+from .robot import MOVES
 
 
 def get_actions_from_llm(
@@ -34,6 +35,28 @@ def get_actions_from_llm(
         top_p=top_p,
     )
 
-    # Validate the completion format
+    llm_response = completion.choices[0].message.content
 
-    return completion.choices[0].message
+    # Validate the completion format
+    if llm_response not in MOVES.keys():
+        prompt_with_correction = build_main_prompt(wrong_answer=llm_response)
+
+        completion = client.chat.completions.create(
+            model=model_name,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": main_prompt},
+            ],
+            temperature=temperature,
+            max_tokens=max_tokens,
+            top_p=top_p,
+        )
+
+        llm_response = completion.choices[0].message.content
+
+        if llm_response not in MOVES.keys():
+            raise ValueError(
+                f"Invalid completion (even after one error injection): {llm_response}"
+            )
+
+    return llm_response
