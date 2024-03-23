@@ -27,6 +27,7 @@ class Player1(Player):
             side=0,
             character_color=KEN_RED,
             ennemy_color=KEN_GREEN,
+            only_punch=os.getenv("TEST_MODE", False),
         )
 
 
@@ -40,7 +41,32 @@ class Player2(Player):
             side=1,
             character_color=KEN_GREEN,
             ennemy_color=KEN_RED,
+            sleepy=os.getenv("TEST_MODE", False),
         )
+
+
+class Episode:
+    player_1: Player1
+    player_2: Player2
+    player_1_won: Optional[bool] = None
+
+    def __init__(self, player_1: Player1, player_2: Player2):
+        self.player_1 = player_1
+        self.player_2 = player_2
+
+    def save(self):
+        # Write the results to an existing csv with headers "player_1", "player_2", "winner"
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
+        # Verifty if the file exists
+        if not os.path.exists("results.csv"):
+            with open("results.csv", "w") as f:
+                f.write("id,player_1, player_2, winner\n")
+
+        with open("results.csv", "a") as f:
+            f.write(
+                f"{timestamp}, {self.player_1.nickname}, {self.player_2.nickname}, {self.player_1_won}\n"
+            )
 
 
 class Game:
@@ -153,6 +179,16 @@ class Game:
         """
         pass
 
+    def _determine_winner(self, episode: Episode):
+        p1_health = self.observation["P1"]["health"][0]
+        p2_health = self.observation["P2"]["health"][0]
+        if p1_health > p2_health:
+            episode.player_1_won = True
+        elif p2_health > p1_health:
+            episode.player_1_won = False
+        else:
+            return "Draw"
+
     def run(self):
         """
         Runs the game with the given settings.
@@ -160,6 +196,9 @@ class Game:
 
         self.player_1.robot.observe(self.observation, {})
         self.player_2.robot.observe(self.observation, {})
+        # Initialize the episode
+
+        episode = Episode(player_1=self.player_1, player_2=self.player_2)
 
         while True:
             if self.render:
@@ -178,21 +217,17 @@ class Game:
             # Execute actions in the game
             observation, reward, terminated, truncated, info = self.env.step(actions)
 
-            done = terminated or truncated
-            print("Reward: {}".format(reward))
-            print("Done: {}".format(done))
-            print("Info: {}".format(info))
+            p1_wins = observation["P1"]["wins"][0]
+            p2_wins = observation["P2"]["wins"][0]
 
-            if done:
-                # Optionally, change episode settings here
-                options = {}
-                options["characters"] = (None, None)
-                options["char_outfits"] = (5, 5)
-                observation, info = self.env.reset(options=options)
-                break
+            if p1_wins == 1 or p2_wins == 1:
+                episode.player_1_won = p1_wins == 1
+                episode.save()
+                self.env.close()
+                return 0
+
+            # Update the episode with the winner
 
             # Observe the environment
             self.player_1.robot.observe(observation, actions)
             self.player_2.robot.observe(observation, actions)
-        self.env.close()
-        return 0
