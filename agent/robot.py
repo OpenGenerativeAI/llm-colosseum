@@ -90,10 +90,9 @@ class Robot:
         logger.debug(f"Context: {context}")
 
         # Call the LLM to get the next steps
-        next_step = get_actions_from_llm(context)
-        logger.debug(f"Next step: {next_step}")
+        next_steps_from_llm = get_actions_from_llm(context, self.character)
 
-        self.next_steps.append(MOVES[next_step])
+        self.next_steps.extend(next_steps_from_llm)
 
         # Do a Hadouken
         # if self.current_direction == "Right":
