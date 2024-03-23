@@ -1,14 +1,13 @@
 import os
 from typing import Tuple
-from dotenv import load_dotenv
 
 try:
     from openai import AsyncOpenAI, OpenAI
 except ImportError:
     pass
 
-# Load the environment variables
-load_dotenv()
+# Check we can access the environment variables
+assert os.getenv("MISTRAL_API_KEY") is not None
 
 
 def get_async_client(provider: str) -> AsyncOpenAI:
