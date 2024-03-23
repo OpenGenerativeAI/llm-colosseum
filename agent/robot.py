@@ -18,6 +18,8 @@ class Robot:
     character: Optional[str] = None  # character name
     side: int  # side of the stage where playing: 0 = left, 1 = right
     current_direction: Literal["Left", "Right"]  # current direction facing
+    sleepy: Optional[bool] = False  # if the robot is sleepy
+    only_punch: Optional[bool] = False  # if the robot only punch
 
     def __init__(
         self,
@@ -26,6 +28,8 @@ class Robot:
         side: int,
         character_color: list,
         ennemy_color: list,
+        sleepy: bool = False,
+        only_punch: bool = False,
     ):
         self.action_space = action_space
         self.character = character
@@ -39,6 +43,8 @@ class Robot:
         self.character_color = character_color
         self.ennemy_color = ennemy_color
         self.side = side
+        self.sleepy = sleepy
+        self.only_punch = only_punch
 
     def act(self) -> int:
         """
@@ -50,6 +56,30 @@ class Robot:
         """
         if not self.next_steps or len(self.next_steps) == 0:
             return 0  # No move
+
+        if self.sleepy:
+            return 0
+
+        if self.only_punch:
+            # Do a Hadouken
+            if self.current_direction == "Right":
+                self.next_steps.extend(
+                    [
+                        MOVES["Down"],
+                        MOVES["Right+Down"],
+                        MOVES["Right"],
+                        MOVES["High Punch"],
+                    ]
+                )
+            elif self.current_direction == "Left":
+                self.next_steps.extend(
+                    [
+                        MOVES["Down"],
+                        MOVES["Down+Left"],
+                        MOVES["Left"],
+                        MOVES["High Punch"],
+                    ]
+                )
 
         next_step = self.next_steps.pop(0)
 
@@ -93,26 +123,6 @@ class Robot:
         next_steps_from_llm = get_actions_from_llm(context, self.character)
 
         self.next_steps.extend(next_steps_from_llm)
-
-        # Do a Hadouken
-        # if self.current_direction == "Right":
-        #     self.next_steps.extend(
-        #         [
-        #             MOVES["Down"],
-        #             MOVES["Right+Down"],
-        #             MOVES["Right"],
-        #             MOVES["High Punch"],
-        #         ]
-        #     )
-        # elif self.current_direction == "Left":
-        #     self.next_steps.extend(
-        #         [
-        #             MOVES["Down"],
-        #             MOVES["Down+Left"],
-        #             MOVES["Left"],
-        #             MOVES["High Punch"],
-        #         ]
-        #     )
 
     def observe(self, observation: dict, actions: dict):
         """
