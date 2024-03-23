@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import diambra.arena
 from diambra.arena import SpaceTypes, EnvironmentSettingsMultiAgent
+from .robot import Robot
 
 
 def main():
@@ -27,8 +28,13 @@ def main():
 
     observation, info = env.reset(seed=42)
 
+    robot_gpt = Robot(action_space=env.action_space[0])
+    robot_mistral = Robot(action_space=env.action_space[1])
+
     while True:
         env.render()
+
+        actions = [robot_gpt.act(), robot_mistral.act()]
 
         actions = env.action_space.sample()
         print("Actions: {}".format(actions))
