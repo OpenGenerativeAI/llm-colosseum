@@ -41,7 +41,7 @@ def main():
         robot_mistral.plan()
 
         # Act
-        actions = [robot_gpt.act(), robot_mistral.act()]
+        actions = {"agent_0": robot_gpt.act(), "agent_1": robot_mistral.act()}
 
         print("Actions: {}".format(actions))
         # Execute actions in the game
