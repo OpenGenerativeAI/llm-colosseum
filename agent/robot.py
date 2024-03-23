@@ -141,6 +141,7 @@ class Robot:
         observation["ennemy_position"] = detect_position_from_color(
             observation, self.ennemy_color
         )
+        print("observation", observation)
 
         self.observations.append(observation)
         # we delete the oldest observation if we have more than 10 observations
