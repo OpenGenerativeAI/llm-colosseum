@@ -81,6 +81,8 @@ class Robot:
         Moves of Ryu
         https://www.eventhubs.com/guides/2008/may/09/ryu-street-fighter-3-third-strike-character-guide/
         """
+        # Later we will call get_actions_from_llm from `actions.py`
+
         # Just add a random action to the next steps
         # self.next_steps.append(self.action_space.sample())
         if len(self.next_steps) > 0:
