@@ -146,12 +146,6 @@ class Robot:
         "The action history is Up"
         """
         side = self.side
-        if side == 0:
-            player_id = "P1"
-            opp_id = "P2"
-        else:
-            player_id = "P2"
-            opp_id = "P1"
         obs_own = self.observations[-1]["character_position"]
         obs_opp = self.observations[-1]["ennemy_position"]
 
@@ -159,8 +153,8 @@ class Robot:
         if self.actions == {}:
             return f"""
             It's the first observation of the game, the game just started.
-            The observation for {player_id} is {obs_own}
-            The observation for {opp_id} is {obs_opp}
+            The observation for you is {obs_own}
+            The observation for the opponent is {obs_opp}
             """
 
         act_own = self.actions["agent_" + str(side)]
