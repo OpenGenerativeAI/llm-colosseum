@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
 import diambra.arena
 from diambra.arena import SpaceTypes, EnvironmentSettingsMultiAgent
-from .robot import Robot
+from agent import Robot
 
 
 def main():
@@ -28,18 +27,26 @@ def main():
 
     observation, info = env.reset(seed=42)
 
-    robot_gpt = Robot(action_space=env.action_space[0])
-    robot_mistral = Robot(action_space=env.action_space[1])
+    robot_gpt = Robot(action_space=env.action_space["agent_0"])
+    robot_mistral = Robot(action_space=env.action_space["agent_1"])
+
+    robot_gpt.observe(observation)
+    robot_mistral.observe(observation)
 
     while True:
         env.render()
 
+        # Plan
+        robot_gpt.plan()
+        robot_mistral.plan()
+
+        # Act
         actions = [robot_gpt.act(), robot_mistral.act()]
 
-        actions = env.action_space.sample()
         print("Actions: {}".format(actions))
-
+        # Execute actions in the game
         observation, reward, terminated, truncated, info = env.step(actions)
+
         done = terminated or truncated
         print("Reward: {}".format(reward))
         print("Done: {}".format(done))
@@ -52,6 +59,10 @@ def main():
             options["char_outfits"] = (5, 5)
             observation, info = env.reset(options=options)
             break
+
+        # Observe the environment
+        robot_gpt.observe(observation)
+        robot_mistral.observe(observation)
 
     env.close()
 
