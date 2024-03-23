@@ -1,7 +1,8 @@
-from eval.game import Game
 from dotenv import load_dotenv
 
 load_dotenv()
+
+from eval.game import Game
 
 
 def main():

@@ -5,7 +5,7 @@ Take observations and return actions for the Robot to use
 from agent.language_models import get_sync_client  # Change to async later
 
 from .prompts import build_system_prompt, build_main_prompt
-from .robot import MOVES
+from .config import MOVES
 import time
 
 from loguru import logger

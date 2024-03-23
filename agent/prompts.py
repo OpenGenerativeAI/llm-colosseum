@@ -1,4 +1,4 @@
-from .robot import MOVES
+from .config import MOVES
 
 
 def build_system_prompt() -> str:
