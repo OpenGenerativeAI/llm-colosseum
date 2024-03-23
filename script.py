@@ -1,6 +1,3 @@
-import diambra.arena
-from diambra.arena import SpaceTypes, EnvironmentSettingsMultiAgent
-from agent import Robot
 from eval.game import Game
 
 
@@ -11,9 +8,8 @@ def main():
     game = Game(
         render=True,
         splash_screen=True,
-        characters=["Ryu", "Ken"],
-        outfits=[2, 2],
-        render_mode="human",
+        characters=["Ken", "Ken"],
+        outfits=[1, 3],
         seed=42,
     )
 
