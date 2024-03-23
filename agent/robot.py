@@ -1,5 +1,8 @@
+import abc
 from typing import List, Optional, Literal
 from gymnasium import spaces
+
+from .observer import detect_position_from_color, KEN_RED, KEN_GREEN
 
 MOVES = {
     "No-Move": 0,
@@ -37,7 +40,14 @@ class Robot:
     side: int  # side of the stage where playing: 0 = left, 1 = right
     current_direction: Literal["Left", "Right"]  # current direction facing
 
-    def __init__(self, action_space: spaces.Space, character: str, side: int):
+    def __init__(
+        self,
+        action_space: spaces.Space,
+        character: str,
+        side: int,
+        character_color: list,
+        ennemy_color: list,
+    ):
         self.action_space = action_space
         self.character = character
         if side == 0:
@@ -47,6 +57,8 @@ class Robot:
 
         self.observations = []
         self.next_steps = []
+        self.character_color = character_color
+        self.ennemy_color = ennemy_color
 
     def act(self) -> int:
         """
@@ -81,8 +93,11 @@ class Robot:
         Moves of Ryu
         https://www.eventhubs.com/guides/2008/may/09/ryu-street-fighter-3-third-strike-character-guide/
         """
-        # Just add a random action to the next steps
-        # self.next_steps.append(self.action_space.sample())
+
+        # Detect own position
+        own_position = self.observations[-1]["character_position"]
+        ennemy_position = self.observations[-1]["ennemy_position"]
+
         if len(self.next_steps) > 0:
             return
 
@@ -112,6 +127,15 @@ class Robot:
 
         The latest observations are at the end of the list.
         """
+
+        # detect the position of characters and ennemy based on color
+        observation["character_position"] = detect_position_from_color(
+            observation, self.character_color
+        )
+        observation["ennemy_position"] = detect_position_from_color(
+            observation, self.ennemy_color
+        )
+
         self.observations.append(observation)
         # we delete the oldest observation if we have more than 10 observations
         if len(self.observations) > 10:

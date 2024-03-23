@@ -1,6 +1,6 @@
 import diambra.arena
 from diambra.arena import SpaceTypes, EnvironmentSettingsMultiAgent
-from agent import Robot
+from agent import HadokenRobot, KEN_RED, KEN_GREEN
 
 
 def main():
@@ -16,10 +16,10 @@ def main():
 
     # Characters to be used, automatically extended with None for games
     # requiring to select more than one character (e.g. Tekken Tag Tournament)
-    settings.characters = ("Ryu", "Ken")
+    settings.characters = ("Ken", "Ken")
+    settings.outfits = (1, 3)
 
     # Characters outfit
-    settings.outfits = (2, 2)
 
     settings.frame_shape = (0, 0, 0)  # RBG with default size
 
@@ -28,29 +28,33 @@ def main():
     observation, info = env.reset(seed=42)
 
     # Intiialize the robots
-    robot_gpt = Robot(
+    robot_mistral = HadokenRobot(
         action_space=env.action_space["agent_0"],
-        character="Ryu",
-        side=0,
-    )
-    robot_mistral = Robot(
-        action_space=env.action_space["agent_1"],
         character="Ken",
+        side=0,
+        character_color=KEN_RED,
+        ennemy_color=KEN_GREEN,
+    )
+    robot_gpt = HadokenRobot(
+        action_space=env.action_space["agent_1"],
+        character="Ryu",
         side=1,
+        character_color=KEN_GREEN,
+        ennemy_color=KEN_RED,
     )
 
-    robot_gpt.observe(observation)
     robot_mistral.observe(observation)
+    robot_gpt.observe(observation)
 
     while True:
         env.render()
 
         # Plan
-        robot_gpt.plan()
         robot_mistral.plan()
+        robot_gpt.plan()
 
         # Act
-        actions = {"agent_0": robot_gpt.act(), "agent_1": robot_mistral.act()}
+        actions = {"agent_0": robot_mistral.act(), "agent_1": robot_gpt.act()}
 
         print("Actions: {}".format(actions))
         # Execute actions in the game
@@ -60,6 +64,7 @@ def main():
         # print("Reward: {}".format(reward))
         # print("Done: {}".format(done))
         # print("Info: {}".format(info))
+        print(f"Observation: {observation}")
 
         if done:
             # Optionally, change episode settings here
@@ -70,10 +75,8 @@ def main():
             break
 
         # Observe the environment
-        robot_gpt.observe(observation)
         robot_mistral.observe(observation)
-
-        input()
+        robot_gpt.observe(observation)
 
     env.close()
 
