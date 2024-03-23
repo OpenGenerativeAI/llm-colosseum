@@ -26,7 +26,7 @@ INDEX_TO_MOVE = {v: k for k, v in MOVES.items()}
 
 class Robot:
     observations: List[Optional[dict]] = None  # memory
-    next_steps: List[int] = []  # action plan
+    next_steps: List[int]  # action plan
 
     action_space: spaces.Space
     character: Optional[str] = None  # character name
@@ -42,6 +42,7 @@ class Robot:
             self.current_direction = "Left"
 
         self.observations = []
+        self.next_steps = []
 
     def act(self) -> int:
         """

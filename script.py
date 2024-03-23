@@ -57,9 +57,9 @@ def main():
         observation, reward, terminated, truncated, info = env.step(actions)
 
         done = terminated or truncated
-        print("Reward: {}".format(reward))
-        print("Done: {}".format(done))
-        print("Info: {}".format(info))
+        # print("Reward: {}".format(reward))
+        # print("Done: {}".format(done))
+        # print("Info: {}".format(info))
 
         if done:
             # Optionally, change episode settings here
@@ -72,6 +72,8 @@ def main():
         # Observe the environment
         robot_gpt.observe(observation)
         robot_mistral.observe(observation)
+
+        input()
 
     env.close()
 
