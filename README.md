@@ -1,1 +1,1 @@
-# llm-arena
+# llm-collosseum
