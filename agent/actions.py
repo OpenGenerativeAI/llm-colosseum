@@ -2,11 +2,13 @@
 Take observations and return actions for the Robot to use
 """
 
+import os
 from agent.language_models import get_sync_client  # Change to async later
 
 from .prompts import build_system_prompt, build_main_prompt
 from .config import MOVES
 import time
+import random
 
 from loguru import logger
 
@@ -22,6 +24,12 @@ def get_actions_from_llm(
     Get actions from the language model
     context_prompt: str, the prompt to describe the situation to the LLM. Will be placed inside the main prompt template.
     """
+
+    # If we are in the test environment, we don't want to call the LLM
+    if os.getenv("DISABLE_LLM", "False") == "True":
+        # Choose a random move
+        return random.choice(list(MOVES.keys()))
+
     client = get_sync_client("mistral")
 
     # Generate the prompts
