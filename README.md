@@ -12,3 +12,8 @@
 
 To disable the LLM calls, set `DISABLE_LLM` to `True` in the `.env` file.
 It will choose the action randomly.
+
+## Positions
+
+- x is between 0 and 384
+- y is between 0 and 224

@@ -51,12 +51,14 @@ def get_actions_from_llm(
 
     logger.debug(f"LLM call to {model_name}: {time.time() - start_time} s")
 
-    llm_response = completion.choices[0].message.content
+    llm_response = completion.choices[0].message.content.strip()
 
     # Validate the completion format
     if llm_response not in MOVES.keys():
         logger.warning(f"Invalid completion: {llm_response}")
-        prompt_with_correction = build_main_prompt(wrong_answer=llm_response)
+        prompt_with_correction = build_main_prompt(
+            context_prompt, wrong_answer=llm_response
+        )
 
         start_time = time.time()
 
@@ -73,11 +75,10 @@ def get_actions_from_llm(
 
         logger.debug(f"LLM call to {model_name}: {time.time() - start_time} s")
 
-        llm_response = completion.choices[0].message.content
+        llm_response = completion.choices[0].message.content.strip()
 
         if llm_response not in MOVES.keys():
-            raise ValueError(
-                f"Invalid completion (even after one error injection): {llm_response}"
-            )
+            logger.error(f"Invalid completion: {llm_response}")
+            return random.choice(list(MOVES.keys()))
 
     return llm_response

@@ -23,3 +23,6 @@ MOVES = {
     "High Punch+High Kick": 17,
 }
 INDEX_TO_MOVE = {v: k for k, v in MOVES.items()}
+
+X_SIZE = 384
+Y_SIZE = 224
