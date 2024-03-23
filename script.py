@@ -1,6 +1,6 @@
 import diambra.arena
 from diambra.arena import SpaceTypes, EnvironmentSettingsMultiAgent
-from .robot import Robot
+from agent import Robot
 
 
 def main():
@@ -27,8 +27,8 @@ def main():
 
     observation, info = env.reset(seed=42)
 
-    robot_gpt = Robot(action_space=env.action_space[0])
-    robot_mistral = Robot(action_space=env.action_space[1])
+    robot_gpt = Robot(action_space=env.action_space["agent_0"])
+    robot_mistral = Robot(action_space=env.action_space["agent_1"])
 
     robot_gpt.observe(observation)
     robot_mistral.observe(observation)
