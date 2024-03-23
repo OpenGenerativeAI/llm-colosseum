@@ -11,6 +11,7 @@ def main():
 
     game = Game(
         render=True,
+        save_game=True,
     )
 
     game.run()

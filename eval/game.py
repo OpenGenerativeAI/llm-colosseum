@@ -1,11 +1,20 @@
 from typing import List, Optional, Union
-from diambra.arena import SpaceTypes, EnvironmentSettingsMultiAgent, make
+from diambra.arena import (
+    SpaceTypes,
+    EnvironmentSettingsMultiAgent,
+    make,
+    RecordingSettings,
+)
+import os
+import datetime
+
 from agent import Robot, KEN_RED, KEN_GREEN
 
 
 class Game:
     render: Optional[bool] = False
     splash_screen: Optional[bool] = False
+    save_game: Optional[bool] = False
     characters: Optional[List[str]] = ["Ken", "Ken"]
     outfits: Optional[List[int]] = [1, 3]
     frame_shape: Optional[List[int]] = [0, 0, 0]
@@ -18,6 +27,7 @@ class Game:
     def __init__(
         self,
         render: bool = False,
+        save_game: bool = False,
         splash_screen: bool = False,
         characters: List[str] = ["Ken", "Ken"],
         outfits: List[int] = [1, 3],
@@ -36,6 +46,7 @@ class Game:
         """
         self.render = render
         self.splash_screen = splash_screen
+        self.save_game = save_game
         self.characters = characters
         self.outfits = outfits
         self.frame_shape = frame_shape
@@ -63,12 +74,44 @@ class Game:
 
         return settings
 
+    def _init_recorder(self) -> RecordingSettings:
+        """
+        Initializes the recorder for the game.
+        """
+        if not self.save_game:
+            return None
+        # Recording settings in root directory
+        root_dir = os.path.dirname(os.path.abspath(__file__))
+        game_id = "sfiii3n"
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        recording_settings = RecordingSettings()
+        recording_settings.dataset_path = os.path.join(
+            root_dir, "diambra/episode_recording", game_id, "-", timestamp
+        )
+        recording_settings.username = "llm-colosseum"
+
+        return recording_settings
+
     def _init_env(self, settings: EnvironmentSettingsMultiAgent):
         """
         Initializes the environment for the game.
         """
         render_mode = "human" if self.render else "rgb_array"
+        recorder_settings = self._init_recorder()
+        if self.save_game:
+            return make(
+                "sfiii3n",
+                settings,
+                render_mode=render_mode,
+                episode_recording_settings=recorder_settings,
+            )
         return make("sfiii3n", settings, render_mode=render_mode)
+
+    def _save(self):
+        """
+        Save the game state.
+        """
+        pass
 
     def run(self):
         """
