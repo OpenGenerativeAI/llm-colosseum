@@ -80,6 +80,10 @@ class Robot:
 
         # Note: at the beginning of the game, the position is None
 
+        # If we already have a next step, we don't need to plan
+        if len(self.next_steps) > 0:
+            return
+
         # Get the context
         context = self.context_prompt()
 
@@ -89,32 +93,27 @@ class Robot:
         next_step = get_actions_from_llm(context)
         logger.debug(f"Next step: {next_step}")
 
-        # Later we will call get_actions_from_llm from `actions.py`
-
-        # Just add a random action to the next steps
-        # self.next_steps.append(self.action_space.sample())
-        if len(self.next_steps) > 0:
-            return
+        self.next_steps.append(MOVES[next_step])
 
         # Do a Hadouken
-        if self.current_direction == "Right":
-            self.next_steps.extend(
-                [
-                    MOVES["Down"],
-                    MOVES["Right+Down"],
-                    MOVES["Right"],
-                    MOVES["High Punch"],
-                ]
-            )
-        elif self.current_direction == "Left":
-            self.next_steps.extend(
-                [
-                    MOVES["Down"],
-                    MOVES["Down+Left"],
-                    MOVES["Left"],
-                    MOVES["High Punch"],
-                ]
-            )
+        # if self.current_direction == "Right":
+        #     self.next_steps.extend(
+        #         [
+        #             MOVES["Down"],
+        #             MOVES["Right+Down"],
+        #             MOVES["Right"],
+        #             MOVES["High Punch"],
+        #         ]
+        #     )
+        # elif self.current_direction == "Left":
+        #     self.next_steps.extend(
+        #         [
+        #             MOVES["Down"],
+        #             MOVES["Down+Left"],
+        #             MOVES["Left"],
+        #             MOVES["High Punch"],
+        #         ]
+        #     )
 
     def observe(self, observation: dict, actions: dict):
         """
@@ -130,7 +129,6 @@ class Robot:
         observation["ennemy_position"] = detect_position_from_color(
             observation, self.ennemy_color
         )
-        print("observation", observation)
 
         self.observations.append(observation)
         # we delete the oldest observation if we have more than 10 observations
@@ -165,8 +163,6 @@ class Robot:
             The observation for {opp_id} is {obs_opp}
             """
 
-        print("actions", self.actions)
-
         act_own = self.actions["agent_" + str(side)]
         act_opp = self.actions["agent_" + str(abs(1 - side))]
         str_act_own = INDEX_TO_MOVE[act_own]
@@ -179,5 +175,5 @@ class Robot:
         Your position is {obs_own} 
         """
 
-        print(context)
+        logger.debug(f"Context: {context}")
         return context
