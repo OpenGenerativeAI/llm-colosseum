@@ -164,20 +164,22 @@ class Robot:
         else:
             player_id = "P2"
             opp_id = "P1"
-        ##obs_own = self.observe(observation[player_id])
-        ##obs_opp = self.observe(observation[opp_id])
+        obs_own = self.observations[-1]["character_position"]
+        obs_opp = self.observations[-1]["ennemy_position"]
 
-        action_hist = action["agent_" + str(side)]
+        act_own = action["agent_" + str(side)]
+        act_opp = action["agent_" + str(abs(1-side))]
+        str_act_own = INDEX_TO_MOVE[act_own]
+        str_act_opp = INDEX_TO_MOVE[act_opp]
 
 
-        context = str(
-            ##"The observation for you is: " + str(obs_own) + "\n"
-            ##"The observation for the opponent is: " + str(obs_opp) + "\n"
-            "The action history is: " + str(action_hist) + "\n"
-            "The observation for you is Left"
-            "The observation for the opponent is Left+Up"
-            "The action history is Up"
-        )
+
+        context = f"""
+        Your last action was {str_act_own}
+        The opponent's last action was {str_act_opp}
+        The opponent location is {obs_opp}
+        Your position is {obs_own} 
+        """
 
         print(context)
 
