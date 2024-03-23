@@ -33,7 +33,7 @@ def detect_position_from_color(
     mask = diff < epsilon
 
     # Return the index where the red color is detected
-    coordinates = mask.any(axis=2).nonzero()
+    coordinates = mask.nonzero()
     print("coordinates", coordinates)
 
     if len(coordinates[0]) == 0:
