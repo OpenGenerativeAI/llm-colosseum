@@ -48,7 +48,7 @@ class Robot:
             [
                 # Do a Hadouken
                 MOVES["Down"],
-                MOVES["Down+Right"],
+                MOVES["Right+Down"],
                 MOVES["Right"],
                 MOVES["High Punch"],
             ]
