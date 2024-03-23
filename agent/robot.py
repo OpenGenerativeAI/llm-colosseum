@@ -98,6 +98,8 @@ class Robot:
         own_position = self.observations[-1]["character_position"]
         ennemy_position = self.observations[-1]["ennemy_position"]
 
+        # Note: at the beginning of the game, the position is None
+
         if len(self.next_steps) > 0:
             return
 
