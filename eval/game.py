@@ -11,6 +11,38 @@ import datetime
 from agent import Robot, KEN_RED, KEN_GREEN
 
 
+class Player:
+    nickname: str
+    model: str
+    robot: Optional[Robot] = None
+
+
+class Player1(Player):
+    def __init__(self, nickname: str, model: str):
+        self.nickname = nickname
+        self.model = model
+        self.robot = Robot(
+            action_space=None,
+            character="Ken",
+            side=0,
+            character_color=KEN_RED,
+            ennemy_color=KEN_GREEN,
+        )
+
+
+class Player2(Player):
+    def __init__(self, nickname: str, model: str):
+        self.nickname = nickname
+        self.model = model
+        self.robot = Robot(
+            action_space=None,
+            character="Ken",
+            side=1,
+            character_color=KEN_GREEN,
+            ennemy_color=KEN_RED,
+        )
+
+
 class Game:
     render: Optional[bool] = False
     splash_screen: Optional[bool] = False
@@ -21,8 +53,8 @@ class Game:
     seed: Optional[int] = 42
     settings: EnvironmentSettingsMultiAgent = None  # Settings of the game
     env = None  # Environment of the game
-    agent_1: Robot = None  # First agent
-    agent_2: Robot = None  # Second agent
+    player_1: Player1 = None  # First player
+    player_2: Player2 = None  # Second player
 
     def __init__(
         self,
@@ -33,6 +65,8 @@ class Game:
         outfits: List[int] = [1, 3],
         frame_shape: List[int] = [0, 0, 0],
         seed: int = 42,
+        player_1: Player1 = None,
+        player_2: Player2 = None,
     ):
         """_summary_
 
@@ -54,6 +88,12 @@ class Game:
         self.settings = self._init_settings()
         self.env = self._init_env(self.settings)
         self.observation, self.info = self.env.reset(seed=self.seed)
+        self.player_1 = (
+            player_1 if player_1 else Player1(nickname="Player 1", model="llm")
+        )
+        self.player_2 = (
+            player_2 if player_2 else Player2(nickname="Player 2", model="llm")
+        )
 
     def _init_settings(self) -> EnvironmentSettingsMultiAgent:
         """
@@ -118,35 +158,22 @@ class Game:
         Runs the game with the given settings.
         """
 
-        self.agent_1 = Robot(
-            action_space=self.env.action_space["agent_0"],
-            character="Ken",
-            side=0,
-            character_color=KEN_RED,
-            ennemy_color=KEN_GREEN,
-        )
-
-        self.agent_2 = Robot(
-            action_space=self.env.action_space["agent_1"],
-            character="Ken",
-            side=1,
-            character_color=KEN_GREEN,
-            ennemy_color=KEN_RED,
-        )
-
-        self.agent_1.observe(self.observation, {})
-        self.agent_2.observe(self.observation, {})
+        self.player_1.robot.observe(self.observation, {})
+        self.player_2.robot.observe(self.observation, {})
 
         while True:
             if self.render:
                 self.env.render()
 
             # Plan
-            self.agent_1.plan()
-            self.agent_2.plan()
+            self.player_1.robot.plan()
+            self.player_2.robot.plan()
 
             # Act
-            actions = {"agent_0": self.agent_1.act(), "agent_1": self.agent_2.act()}
+            actions = {
+                "agent_0": self.player_1.robot.act(),
+                "agent_1": self.player_2.robot.act(),
+            }
             print("Actions: {}".format(actions))
             # Execute actions in the game
             observation, reward, terminated, truncated, info = self.env.step(actions)
@@ -165,7 +192,7 @@ class Game:
                 break
 
             # Observe the environment
-            self.agent_1.observe(observation, actions)
-            self.agent_2.observe(observation, actions)
+            self.player_1.robot.observe(observation, actions)
+            self.player_2.robot.observe(observation, actions)
         self.env.close()
         return 0
