@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+diambra = "==0.0.17"
+diambra-arena = "==2.2.6"
+openai = "==1.14.2"
+python-dotenv = "==1.0.1"
+loguru = "==0.7.2"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"
