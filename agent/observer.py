@@ -39,9 +39,7 @@ def detect_position_from_color(
     if len(coordinates[0]) == 0:
         return None
 
-    first_match = coordinates[0][0], coordinates[1][0]
-
     # Add back the vertical offset
-    first_match = (first_match[0], first_match[1] + 80)
+    first_match = (coordinates[1][0], coordinates[0][0] + 80)
 
     return first_match
