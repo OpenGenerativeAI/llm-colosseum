@@ -5,7 +5,7 @@ KEN_GREEN = [48, 88, 152]
 
 
 def detect_position_from_color(
-    observation: dict, color: list, epsilon=1, save_frame: bool = True
+    observation: dict, color: list, epsilon=1, save_frame: bool = False
 ) -> tuple:
     """
     Convert the observation from pixels to player coordinates.
