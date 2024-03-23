@@ -169,10 +169,14 @@ class Robot:
 
         action_hist = action["agent_" + str(side)]
 
+
         context = str(
             ##"The observation for you is: " + str(obs_own) + "\n"
             ##"The observation for the opponent is: " + str(obs_opp) + "\n"
             "The action history is: " + str(action_hist) + "\n"
+            "The observation for you is Left"
+            "The observation for the opponent is Left+Up"
+            "The action history is Up"
         )
 
         print(context)
