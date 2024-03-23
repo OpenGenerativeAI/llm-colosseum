@@ -16,6 +16,6 @@ def build_main_prompt() -> str:
     """
 
     prompt = "Choose randomly a move to make. "
-    prompt += "Only respond with the moves you want to make."
+    prompt += "Only respond with the move you want to make. It must be only the name of the move in the list of mooves."
 
     return prompt
