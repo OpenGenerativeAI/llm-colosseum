@@ -59,6 +59,7 @@ class Robot:
         self.next_steps = []
         self.character_color = character_color
         self.ennemy_color = ennemy_color
+        self.side = side
 
     def act(self) -> int:
         """
@@ -146,3 +147,35 @@ class Robot:
         # we delete the oldest observation if we have more than 10 observations
         if len(self.observations) > 10:
             self.observations.pop(0)
+
+
+    def context_prompt(self, observation: dict, action: dict):
+        """
+        Return a str of the context 
+        
+        "The observation for you is Left"
+        "The observation for the opponent is Left+Up"
+        "The action history is Up"
+        """
+        side = self.side
+        if side==0:
+            player_id = "P1"
+            opp_id = "P2"
+        else:
+            player_id = "P2"
+            opp_id = "P1"
+        ##obs_own = self.observe(observation[player_id])
+        ##obs_opp = self.observe(observation[opp_id])
+
+        action_hist = action["agent_" + str(side)]
+
+        context = str(
+            ##"The observation for you is: " + str(obs_own) + "\n"
+            ##"The observation for the opponent is: " + str(obs_opp) + "\n"
+            "The action history is: " + str(action_hist) + "\n"
+        )
+
+        print(context)
+
+
+
