@@ -2,7 +2,11 @@ from typing import List
 
 
 class Robot:
-    next_steps: List[list] = []  # The next steps of the robots
+    next_steps: List[list] = []  # The next steps of the robots, a lis of actions
+    actions_history: List[list] = []  # The history of the actions of the robots
+    position_history: List[
+        tuple
+    ] = []  # The history of the (x,y) position of the robots
 
     def __init__(self, action_space):
         self.action_space = action_space
