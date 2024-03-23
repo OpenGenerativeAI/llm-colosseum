@@ -28,7 +28,7 @@ def detect_position_from_color(
     # Detect the red color of Ken
     # !!! THIS DOESNT WORK BECAUSE THE COLOR ISNT RIGHT!!
 
-    diff = np.linalg.Norm(np.array(frame) - np.array(color), axis=2)
+    diff = np.linalg.norm(np.array(frame) - np.array(color), axis=2)
     print("diff", diff)
     mask = diff < epsilon
 
