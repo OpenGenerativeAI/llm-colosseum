@@ -45,7 +45,7 @@ def get_actions_from_llm(
             model=model_name,
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": main_prompt},
+                {"role": "user", "content": prompt_with_correction},
             ],
             temperature=temperature,
             max_tokens=max_tokens,
