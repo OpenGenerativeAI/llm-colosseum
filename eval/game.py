@@ -1,10 +1,9 @@
 from typing import List, Optional, Union
-from agent import Robot
 from diambra.arena import SpaceTypes, EnvironmentSettingsMultiAgent, make
+from agent import Robot, KEN_RED, KEN_GREEN
 
 
 class Game:
-
     render: Optional[bool] = False
     splash_screen: Optional[bool] = False
     characters: Optional[List[str]] = ["Ryu", "Ken"]
@@ -78,14 +77,18 @@ class Game:
 
         self.agent_1 = Robot(
             action_space=self.env.action_space["agent_0"],
-            character="Ryu",
+            character="Ken",
             side=0,
+            character_color=KEN_RED,
+            ennemy_color=KEN_GREEN,
         )
 
         self.agent_2 = Robot(
             action_space=self.env.action_space["agent_1"],
             character="Ken",
             side=1,
+            character_color=KEN_GREEN,
+            ennemy_color=KEN_RED,
         )
 
         self.agent_1.observe(self.observation)
