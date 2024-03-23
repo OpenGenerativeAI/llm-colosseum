@@ -6,8 +6,8 @@ from agent import Robot, KEN_RED, KEN_GREEN
 class Game:
     render: Optional[bool] = False
     splash_screen: Optional[bool] = False
-    characters: Optional[List[str]] = ["Ryu", "Ken"]
-    outfits: Optional[List[int]] = [2, 2]
+    characters: Optional[List[str]] = ["Ken", "Ken"]
+    outfits: Optional[List[int]] = [1, 3]
     frame_shape: Optional[List[int]] = [0, 0, 0]
     seed: Optional[int] = 42
     settings: EnvironmentSettingsMultiAgent = None  # Settings of the game
@@ -19,8 +19,8 @@ class Game:
         self,
         render: bool = False,
         splash_screen: bool = False,
-        characters: List[str] = ["Ryu", "Ken"],
-        outfits: List[int] = [2, 2],
+        characters: List[str] = ["Ken", "Ken"],
+        outfits: List[int] = [1, 3],
         frame_shape: List[int] = [0, 0, 0],
         seed: int = 42,
     ):
@@ -104,7 +104,6 @@ class Game:
 
             # Act
             actions = {"agent_0": self.agent_1.act(), "agent_1": self.agent_2.act()}
-
             print("Actions: {}".format(actions))
             # Execute actions in the game
             observation, reward, terminated, truncated, info = self.env.step(actions)
@@ -113,7 +112,6 @@ class Game:
             print("Reward: {}".format(reward))
             print("Done: {}".format(done))
             print("Info: {}".format(info))
-            
 
             if done:
                 # Optionally, change episode settings here

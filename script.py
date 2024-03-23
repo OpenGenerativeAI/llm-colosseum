@@ -7,10 +7,6 @@ def main():
 
     game = Game(
         render=True,
-        splash_screen=True,
-        characters=["Ken", "Ken"],
-        outfits=[1, 3],
-        seed=42,
     )
 
     game.run()
