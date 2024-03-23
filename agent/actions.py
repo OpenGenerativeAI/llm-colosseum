@@ -6,6 +6,9 @@ from agent.language_models import get_sync_client  # Change to async later
 
 from .prompts import build_system_prompt, build_main_prompt
 from .robot import MOVES
+import time
+
+from loguru import logger
 
 
 def get_actions_from_llm(
@@ -25,6 +28,8 @@ def get_actions_from_llm(
     system_prompt = build_system_prompt()
     main_prompt = build_main_prompt()
 
+    start_time = time.time()
+
     completion = client.chat.completions.create(
         model=model_name,
         messages=[
@@ -36,11 +41,16 @@ def get_actions_from_llm(
         top_p=top_p,
     )
 
+    logger.debug(f"LLM call to {model_name}: {time.time() - start_time} s")
+
     llm_response = completion.choices[0].message.content
 
     # Validate the completion format
     if llm_response not in MOVES.keys():
+        logger.warning(f"Invalid completion: {llm_response}")
         prompt_with_correction = build_main_prompt(wrong_answer=llm_response)
+
+        start_time = time.time()
 
         completion = client.chat.completions.create(
             model=model_name,
@@ -52,6 +62,8 @@ def get_actions_from_llm(
             max_tokens=max_tokens,
             top_p=top_p,
         )
+
+        logger.debug(f"LLM call to {model_name}: {time.time() - start_time} s")
 
         llm_response = completion.choices[0].message.content
 
