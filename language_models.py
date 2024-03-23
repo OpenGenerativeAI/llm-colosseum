@@ -1,10 +1,14 @@
 import os
 from typing import Tuple
+from dotenv import load_dotenv
 
 try:
     from openai import AsyncOpenAI, OpenAI
 except ImportError:
     pass
+
+# Load the environment variables
+load_dotenv()
 
 
 def get_async_client(provider: str) -> AsyncOpenAI:
