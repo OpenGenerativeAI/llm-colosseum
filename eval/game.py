@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 from agent import Robot
 from diambra.arena import SpaceTypes, EnvironmentSettingsMultiAgent, make
 
@@ -10,7 +10,6 @@ class Game:
     characters: Optional[List[str]] = ["Ryu", "Ken"]
     outfits: Optional[List[int]] = [2, 2]
     frame_shape: Optional[List[int]] = [0, 0, 0]
-    render_mode: Optional[str] = "human"  # either human or rgb_array
     seed: Optional[int] = 42
     settings: EnvironmentSettingsMultiAgent = None  # Settings of the game
     env = None  # Environment of the game
@@ -24,7 +23,6 @@ class Game:
         characters: List[str] = ["Ryu", "Ken"],
         outfits: List[int] = [2, 2],
         frame_shape: List[int] = [0, 0, 0],
-        render_mode: str = "human",
         seed: int = 42,
     ):
         """_summary_
@@ -35,7 +33,6 @@ class Game:
             characters (List[str], optional): List of the players to have. Defaults to ["Ryu", "Ken"].
             outfits (List[int], optional): Outfits to run. Defaults to [2, 2].
             frame_shape (List[int], optional): Don't know :D . Defaults to [0, 0, 0].
-            render_mode (str, optional): Weither to display an RGB or not. Defaults to "human".
             seed (int, optional): Random seed. Defaults to 42.
         """
         self.render = render
@@ -43,7 +40,6 @@ class Game:
         self.characters = characters
         self.outfits = outfits
         self.frame_shape = frame_shape
-        self.render_mode = render_mode
         self.seed = seed
         self.settings = self._init_settings()
         self.env = self._init_env(self.settings)
@@ -54,7 +50,7 @@ class Game:
         Initializes the settings for the game.
         """
         settings = EnvironmentSettingsMultiAgent(
-            render_mode=self.render_mode,
+            render_mode="rgb_array",
             splash_screen=self.splash_screen,
         )
 
@@ -72,7 +68,8 @@ class Game:
         """
         Initializes the environment for the game.
         """
-        return make("sfiii3n", settings, render_mode=self.render_mode)
+        render_mode = "human" if self.render else "rgb_array"
+        return make("sfiii3n", settings, render_mode=render_mode)
 
     def run(self):
         """
