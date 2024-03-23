@@ -1,6 +1,6 @@
 import diambra.arena
 from diambra.arena import SpaceTypes, EnvironmentSettingsMultiAgent
-from agent import HadokenRobot, KEN_RED, KEN_GREEN
+from agent import Robot, KEN_RED, KEN_GREEN
 
 
 def main():
@@ -28,14 +28,14 @@ def main():
     observation, info = env.reset(seed=42)
 
     # Intiialize the robots
-    robot_mistral = HadokenRobot(
+    robot_mistral = Robot(
         action_space=env.action_space["agent_0"],
         character="Ken",
         side=0,
         character_color=KEN_RED,
         ennemy_color=KEN_GREEN,
     )
-    robot_gpt = HadokenRobot(
+    robot_gpt = Robot(
         action_space=env.action_space["agent_1"],
         character="Ryu",
         side=1,
