@@ -25,3 +25,24 @@ MOVES = {
     "High Punch+High Kick": 17,
 }
 INDEX_TO_MOVE = {v: k for k, v in MOVES.items()}
+
+# TODO : Adds some combos to this
+REAL_MOVE_LIST = [
+    "No-Move",
+    "Left",
+    "Left+Up",
+    "Up",
+    "Right",
+    "Right+Down",
+    "Down",
+    "Down+Left",
+    "Low Punch",
+    "Medium Punch",
+    "High Punch",
+    "Low Kick",
+    "Medium Kick",
+    "High Kick",
+    "Low Punch+Low Kick",
+    "Medium Punch+Medium Kick",
+    "High Punch+High Kick",
+]
