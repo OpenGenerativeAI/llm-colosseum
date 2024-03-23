@@ -157,6 +157,16 @@ class Robot:
         obs_own = self.observations[-1]["character_position"]
         obs_opp = self.observations[-1]["ennemy_position"]
 
+        # Handle the first observation setting, if self.actions == {}
+        if self.actions == {}:
+            return f"""
+            It's the first observation of the game, the game just started.
+            The observation for {player_id} is {obs_own}
+            The observation for {opp_id} is {obs_opp}
+            """
+
+        print("actions", self.actions)
+
         act_own = self.actions["agent_" + str(side)]
         act_opp = self.actions["agent_" + str(abs(1 - side))]
         str_act_own = INDEX_TO_MOVE[act_own]
