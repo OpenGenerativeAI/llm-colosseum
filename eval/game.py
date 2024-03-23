@@ -113,7 +113,6 @@ class Game:
             print("Reward: {}".format(reward))
             print("Done: {}".format(done))
             print("Info: {}".format(info))
-            print(context_prompt(self.agent_1, observation, actions))
 
             if done:
                 # Optionally, change episode settings here
