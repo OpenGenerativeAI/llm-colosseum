@@ -5,12 +5,16 @@ MOVES = {
     "No-Move": 0,
     "Left": 1,
     "Left+Up": 2,
+    "Up+Left": 2,
     "Up": 3,
     "Up+Right": 4,
+    "Right+Up": 4,
     "Right": 5,
     "Right+Down": 6,
+    "Down+Right": 6,
     "Down": 7,
     "Down+Left": 8,
+    "Left+Down": 8,
     "Low Punch": 9,
     "Medium Punch": 10,
     "High Punch": 11,
@@ -96,7 +100,7 @@ class Robot:
             self.next_steps.extend(
                 [
                     MOVES["Down"],
-                    MOVES["Left+Down"],
+                    MOVES["Down+Left"],
                     MOVES["Left"],
                     MOVES["High Punch"],
                 ]
