@@ -26,7 +26,7 @@ def get_actions_from_llm(
 
     # Generate the prompts
     system_prompt = build_system_prompt()
-    main_prompt = build_main_prompt()
+    main_prompt = build_main_prompt(context_prompt)
 
     start_time = time.time()
 

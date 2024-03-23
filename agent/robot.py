@@ -1,8 +1,10 @@
 import abc
 from typing import List, Optional, Literal
 from gymnasium import spaces
+from loguru import logger
 
 from .observer import detect_position_from_color, KEN_RED, KEN_GREEN
+from .actions import get_actions_from_llm
 
 MOVES = {
     "No-Move": 0,
@@ -34,6 +36,7 @@ INDEX_TO_MOVE = {v: k for k, v in MOVES.items()}
 class Robot:
     observations: List[Optional[dict]] = None  # memory
     next_steps: List[int]  # action plan
+    actions: dict  # actions of the agents during a step of the game
 
     action_space: spaces.Space
     character: Optional[str] = None  # character name
@@ -60,34 +63,6 @@ class Robot:
         self.character_color = character_color
         self.ennemy_color = ennemy_color
         self.side = side
-
-    def context_prompt(self, observation: dict, action: dict):
-        """
-        Return a str of the context
-
-        "The observation for you is Left"
-        "The observation for the opponent is Left+Up"
-        "The action history is Up"
-        """
-        side = self.side
-        if side == 0:
-            player_id = "P1"
-            opp_id = "P2"
-        else:
-            player_id = "P2"
-            opp_id = "P1"
-        ##obs_own = self.observe(observation[player_id])
-        ##obs_opp = self.observe(observation[opp_id])
-
-        action_hist = action["agent_" + str(side)]
-
-        context = str(
-            ##"The observation for you is: " + str(obs_own) + "\n"
-            ##"The observation for the opponent is: " + str(obs_opp) + "\n"
-            "The action history is: " + str(action_hist) + "\n"
-        )
-
-        print(context)
 
     def act(self) -> int:
         """
@@ -129,6 +104,15 @@ class Robot:
 
         # Note: at the beginning of the game, the position is None
 
+        # Get the context
+        context = self.context_prompt()
+
+        logger.debug(f"Context: {context}")
+
+        # Call the LLM to get the next steps
+        next_step = get_actions_from_llm(context)
+        logger.debug(f"Next step: {next_step}")
+
         # Later we will call get_actions_from_llm from `actions.py`
 
         # Just add a random action to the next steps
@@ -156,7 +140,7 @@ class Robot:
                 ]
             )
 
-    def observe(self, observation: dict):
+    def observe(self, observation: dict, actions: dict):
         """
         The robot will observe the environment by calling this method.
 
@@ -177,17 +161,18 @@ class Robot:
         if len(self.observations) > 10:
             self.observations.pop(0)
 
+        self.actions = actions
 
-    def context_prompt(self, observation: dict, action: dict):
+    def context_prompt(self):
         """
-        Return a str of the context 
-        
+        Return a str of the context
+
         "The observation for you is Left"
         "The observation for the opponent is Left+Up"
         "The action history is Up"
         """
         side = self.side
-        if side==0:
+        if side == 0:
             player_id = "P1"
             opp_id = "P2"
         else:
@@ -196,12 +181,10 @@ class Robot:
         obs_own = self.observations[-1]["character_position"]
         obs_opp = self.observations[-1]["ennemy_position"]
 
-        act_own = action["agent_" + str(side)]
-        act_opp = action["agent_" + str(abs(1-side))]
+        act_own = self.actions["agent_" + str(side)]
+        act_opp = self.actions["agent_" + str(abs(1 - side))]
         str_act_own = INDEX_TO_MOVE[act_own]
         str_act_opp = INDEX_TO_MOVE[act_opp]
-
-
 
         context = f"""
         Your last action was {str_act_own}
@@ -211,6 +194,4 @@ class Robot:
         """
 
         print(context)
-
-
-
+        return context

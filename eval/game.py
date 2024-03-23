@@ -91,8 +91,8 @@ class Game:
             ennemy_color=KEN_RED,
         )
 
-        self.agent_1.observe(self.observation)
-        self.agent_2.observe(self.observation)
+        self.agent_1.observe(self.observation, {})
+        self.agent_2.observe(self.observation, {})
 
         while True:
             if self.render:
@@ -122,7 +122,7 @@ class Game:
                 break
 
             # Observe the environment
-            self.agent_1.observe(observation)
-            self.agent_2.observe(observation)
+            self.agent_1.observe(observation, actions)
+            self.agent_2.observe(observation, actions)
         self.env.close()
         return 0
