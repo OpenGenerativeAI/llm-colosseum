@@ -27,8 +27,17 @@ def main():
 
     observation, info = env.reset(seed=42)
 
-    robot_gpt = Robot(action_space=env.action_space["agent_0"])
-    robot_mistral = Robot(action_space=env.action_space["agent_1"])
+    # Intiialize the robots
+    robot_gpt = Robot(
+        action_space=env.action_space["agent_0"],
+        character="Ryu",
+        side=0,
+    )
+    robot_mistral = Robot(
+        action_space=env.action_space["agent_1"],
+        character="Ken",
+        side=1,
+    )
 
     robot_gpt.observe(observation)
     robot_mistral.observe(observation)

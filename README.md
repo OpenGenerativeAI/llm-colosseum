@@ -1,6 +1,5 @@
 # llm-collosseum
 
-
 ## Installation
 
 - Follow instructions in https://docs.diambra.ai/#installation
