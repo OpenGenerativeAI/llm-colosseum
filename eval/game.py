@@ -104,7 +104,6 @@ class Game:
 
             # Act
             actions = {"agent_0": self.agent_1.act(), "agent_1": self.agent_2.act()}
-
             print("Actions: {}".format(actions))
             # Execute actions in the game
             observation, reward, terminated, truncated, info = self.env.step(actions)
