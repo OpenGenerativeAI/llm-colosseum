@@ -1,17 +1,17 @@
 from typing import Optional
-from .config import REAL_MOVE_LIST, NB_FRAME_WAIT
+from .config import META_INSTRUCTIONS
 import random
 from typing import List
 
 
 def build_system_prompt(character: str) -> str:
-    move_list = "\n - ".join(REAL_MOVE_LIST)
+    move_list = "- " + "\n - ".join([move for move in META_INSTRUCTIONS])
 
     system_prompt = f"""You are the best and most aggressive player in the world. \
     You're playing Street Fighter III 3rd strike with the character {character}. \
 Your goal it to beat the other opponent. You can do the following moves:
 {move_list}
-You reply with a bullet point list of moves. The format should be: `- move` separated by a new line."""
+You reply with a bullet point list of moves. The format should be: `- <name of the move>` separated by a new line."""
     return system_prompt
 
 
@@ -33,7 +33,7 @@ The context of the game is:
 {context}
 Response with a bullet point list of the moves you want to do. Do not \
 include moves that are not in the list of moves. Do not include any other information. \
-The format should be: `- move` separated by a new line.
+The format should be: `- <name of move>` separated by a new line.
 """
 
     if wrong_answer:

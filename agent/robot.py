@@ -146,10 +146,16 @@ class Robot:
             temperature=0.7,
         )
 
-        # Add some steps where we just wait
-        next_steps_from_llm.extend([0] * NB_FRAME_WAIT)
+        next_button_press = [
+            button
+            for combo in next_steps_from_llm
+            for button in META_INSTRUCTIONS[combo][self.current_direction.lower()]
+        ]
 
-        self.next_steps.extend(next_steps_from_llm)
+        # Add some steps where we just wait
+        next_button_press.extend([0] * NB_FRAME_WAIT)
+
+        self.next_steps.extend(next_button_press)
 
     def observe(self, observation: dict, actions: dict, reward: float):
         """
@@ -190,7 +196,6 @@ class Robot:
         "The observation for the opponent is Left+Up"
         "The action history is Up"
         """
-
 
         # Create the position prompt
         side = self.side
@@ -240,7 +245,6 @@ class Robot:
             str_act_opp = INDEX_TO_MOVE[act_opp]
 
             last_action_prompt += f"Your last action was {str_act_own}. The opponent's last action was {str_act_opp}."
-
 
         reward = self.reward
 
