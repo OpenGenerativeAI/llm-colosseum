@@ -151,10 +151,11 @@ class Robot:
             for button in META_INSTRUCTIONS_WITH_LOWER[combo][
                 self.current_direction.lower()
             ]
+            + [0] * NB_FRAME_WAIT
         ]
 
         # Add some steps where we just wait
-        next_button_press.extend([0] * NB_FRAME_WAIT)
+        # next_button_press.extend([0] * NB_FRAME_WAIT)
 
         self.next_steps.extend(next_button_press)
 

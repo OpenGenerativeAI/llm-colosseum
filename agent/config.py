@@ -4,7 +4,7 @@ MODELS = {
         "openai:gpt-4-1106-preview",
         "openai:gpt-4",
         "openai:gpt-3.5-turbo-0125",
-        "openai:gpt-3.5-turbo-instruct",
+        # "openai:gpt-3.5-turbo-instruct", # not a chat model
     },
     "MISTRAL": {
         "mistral:mistral-small-latest",
@@ -176,4 +176,4 @@ REAL_MOVE_LIST = [
     "High Punch+High Kick",
 ]
 
-NB_FRAME_WAIT = 3
+NB_FRAME_WAIT = 1
