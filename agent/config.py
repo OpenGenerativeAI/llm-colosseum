@@ -127,7 +127,6 @@ SPECIAL_MOVES = {
 META_INSTRUCTIONS = {
     "Move Closer": {"right": [5, 5, 5, 5], "left": [1, 1, 1, 1]},
     "Move Away": {"right": [1, 1, 1, 1], "left": [5, 5, 5, 5]},
-    "Jump Closer": {"right": [4, 4, 4, 4], "left": [2, 2, 2, 2]},
     "Fireball": COMBOS["Fireball (Hadouken)"],
     "Megapunch": COMBOS["Dragon Punch (Shoryuken)"],
     "Hurricane": COMBOS["Hurricane Kick (Tatsumaki Senpukyaku)"],
@@ -140,6 +139,7 @@ META_INSTRUCTIONS = {
         for move_name, move_nb in MOVES.items()
         if "Punch" in move_name or "Kick" in move_name
     },
+    "Jump Closer": {"right": [4, 4, 4, 4], "left": [2, 2, 2, 2]},
 }
 META_INSTRUCTIONS_WITH_LOWER = {
     **META_INSTRUCTIONS,
