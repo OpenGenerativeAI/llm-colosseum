@@ -76,6 +76,9 @@ We send to the LLM a text description of the screen. The LLM decide on the next 
 - Multithreading
 - Real time
 
+  ![fight3 drawio](https://github.com/OpenGenerativeAI/llm-colosseum/assets/78322686/3a212601-f54c-490d-aeb9-6f7c2401ebe6)
+
+
 # Installation
 
 - Follow instructions in https://docs.diambra.ai/#installation
