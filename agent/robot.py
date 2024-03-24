@@ -131,22 +131,12 @@ class Robot:
         logger.debug(f"Context: {context}")
 
         # Call the LLM to get the next steps
-        # next_steps_from_llm = get_actions_from_llm(
-        #     context,
-        #     self.character,
-        #     model=self.model,
-        #     temperature=0.7,
-        # )
-
-        # TEST overide
-        if self.current_direction == "Right":
-            next_steps_from_llm = COMBOS["Hurricane Kick (Tatsumaki Senpukyaku)"][
-                "right"
-            ]
-        else:
-            next_steps_from_llm = COMBOS["Hurricane Kick (Tatsumaki Senpukyaku)"][
-                "left"
-            ]
+        next_steps_from_llm = get_actions_from_llm(
+            context,
+            self.character,
+            model=self.model,
+            temperature=0.7,
+        )
 
         logger.info(f"Next steps from LLM: {self.previous_actions}")
 

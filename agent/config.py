@@ -26,8 +26,20 @@ MOVES = {
 }
 COMBOS = {
     "Fireball (Hadouken)": {"right": [7, 6, 5, 10], "left": [7, 8, 1, 10]},
-    "Dragon Punch (Shoryuken)": {"right": [1, 3, 10], "left": [5, 3, 10]},
-    "Hurricane Kick (Tatsumaki Senpukyaku)": {"right": [7, 5, 13], "left": [7, 1, 13]},
+    # Refacto with command names
+    "Dragon Punch (Shoryuken)": {
+        "right": [
+            MOVES["Right"],
+            MOVES["Down"],
+            MOVES["Down+Right"],
+            MOVES["High Punch"],
+        ],
+        "left": [MOVES["Left"], MOVES["Down"], MOVES["Down+Left"], MOVES["High Punch"]],
+    },
+    "Hurricane Kick (Tatsumaki Senpukyaku)": {
+        "right": [MOVES["Down"], MOVES["Down+Left"], MOVES["Left"], MOVES["Low Kick"]],
+        "left": [MOVES["Down"], MOVES["Down+Right"], MOVES["Right"], MOVES["Low Kick"]],
+    },
 }
 
 META_INSTRUCTIONS = {
