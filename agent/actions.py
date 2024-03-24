@@ -19,6 +19,7 @@ from .prompts import build_main_prompt, build_system_prompt
 def call_llm(
     context_prompt: str,
     character: str,
+    provider_name: str = "mistral",  # mistral or openai
     model_name: str = "mistral-large-latest",
     temperature: float = 0.3,
     max_tokens: int = 20,
@@ -30,12 +31,9 @@ def call_llm(
     context_prompt: str, the prompt to describe the situation to the LLM. Will be placed inside the main prompt template.
     """
 
-    # If we are in the test environment, we don't want to call the LLM
-    if os.getenv("DISABLE_LLM", "False") == "True":
-        # Choose a random move
-        return random.choice(list(MOVES.keys()))
-
-    client = get_sync_client("mistral")
+    # Get the correct provider, default is mistral
+    client = get_sync_client(provider_name)
+    logger.debug(f"Using provider: {provider_name}")
 
     # Generate the prompts
     system_prompt = build_system_prompt(character)
@@ -80,6 +78,7 @@ def get_simple_actions_from_llm(
 def get_actions_from_llm(
     context_prompt: str,
     character: str,
+    provider_name: str = "mistral",  # mistral or openai
     model_name: str = "mistral-large-latest",
     temperature: float = 0.1,
     max_tokens: int = 20,
@@ -97,10 +96,17 @@ def get_actions_from_llm(
     valid_moves = []
     wrong_answer = None
 
+    # If we are in the test environment, we don't want to call the LLM
+    if os.getenv("DISABLE_LLM", "False") == "True":
+        # Choose a random int from the list of moves
+        logger.debug("DISABLE_LLM is True, returning a random move")
+        return [random.choice(list(MOVES.values()))]
+
     while len(valid_moves) == 0 or len(invalid_moves) > 2:
         llm_response = call_llm(
             context_prompt=context_prompt,
             character=character,
+            provider_name=provider_name,
             model_name=model_name,
             temperature=temperature,
             max_tokens=max_tokens,
