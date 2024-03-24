@@ -258,12 +258,8 @@ class Game:
 
                 episode.player_1_won = p1_wins == 1
                 episode.save()
-                # self.env.close()
+                self.env.close()
                 break
-
-        root = display_win_screen()
-        time.sleep(3)
-        root.destroy()
 
 
 class PlanAndAct(Thread):
