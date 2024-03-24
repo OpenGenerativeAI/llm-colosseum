@@ -1,7 +1,6 @@
 MODELS = {
     "OPENAI": {
         "openai:gpt-4-0125-preview",
-        "openai:gpt-4-1106-preview",
         "openai:gpt-4",
         "openai:gpt-3.5-turbo-0125",
         # "openai:gpt-3.5-turbo-instruct", # not a chat model
