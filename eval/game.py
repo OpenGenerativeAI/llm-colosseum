@@ -261,7 +261,9 @@ class Game:
                 # self.env.close()
                 break
 
-        display_win_screen()
+        root = display_win_screen()
+        time.sleep(3)
+        root.destroy()
 
 
 class PlanAndAct(Thread):

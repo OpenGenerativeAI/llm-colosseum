@@ -23,3 +23,4 @@ def display_win_screen():
 
     # Run the Tkinter event loop
     root.mainloop()
+    return root
