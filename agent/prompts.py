@@ -10,9 +10,10 @@ def build_system_prompt(character: str) -> str:
 
     system_prompt = f"""You're playing Street Fighter III 3rd strike with the character {character}. \
 Your goal it to beat the other opponent. You can do the following moves: \n
+{''.join([f'- {move}' for move in REAL_MOVE_LIST])}
+You reply with a bullet point list of moves. The format should be: `- move` separated by a new line."""
 {move_list}
 You reply with a bullet point list of moves. The format should be: `- move` separated by a new line.
-"""
     return system_prompt
 
 
