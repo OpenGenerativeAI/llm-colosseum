@@ -13,6 +13,8 @@ from threading import Thread
 
 import time
 
+from .result import display_win_screen
+
 
 class Player:
     nickname: str
@@ -258,8 +260,8 @@ class Game:
 
                 episode.player_1_won = p1_wins == 1
                 episode.save()
-                # self.env.close()
-                # return 0
+                self.env.close()
+                break
 
 
 class PlanAndAct(Thread):
