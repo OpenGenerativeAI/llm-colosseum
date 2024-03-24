@@ -9,6 +9,9 @@ import os
 import datetime
 
 from agent import Robot, KEN_RED, KEN_GREEN
+from threading import Thread
+
+import time
 
 
 class Player:
@@ -199,37 +202,88 @@ class Game:
         # Initialize the episode
 
         episode = Episode(player_1=self.player_1, player_2=self.player_2)
+        self.actions = {
+            "agent_0": 0,
+            "agent_1": 0,
+        }
+
+        # Start the thread
+        player1_thread = PlanAndActPlayer1(game=self, episode=episode)
+        player2_thread = PlanAndActPlayer2(game=self, episode=episode)
+
+        player1_thread.start()
+        player2_thread.start()
 
         while True:
+            # Render the game
             if self.render:
                 self.env.render()
 
-            # Plan
-            self.player_1.robot.plan()
-            self.player_2.robot.plan()
-
-            # Act
-            actions = {
-                "agent_0": self.player_1.robot.act(),
-                "agent_1": self.player_2.robot.act(),
-            }
-            print("Actions: {}".format(actions))
-            # Execute actions in the game
+            actions = self.actions
+            if "agent_0" not in actions:
+                actions["agent_0"] = 0
+            if "agent_1" not in actions:
+                actions["agent_1"] = 0
             observation, reward, terminated, truncated, info = self.env.step(actions)
+            # Remove the actions that were executed
+            if "agent_0" in self.actions:
+                del actions["agent_0"]
+            if "agent_1" in self.actions:
+                del actions["agent_1"]
+
+            self.observation = observation
+            self.reward = reward
 
             p1_wins = observation["P1"]["wins"][0]
             p2_wins = observation["P2"]["wins"][0]
 
             if p1_wins == 1 or p2_wins == 1:
-                episode.player_1_won = p1_wins == 1
-                episode.save()
+                player1_thread.running = False
+                player2_thread.running = False
+
+                self.episode.player_1_won = p1_wins == 1
+                self.episode.save()
                 self.env.close()
                 return 0
 
-            # Update the episode with the winner
 
-            # Observe the environment
-            self.player_1.robot.observe(observation, actions, reward)
-            self.player_2.robot.observe(observation, actions, -reward)
-        self.env.close()
-        return 0
+class PlanAndAct(Thread):
+    def __init__(self, game: Game, episode: Episode):
+        self.running = True
+        self.game = game
+        self.episode = episode
+
+        Thread.__init__(self, daemon=True)
+        # atexit.register(self.stop)
+
+
+class PlanAndActPlayer1(PlanAndAct):
+    def run(self) -> None:
+        while self.running:
+            if "agent_0" not in self.game.actions:
+                # Plan
+                self.game.player_1.robot.plan()
+                # Act
+                self.game.actions["agent_0"] = self.game.player_1.robot.act()
+                # Observe the environment
+                self.game.player_1.robot.observe(
+                    self.game.observation, self.game.actions, self.game.reward
+                )
+
+
+class PlanAndActPlayer2(PlanAndAct):
+    def run(self) -> None:
+        while self.running:
+            if "agent_1" not in self.game.actions:
+                # Plan
+                self.game.player_2.robot.plan()
+                # Act
+                self.game.actions["agent_1"] = self.game.player_2.robot.act()
+                # Observe the environment
+                self.game.player_1.robot.observe(
+                    self.game.observation, self.game.actions
+                )
+                self.game.player_2.robot.observe(
+                    self.game.observation, self.game.actions, -self.game.reward
+                )
+                time.sleep(0.1)
