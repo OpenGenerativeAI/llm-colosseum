@@ -48,3 +48,5 @@ REAL_MOVE_LIST = [
     "Medium Punch+Medium Kick",
     "High Punch+High Kick",
 ]
+
+NB_FRAME_WAIT = 10

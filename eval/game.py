@@ -213,7 +213,6 @@ class Game:
                 "agent_0": self.player_1.robot.act(),
                 "agent_1": self.player_2.robot.act(),
             }
-            print("Actions: {}".format(actions))
             # Execute actions in the game
             observation, reward, terminated, truncated, info = self.env.step(actions)
 
