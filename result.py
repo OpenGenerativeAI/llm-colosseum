@@ -1,11 +1,9 @@
+import os
+import tkinter as tk
+from PIL import Image, ImageTk
+
+
 def display_win_screen():
-    import os
-    import tkinter as tk
-    from PIL import Image, ImageTk
-    import time
-
-    time.sleep(0.5)
-
     current_directory = os.path.dirname(os.path.realpath(__file__))
     image_path = os.path.join(current_directory, "winscreen.jpg")
 
@@ -25,3 +23,8 @@ def display_win_screen():
 
     # Run the Tkinter event loop
     root.mainloop()
+    return root
+
+
+if __name__ == "__main__":
+    display_win_screen()

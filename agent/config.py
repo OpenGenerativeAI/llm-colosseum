@@ -1,3 +1,20 @@
+MODELS = {
+    "OPENAI": {
+        "openai:gpt-4-0125-preview",
+        "openai:gpt-4-1106-preview",
+        "openai:gpt-4",
+        "openai:gpt-3.5-turbo-0125",
+        # "openai:gpt-3.5-turbo-instruct", # not a chat model
+    },
+    "MISTRAL": {
+        "mistral:mistral-small-latest",
+        "mistral:mistral-medium-latest",
+        "mistral:mistral-large-latest",
+        # "groq:mistral-8x6b-32768",
+    },
+}
+
+
 MOVES = {
     "No-Move": 0,
     "Left": 1,
@@ -47,47 +64,82 @@ COMBOS = {
 }
 
 SPECIAL_MOVES = {
-    "EX-Fireball (Hadouken)": {"right":[7, 6, 5, 10, 10], "left":[7, 8, 1, 10, 10]},
-    "EX-Dragon Punch (Shoryuken)": {"right":[
+    "EX-Fireball (Hadouken)": {"right": [7, 6, 5, 10, 10], "left": [7, 8, 1, 10, 10]},
+    "EX-Dragon Punch (Shoryuken)": {
+        "right": [
             MOVES["Right"],
             MOVES["Down"],
             MOVES["Down+Right"],
             MOVES["High Punch"],
             MOVES["High Punch"],
-        ], "left":[MOVES["Left"], MOVES["Down"], MOVES["Down+Left"], MOVES["High Punch"], MOVES["High Punch"]]},
-    "Super Dragon Punch (Shouryuu-Reppa)": {"right":[
+        ],
+        "left": [
+            MOVES["Left"],
+            MOVES["Down"],
+            MOVES["Down+Left"],
+            MOVES["High Punch"],
+            MOVES["High Punch"],
+        ],
+    },
+    "Super Dragon Punch (Shouryuu-Reppa)": {
+        "right": [
             MOVES["Right"],
             MOVES["Down"],
             MOVES["Down+Right"],
             MOVES["Right"],
             MOVES["Down"],
             MOVES["Down+Right"],
-            MOVES["High Punch"]], "left":[MOVES["Left"], MOVES["Down"], MOVES["Down+Left"], MOVES["Left"], MOVES["Down"], MOVES["Down+Left"], MOVES["High Punch"]]},
-    "Shippuu-Jinrai-Kyaku": {"right":[
+            MOVES["High Punch"],
+        ],
+        "left": [
+            MOVES["Left"],
+            MOVES["Down"],
+            MOVES["Down+Left"],
+            MOVES["Left"],
+            MOVES["Down"],
+            MOVES["Down+Left"],
+            MOVES["High Punch"],
+        ],
+    },
+    "Shippuu-Jinrai-Kyaku": {
+        "right": [
             MOVES["Right"],
             MOVES["Down"],
             MOVES["Down+Right"],
             MOVES["Right"],
             MOVES["Down"],
             MOVES["Down+Right"],
-            MOVES["Low Kick"]], "left":[MOVES["Left"], MOVES["Down"], MOVES["Down+Left"], MOVES["Left"], MOVES["Down"], MOVES["Down+Left"],MOVES["Low Kick"]]},
+            MOVES["High Punch"],
+            MOVES["Low Kick"],
+        ],
+        "left": [
+            MOVES["Left"],
+            MOVES["Down"],
+            MOVES["Down+Left"],
+            MOVES["Left"],
+            MOVES["Down"],
+            MOVES["Down+Left"],
+            MOVES["Low Kick"],
+        ],
+    },
 }
 
 META_INSTRUCTIONS = {
     "Move Closer": {"right": [5, 5, 5, 5], "left": [1, 1, 1, 1]},
     "Move Away": {"right": [1, 1, 1, 1], "left": [5, 5, 5, 5]},
     "Fireball": COMBOS["Fireball (Hadouken)"],
-    "Dragon Punch": COMBOS["Dragon Punch (Shoryuken)"],
-    "Hurricane Kick": COMBOS["Hurricane Kick (Tatsumaki Senpukyaku)"],
-    "EX Fireball": SPECIAL_MOVES["EX-Fireball (Hadouken)"],
-    "EX Dragon Punch": SPECIAL_MOVES["EX-Dragon Punch (Shoryuken)"],
-    "Super Dragon Punch": SPECIAL_MOVES["Super Dragon Punch (Shouryuu-Reppa)"],
-    "Shippuu Jinrai Kyaku": SPECIAL_MOVES["Shippuu-Jinrai-Kyaku"],
+    "Megapunch": COMBOS["Dragon Punch (Shoryuken)"],
+    "Hurricane": COMBOS["Hurricane Kick (Tatsumaki Senpukyaku)"],
+    "Megafireball": SPECIAL_MOVES["EX-Fireball (Hadouken)"],
+    "Super attack 2": SPECIAL_MOVES["EX-Dragon Punch (Shoryuken)"],
+    "Super attack 3": SPECIAL_MOVES["Super Dragon Punch (Shouryuu-Reppa)"],
+    "Super attack 4": SPECIAL_MOVES["Shippuu-Jinrai-Kyaku"],
     **{
         move_name: {"right": [move_nb, 0], "left": [move_nb, 0]}
         for move_name, move_nb in MOVES.items()
         if "Punch" in move_name or "Kick" in move_name
     },
+    "Jump Closer": {"right": [4, 4, 4, 4], "left": [2, 2, 2, 2]},
 }
 META_INSTRUCTIONS_WITH_LOWER = {
     **META_INSTRUCTIONS,
@@ -124,4 +176,4 @@ REAL_MOVE_LIST = [
     "High Punch+High Kick",
 ]
 
-NB_FRAME_WAIT = 3
+NB_FRAME_WAIT = 1

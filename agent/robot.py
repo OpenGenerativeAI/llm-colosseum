@@ -37,6 +37,7 @@ class Robot:
 
     model: str  # model of the robot
     super_bar_own: int
+    player_nb: int  # player number
 
     def __init__(
         self,
@@ -48,7 +49,7 @@ class Robot:
         sleepy: bool = False,
         only_punch: bool = False,
         model: str = "mistral:mistral-large-latest",
-        
+        player_nb: int = 0,  # 0 means not specified
     ):
         self.action_space = action_space
         self.character = character
@@ -67,6 +68,7 @@ class Robot:
         self.model = model
         self.previous_actions = defaultdict(list)
         self.actions = {}
+        self.player_nb = player_nb
 
     def act(self) -> int:
         """
@@ -105,12 +107,6 @@ class Robot:
 
         next_step = self.next_steps.pop(0)
 
-        # Keep track of the current direction
-        if "Left" in INDEX_TO_MOVE[next_step]:
-            self.current_direction = "Left"
-        elif "Right" in INDEX_TO_MOVE[next_step]:
-            self.current_direction = "Right"
-
         return next_step
 
     def plan(self) -> None:
@@ -147,6 +143,7 @@ class Robot:
             self.character,
             model=self.model,
             temperature=0.7,
+            player_nb=self.player_nb,
         )
 
         next_button_press = [
@@ -155,10 +152,11 @@ class Robot:
             for button in META_INSTRUCTIONS_WITH_LOWER[combo][
                 self.current_direction.lower()
             ]
+            + [0] * NB_FRAME_WAIT
         ]
 
         # Add some steps where we just wait
-        next_button_press.extend([0] * NB_FRAME_WAIT)
+        # next_button_press.extend([0] * NB_FRAME_WAIT)
 
         self.next_steps.extend(next_button_press)
 
@@ -193,6 +191,25 @@ class Robot:
             if len(self.previous_actions[key]) > 10:
                 self.previous_actions[key].pop(0)
 
+        # Keep track of the current direction by checking the position of the character
+        # and the ennemy
+        character_position = observation.get("character_position")
+        ennemy_position = observation.get("ennemy_position")
+        if (
+            character_position is not None
+            and ennemy_position is not None
+            and len(character_position) == 2
+            and len(ennemy_position) == 2
+        ):
+            if character_position[0] < ennemy_position[0]:
+                self.current_direction = "Right"
+            else:
+                self.current_direction = "Left"
+            # print(
+            #     f"Character X: {character_position[0]} vs Ennemy X: {ennemy_position[0]}"
+            # )
+            # print(f"Current direction: {self.current_direction}")
+
     def context_prompt(self):
         """
         Return a str of the context
@@ -206,7 +223,7 @@ class Robot:
         side = self.side
         obs_own = self.observations[-1]["character_position"]
         obs_opp = self.observations[-1]["ennemy_position"]
-        super_bar_own = self.observations[-1]["P"+str(side+1)]["super_bar"][0]
+        super_bar_own = self.observations[-1]["P" + str(side + 1)]["super_bar"][0]
 
         if obs_own is not None and obs_opp is not None:
             relative_position = np.array(obs_own) - np.array(obs_opp)
@@ -230,11 +247,11 @@ class Robot:
         else:
             position_prompt += "You are close to the opponent. You should attack him."
 
-        power_prompt =""
-        if super_bar_own >= 30 :
-            power_prompt = "You can now use a powerfull move. The names of the powerful moves are: EX Dragon Punch, EX Fireball."
-        if super_bar_own >= 120 or super_bar_own==0:
-            power_prompt = "You can now only use very powerfull moves. The names of the very powerful moves are: Super Dragon Punch, Shippuu Jinrai Kyaku"
+        power_prompt = ""
+        if super_bar_own >= 30:
+            power_prompt = "You can now use a powerfull move. The names of the powerful moves are: Megafireball, Super attack 2."
+        if super_bar_own >= 120 or super_bar_own == 0:
+            power_prompt = "You can now only use very powerfull moves. The names of the very powerful moves are: Super attack 3, Super attack 4"
         # Create the last action prompt
         last_action_prompt = ""
         if len(self.previous_actions.keys()) >= 0:
