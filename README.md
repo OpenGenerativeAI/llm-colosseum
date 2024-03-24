@@ -10,6 +10,12 @@ https://github.com/OpenGenerativeAI/llm-colosseum/assets/19614572/ec3f2d4b-66b8-
 
 ![LLM colosseum](multi_agents.png)
 
+
+
+https://github.com/OpenGenerativeAI/llm-colosseum/assets/19614572/2935455f-a78c-436c-92df-a3c3d853c1d3
+
+
+
 ## Explanation
 
 Each player is controlled by an LLM. We send to the LLM a text description of the screen. The LLM decide on the next moves its character will make.
