@@ -241,8 +241,8 @@ class Game:
                 player1_thread.running = False
                 player2_thread.running = False
 
-                self.episode.player_1_won = p1_wins == 1
-                self.episode.save()
+                episode.player_1_won = p1_wins == 1
+                episode.save()
                 self.env.close()
                 return 0
 
