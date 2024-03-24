@@ -24,3 +24,7 @@ def display_win_screen():
     # Run the Tkinter event loop
     root.mainloop()
     return root
+
+
+if __name__ == "__main__":
+    display_win_screen()
