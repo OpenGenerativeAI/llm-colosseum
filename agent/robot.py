@@ -1,4 +1,5 @@
 import abc
+import numpy as np
 from typing import List, Optional, Literal
 from gymnasium import spaces
 from loguru import logger
@@ -176,6 +177,11 @@ class Robot:
         obs_opp = self.observations[-1]["ennemy_position"]
         relative_position = tuple(a - b for a, b in zip(obs_own, obs_opp))
 
+        relative_position = np.array(obs_own) - np.array(obs_opp)
+        normalized_relative_position = [
+            relative_position[0] / X_SIZE,
+            relative_position[1] / Y_SIZE,
+        ]
         # Handle the first observation setting, if self.actions == {}
         if self.actions == {}:
             return f"""
@@ -183,7 +189,7 @@ class Robot:
             The frame has a size of {X_SIZE}x{Y_SIZE}.
             Your position is {obs_own}
             The opponent location is {obs_opp}
-            The relative position between you and your opponent is {relative_position}
+            The relative position between you and your opponent is {normalized_relative_position}
             """
 
         act_own = self.actions["agent_" + str(side)]
@@ -191,11 +197,27 @@ class Robot:
         str_act_own = INDEX_TO_MOVE[act_own]
         str_act_opp = INDEX_TO_MOVE[act_opp]
         reward = self.reward
+        position_prompt = ""
+
+        if abs(normalized_relative_position[0]) > 0.2:
+            position_prompt += "You are super far from the opponent."
+            if normalized_relative_position[0] > 0:
+                position_prompt += (
+                    "Your opponent is on the right. You need to move to the rigth."
+                )
+            else:
+                position_prompt += (
+                    "Your opponent is on the left. You need to move to the left."
+                )
+
+        else:
+            position_prompt += "You are close to the opponent. You need to attack him."
 
         context = f"""
         The opponent location is {obs_opp}
         Your position is {obs_own}
-        The relative position between you and your opponent is {relative_position}
+        The relative position between you and your opponent is {normalized_relative_position}
+        {position_prompt}
         Your last action was {str_act_own}
         The opponent's last action was {str_act_opp}
         Your current score is {reward}. There is a direct relation between the position of the characters and the actions taken. You need to maximize it.
