@@ -106,12 +106,6 @@ class Robot:
 
         next_step = self.next_steps.pop(0)
 
-        # Keep track of the current direction
-        if "Left" in INDEX_TO_MOVE[next_step]:
-            self.current_direction = "Left"
-        elif "Right" in INDEX_TO_MOVE[next_step]:
-            self.current_direction = "Right"
-
         return next_step
 
     def plan(self) -> None:
@@ -194,6 +188,21 @@ class Robot:
         for key, value in actions.items():
             if len(self.previous_actions[key]) > 10:
                 self.previous_actions[key].pop(0)
+
+        # Keep track of the current direction by checking the position of the character
+        # and the ennemy
+        character_position = observation.get("character_position")
+        ennemy_position = observation.get("ennemy_position")
+        if (
+            character_position is not None
+            and ennemy_position is not None
+            and len(character_position) == 2
+            and len(ennemy_position) == 2
+        ):
+            if character_position[0] < ennemy_position[0]:
+                self.current_direction = "Right"
+            else:
+                self.current_direction = "Left"
 
     def context_prompt(self):
         """
