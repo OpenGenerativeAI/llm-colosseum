@@ -24,6 +24,32 @@ MOVES = {
     "Medium Punch+Medium Kick": 16,
     "High Punch+High Kick": 17,
 }
+COMBOS = {
+    "Fireball (Hadouken)": {"right": [7, 6, 5, 10], "left": [7, 8, 1, 10]},
+    # Refacto with command names
+    "Dragon Punch (Shoryuken)": {
+        "right": [
+            MOVES["Right"],
+            MOVES["Down"],
+            MOVES["Down+Right"],
+            MOVES["High Punch"],
+        ],
+        "left": [MOVES["Left"], MOVES["Down"], MOVES["Down+Left"], MOVES["High Punch"]],
+    },
+    "Hurricane Kick (Tatsumaki Senpukyaku)": {
+        "right": [MOVES["Down"], MOVES["Down+Left"], MOVES["Left"], MOVES["Low Kick"]],
+        "left": [MOVES["Down"], MOVES["Down+Right"], MOVES["Right"], MOVES["Low Kick"]],
+    },
+}
+
+META_INSTRUCTIONS = {
+    "Move closer": {"right": [5, 5, 5, 5], "left": [1, 1, 1, 1]},
+    "Move away": {"right": [1, 1, 1, 1], "left": [5, 5, 5, 5]},
+    "Normal punch": {"right": [10, 0, 10, 0], "left": [10, 0, 10, 0]},
+    "Normal kick": {"right": [13, 0, 13, 0], "left": [13, 0, 13, 0]},
+    "Fireball (Hadouken)": COMBOS["Fireball (Hadouken)"],
+}
+
 INDEX_TO_MOVE = {v: k for k, v in MOVES.items()}
 
 X_SIZE = 384

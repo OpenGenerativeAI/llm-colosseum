@@ -8,7 +8,7 @@ from loguru import logger
 from .observer import detect_position_from_color, KEN_RED, KEN_GREEN
 from .actions import get_actions_from_llm
 
-from .config import MOVES, INDEX_TO_MOVE, X_SIZE, Y_SIZE, NB_FRAME_WAIT
+from .config import MOVES, INDEX_TO_MOVE, X_SIZE, Y_SIZE, NB_FRAME_WAIT, COMBOS
 
 
 class Robot:
@@ -55,6 +55,7 @@ class Robot:
         self.only_punch = only_punch
         self.model = model
         self.previous_actions = defaultdict(list)
+        self.actions = {}
 
     def act(self) -> int:
         """
