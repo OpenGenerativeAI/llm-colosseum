@@ -45,9 +45,9 @@ Each LLM has an ELO score based on its results
 
 | Model                         |  Rating |
 | ---------------------------- | ------: |
-| openai:gpt-3.5-turbo-0125     | 1776.11 |
-| mistral:mistral-small-latest  | 1586.16 |
-| openai:gpt-4-1106-preview     | 1584.78 |
+| 🥇openai:gpt-3.5-turbo-0125     | 1776.11 |
+| 🥈mistral:mistral-small-latest  | 1586.16 |
+| 🥉openai:gpt-4-1106-preview     | 1584.78 |
 | openai:gpt-4                  |  1517.2 |
 | openai:gpt-4-turbo-preview    | 1509.28 |
 | openai:gpt-4-0125-preview     | 1438.92 |
