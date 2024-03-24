@@ -17,7 +17,7 @@ They need to be:
 - **Adaptable**: Learn from your mistakes and adapt your strategy
 - **Resilient**: Keep your RPS high for an entire game
 
-## Let the fight beging 🥷
+## Let the fight begin 🥷
 
 ### 1 VS 1: Mistral 7B vs Mistral 7B
 
