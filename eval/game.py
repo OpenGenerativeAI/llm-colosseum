@@ -126,6 +126,7 @@ class Game:
             player_1
             if player_1
             else Player1(nickname="Player 1", model="mistral:mistral-large-latest")
+            # else Player1(nickname="Player 1", model="grok:mixtral-8x7b-32768")
         )
         self.player_2 = (
             player_2
@@ -242,7 +243,7 @@ class Game:
             if "agent_1" in self.actions:
                 del actions["agent_1"]
 
-            self.observation = observation   
+            self.observation = observation
             self.reward += reward
 
             p1_wins = observation["P1"]["wins"][0]
