@@ -202,7 +202,7 @@ class Robot:
         position_prompt = ""
         if abs(normalized_relative_position[0]) > 0.1:
             position_prompt += "You are very far from the opponent."
-            if normalized_relative_position[0] > 0:
+            if normalized_relative_position[0] < 0:
                 position_prompt += (
                     "Your opponent is on the right. Move towards the opponent. You need to move to the right."
                 )
