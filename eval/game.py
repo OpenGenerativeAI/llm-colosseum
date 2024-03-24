@@ -243,8 +243,7 @@ class Game:
                 del actions["agent_1"]
 
             self.observation = observation   
-            if reward != 0.0:
-                self.reward = reward
+            self.reward += reward
 
             p1_wins = observation["P1"]["wins"][0]
             p2_wins = observation["P2"]["wins"][0]
