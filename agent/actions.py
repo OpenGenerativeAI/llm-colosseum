@@ -7,6 +7,7 @@ import random
 import re
 import time
 from typing import List, Optional
+from rich import print
 
 from loguru import logger
 
@@ -84,6 +85,7 @@ def get_actions_from_llm(
     temperature: float = 0.1,
     max_tokens: int = 20,
     top_p: float = 1.0,
+    player_nb: int = 0,  # 0 for unspecified, 1 for player 1, 2 for player 2
 ) -> List[str]:
     """
     Get actions from the language model
@@ -122,6 +124,10 @@ def get_actions_from_llm(
         for move in moves:
             cleaned_move_name = move.strip().lower()
             if cleaned_move_name in META_INSTRUCTIONS_WITH_LOWER.keys():
+                if player_nb == 1:
+                    print(f"[red] Player {player_nb} move: {cleaned_move_name}")
+                elif player_nb == 2:
+                    print(f"[green] Player {player_nb} move: {cleaned_move_name}")
                 valid_moves.append(cleaned_move_name)
             else:
                 logger.debug(f"Invalid completion: {move}")
