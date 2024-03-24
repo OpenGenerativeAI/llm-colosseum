@@ -202,7 +202,7 @@ class Robot:
         The opponent location is {obs_opp}
         Your position is {obs_own}
         The relative position between you and your opponent is {normalized_relative_position}
-
+        {position_prompt}
         Your last action was {str_act_own}
         The opponent's last action was {str_act_opp}
         Your current score is {reward}. There is a direct relation between the position of the characters and the actions taken. You need to maximize it.
