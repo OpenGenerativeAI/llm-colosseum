@@ -203,8 +203,17 @@ class Robot:
             The relative position between you and your opponent is {normalized_relative_position}
             """
 
-        act_own = self.previous_actions["agent_" + str(side)][-1] or 0
-        act_opp = self.previous_actions["agent_" + str(abs(1 - side))][-1] or 0
+        act_own_list = self.previous_actions["agent_" + str(side)]
+        act_opp_list = self.previous_actions["agent_" + str(abs(1 - side))]
+
+        if len(act_own_list) == 0:
+            act_own = 0
+        else:
+            act_own = act_own_list[-1]
+        if len(act_opp_list) == 0:
+            act_opp = 0
+        else:
+            act_opp = act_opp_list[-1]
 
         str_act_own = INDEX_TO_MOVE[act_own]
         str_act_opp = INDEX_TO_MOVE[act_opp]
