@@ -122,12 +122,12 @@ class Game:
         self.player_1 = (
             player_1
             if player_1
-            else Player1(nickname="Player 1", model="openai:gpt-4-0125-preview")
+            else Player1(nickname="Player 1", model="mistral:mistral-large-latest")
         )
         self.player_2 = (
             player_2
             if player_2
-            else Player2(nickname="Player 2", model="mistral:mistral-large-latest")
+            else Player2(nickname="Player 2", model="openai:gpt-4-0125-preview")
         )
 
     def _init_settings(self) -> EnvironmentSettingsMultiAgent:
