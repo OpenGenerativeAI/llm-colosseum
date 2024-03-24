@@ -1,6 +1,7 @@
 import abc
+from collections import defaultdict
 import numpy as np
-from typing import List, Optional, Literal
+from typing import Dict, List, Optional, Literal
 from gymnasium import spaces
 from loguru import logger
 
@@ -14,9 +15,8 @@ class Robot:
     observations: List[Optional[dict]] = None  # memory
     next_steps: List[int]  # action plan
     actions: dict  # actions of the agents during a step of the game
-    previous_actions: List[
-        dict
-    ]  # actions of the agents during the previous step of the game
+    # actions of the agents during the previous step of the game
+    previous_actions: Dict[str, List[int]]
     reward: float  # reward of the agent
 
     action_space: spaces.Space
@@ -25,6 +25,8 @@ class Robot:
     current_direction: Literal["Left", "Right"]  # current direction facing
     sleepy: Optional[bool] = False  # if the robot is sleepy
     only_punch: Optional[bool] = False  # if the robot only punch
+
+    model: str  # model of the robot
 
     def __init__(
         self,
@@ -35,6 +37,7 @@ class Robot:
         ennemy_color: list,
         sleepy: bool = False,
         only_punch: bool = False,
+        model: str = "mistral:mistral-large-latest",
     ):
         self.action_space = action_space
         self.character = character
@@ -50,7 +53,8 @@ class Robot:
         self.side = side
         self.sleepy = sleepy
         self.only_punch = only_punch
-        self.previous_actions = []
+        self.model = model
+        self.previous_actions = defaultdict(list)
 
     def act(self) -> int:
         """
@@ -129,6 +133,7 @@ class Robot:
         next_steps_from_llm = get_actions_from_llm(
             context,
             self.character,
+            model=self.model,
             temperature=0.7,
         )
 
@@ -159,9 +164,16 @@ class Robot:
         if len(self.observations) > 10:
             self.observations.pop(0)
 
-        self.actions = actions
         self.reward = reward
-        self.previous_actions.append(actions)
+
+        if actions.get("agent_0") is not None and actions.get("agent_0") != 0:
+            self.previous_actions["agent_0"].append(actions["agent_0"])
+        if actions.get("agent_1") is not None and actions.get("agent_1") != 0:
+            self.previous_actions["agent_1"].append(actions["agent_1"])
+
+        for key, value in actions.items():
+            if len(self.previous_actions[key]) > 10:
+                self.previous_actions[key].pop(0)
 
     def context_prompt(self):
         """
@@ -184,6 +196,32 @@ class Robot:
             ]
         else:
             normalized_relative_position = [0.3, 0]
+
+        # Handle the first observation setting, if self.actions == {}
+        if len(self.previous_actions.keys()) == 0:
+            return f"""
+            It's the first observation of the game, the game just started.
+            The frame has a size of {X_SIZE}x{Y_SIZE}.
+            Your position is {obs_own}
+            The opponent location is {obs_opp}
+            The relative position between you and your opponent is {normalized_relative_position}
+            """
+
+        act_own_list = self.previous_actions["agent_" + str(side)]
+        act_opp_list = self.previous_actions["agent_" + str(abs(1 - side))]
+
+        if len(act_own_list) == 0:
+            act_own = 0
+        else:
+            act_own = act_own_list[-1]
+        if len(act_opp_list) == 0:
+            act_opp = 0
+        else:
+            act_opp = act_opp_list[-1]
+
+        str_act_own = INDEX_TO_MOVE[act_own]
+        str_act_opp = INDEX_TO_MOVE[act_opp]
+        reward = self.reward
 
         position_prompt = ""
 

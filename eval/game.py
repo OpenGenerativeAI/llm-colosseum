@@ -18,6 +18,7 @@ class Player:
     nickname: str
     model: str
     robot: Optional[Robot] = None
+    temperature: Optional[float] = 0.0
 
 
 class Player1(Player):
@@ -31,6 +32,7 @@ class Player1(Player):
             character_color=KEN_RED,
             ennemy_color=KEN_GREEN,
             only_punch=os.getenv("TEST_MODE", False),
+            model=model,
         )
 
 
@@ -45,6 +47,7 @@ class Player2(Player):
             character_color=KEN_GREEN,
             ennemy_color=KEN_RED,
             sleepy=os.getenv("TEST_MODE", False),
+            model=model,
         )
 
 
@@ -64,11 +67,13 @@ class Episode:
         # Verifty if the file exists
         if not os.path.exists("results.csv"):
             with open("results.csv", "w") as f:
-                f.write("id,player_1, player_2, winner\n")
+                f.write(
+                    "id, player_1_model, player_1_temperature, player_2_model, player_2_temperature, player_1_won\n"
+                )
 
         with open("results.csv", "a") as f:
             f.write(
-                f"{timestamp}, {self.player_1.nickname}, {self.player_2.nickname}, {self.player_1_won}\n"
+                f"{timestamp}, {self.player_1.model}, {self.player_1.temperature}, {self.player_2.model}, {self.player_2.temperature}, {self.player_1_won}\n"
             )
 
 
@@ -118,10 +123,14 @@ class Game:
         self.env = self._init_env(self.settings)
         self.observation, self.info = self.env.reset(seed=self.seed)
         self.player_1 = (
-            player_1 if player_1 else Player1(nickname="Player 1", model="llm")
+            player_1
+            if player_1
+            else Player1(nickname="Player 1", model="mistral:mistral-large-latest")
         )
         self.player_2 = (
-            player_2 if player_2 else Player2(nickname="Player 2", model="llm")
+            player_2
+            if player_2
+            else Player2(nickname="Player 2", model="openai:gpt-4-0125-preview")
         )
 
     def _init_settings(self) -> EnvironmentSettingsMultiAgent:
@@ -280,9 +289,6 @@ class PlanAndActPlayer2(PlanAndAct):
                 # Act
                 self.game.actions["agent_1"] = self.game.player_2.robot.act()
                 # Observe the environment
-                self.game.player_1.robot.observe(
-                    self.game.observation, self.game.actions
-                )
                 self.game.player_2.robot.observe(
                     self.game.observation, self.game.actions, -self.game.reward
                 )
