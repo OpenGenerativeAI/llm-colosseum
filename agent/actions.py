@@ -31,7 +31,7 @@ def call_llm(
     """
 
     # If we are in the test environment, we don't want to call the LLM
-    if os.getenv("DISABLE_LLM", "False") == "True":
+    if os.getenv("DISABLE_LLM", False) == "True":
         # Choose a random move
         return random.choice(list(MOVES.keys()))
 
@@ -57,11 +57,13 @@ def call_llm(
     llm_response = completion.choices[0].message.content.strip()
 
     # Validate the completion format
-    if llm_response not in MOVES.keys():
-        logger.warning(f"Invalid completion: {llm_response}")
-        prompt_with_correction = build_main_prompt(
-            context_prompt, wrong_answer=llm_response
-        )
+    # if llm_response not in MOVES.keys():
+    #     logger.warning(f"Invalid completion: {llm_response}")
+    #     prompt_with_correction = build_main_prompt(
+    #         context_prompt, wrong_answer=llm_response
+    #     )
+
+    return llm_response
 
 
 def get_simple_actions_from_llm(
