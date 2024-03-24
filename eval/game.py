@@ -18,6 +18,7 @@ class Player:
     nickname: str
     model: str
     robot: Optional[Robot] = None
+    temperature: Optional[float] = 0.0
 
 
 class Player1(Player):
@@ -66,11 +67,13 @@ class Episode:
         # Verifty if the file exists
         if not os.path.exists("results.csv"):
             with open("results.csv", "w") as f:
-                f.write("id,player_1, player_2, winner\n")
+                f.write(
+                    "id, player_1_model, player_1_temperature, player_2_model, player_2_temperature, player_1_won\n"
+                )
 
         with open("results.csv", "a") as f:
             f.write(
-                f"{timestamp}, {self.player_1.nickname}, {self.player_2.nickname}, {self.player_1_won}\n"
+                f"{timestamp}, {self.player_1.model}, {self.player_1.temperature}, {self.player_2.model}, {self.player_2.temperature}, {self.player_1_won}\n"
             )
 
 
