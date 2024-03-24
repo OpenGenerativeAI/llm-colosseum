@@ -6,4 +6,6 @@ myenv/
 eval/diambra
 
 results.csv
+results/
+
 .DS_Store
