@@ -125,8 +125,8 @@ class Game:
         self.player_1 = (
             player_1
             if player_1
-            # else Player1(nickname="Player 1", model="mistral:mistral-large-latest")
-            else Player2(nickname="Player 1", model="mistral:mistral-small")
+            else Player1(nickname="Player 1", model="mistral:mistral-large-latest")
+            # else Player1(nickname="Player 1", model="grok:mixtral-8x7b-32768")
         )
         self.player_2 = (
             player_2

@@ -37,6 +37,11 @@ def get_sync_client(provider: str) -> OpenAI:
         )
     if provider == "ollama":
         return OpenAI(base_url="http://localhost:11434/v1/")
+    if provider == "grok":
+        return OpenAI(
+            base_url="https://api.groq.com/openai/v1/",
+            api_key=os.getenv("GROK_API_KEY"),
+        )
     raise NotImplementedError(f"Provider {provider} is not supported.")
 
 
