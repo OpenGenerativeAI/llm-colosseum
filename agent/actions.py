@@ -10,7 +10,7 @@ from typing import List, Optional
 
 from loguru import logger
 
-from agent.language_models import get_sync_client  # Change to async later
+from agent.language_models import get_sync_client, get_provider_and_model
 
 from .config import MOVES
 from .prompts import build_main_prompt, build_system_prompt
@@ -19,8 +19,7 @@ from .prompts import build_main_prompt, build_system_prompt
 def call_llm(
     context_prompt: str,
     character: str,
-    provider_name: str = "mistral",  # mistral or openai
-    model_name: str = "mistral-large-latest",
+    model: str = "mistral:mistral-large-latest",
     temperature: float = 0.3,
     max_tokens: int = 20,
     top_p: float = 1.0,
@@ -32,8 +31,8 @@ def call_llm(
     """
 
     # Get the correct provider, default is mistral
+    provider_name, model_name = get_provider_and_model(model)
     client = get_sync_client(provider_name)
-    logger.debug(f"Using provider: {provider_name}")
 
     # Generate the prompts
     system_prompt = build_system_prompt(character)
@@ -52,7 +51,7 @@ def call_llm(
         top_p=top_p,
     )
     logger.debug(f"LLM call: {system_prompt}\n\n\n{main_prompt}")
-    logger.debug(f"LLM call to {model_name}: {time.time() - start_time} s")
+    logger.debug(f"LLM call to {model}: {time.time() - start_time} s")
 
     llm_response = completion.choices[0].message.content.strip()
 
@@ -62,7 +61,7 @@ def call_llm(
 def get_simple_actions_from_llm(
     context_prompt: str,
     character: str,
-    model_name: str = "mistral-large-latest",
+    model: str = "mistral:mistral-large-latest",
     temperature: float = 0.1,
     max_tokens: int = 20,
     top_p: float = 1.0,
@@ -80,8 +79,7 @@ def get_simple_actions_from_llm(
 def get_actions_from_llm(
     context_prompt: str,
     character: str,
-    provider_name: str = "mistral",  # mistral or openai
-    model_name: str = "mistral-large-latest",
+    model: str = "mistral:mistral-large-latest",
     temperature: float = 0.1,
     max_tokens: int = 20,
     top_p: float = 1.0,
@@ -108,8 +106,7 @@ def get_actions_from_llm(
         llm_response = call_llm(
             context_prompt=context_prompt,
             character=character,
-            provider_name=provider_name,
-            model_name=model_name,
+            model=model,
             temperature=temperature,
             max_tokens=max_tokens,
             top_p=top_p,

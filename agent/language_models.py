@@ -38,3 +38,21 @@ def get_sync_client(provider: str) -> OpenAI:
     if provider == "ollama":
         return OpenAI(base_url="http://localhost:11434/v1/")
     raise NotImplementedError(f"Provider {provider} is not supported.")
+
+
+def get_provider_and_model(model: str) -> Tuple[str, str]:
+    """
+    Get the provider and model from a string in the format "provider:model"
+    If no provider is specified, it defaults to "openai"
+
+    Args:
+        model (str): The model string in the format "provider:model"
+
+    Returns:
+        tuple: A tuple with the provider and model
+    """
+
+    split_result = model.split(":")
+    if len(split_result) == 1:
+        return "openai", split_result[0]
+    return split_result[0], split_result[1]

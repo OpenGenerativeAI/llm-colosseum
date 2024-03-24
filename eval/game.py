@@ -31,6 +31,7 @@ class Player1(Player):
             character_color=KEN_RED,
             ennemy_color=KEN_GREEN,
             only_punch=os.getenv("TEST_MODE", False),
+            model=model,
         )
 
 
@@ -45,6 +46,7 @@ class Player2(Player):
             character_color=KEN_GREEN,
             ennemy_color=KEN_RED,
             sleepy=os.getenv("TEST_MODE", False),
+            model=model,
         )
 
 
@@ -118,10 +120,14 @@ class Game:
         self.env = self._init_env(self.settings)
         self.observation, self.info = self.env.reset(seed=self.seed)
         self.player_1 = (
-            player_1 if player_1 else Player1(nickname="Player 1", model="llm")
+            player_1
+            if player_1
+            else Player1(nickname="Player 1", model="openai:gpt-4-0125-preview")
         )
         self.player_2 = (
-            player_2 if player_2 else Player2(nickname="Player 2", model="llm")
+            player_2
+            if player_2
+            else Player2(nickname="Player 2", model="mistral:mistral-large-latest")
         )
 
     def _init_settings(self) -> EnvironmentSettingsMultiAgent:
@@ -280,9 +286,6 @@ class PlanAndActPlayer2(PlanAndAct):
                 # Act
                 self.game.actions["agent_1"] = self.game.player_2.robot.act()
                 # Observe the environment
-                self.game.player_1.robot.observe(
-                    self.game.observation, self.game.actions
-                )
                 self.game.player_2.robot.observe(
                     self.game.observation, self.game.actions, -self.game.reward
                 )

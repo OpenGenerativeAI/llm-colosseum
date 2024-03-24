@@ -23,6 +23,8 @@ class Robot:
     sleepy: Optional[bool] = False  # if the robot is sleepy
     only_punch: Optional[bool] = False  # if the robot only punch
 
+    model: str  # model of the robot
+
     def __init__(
         self,
         action_space: spaces.Space,
@@ -32,6 +34,7 @@ class Robot:
         ennemy_color: list,
         sleepy: bool = False,
         only_punch: bool = False,
+        model: str = "mistral:mistral-large-latest",
     ):
         self.action_space = action_space
         self.character = character
@@ -47,6 +50,7 @@ class Robot:
         self.side = side
         self.sleepy = sleepy
         self.only_punch = only_punch
+        self.model = model
 
     def act(self) -> int:
         """
@@ -125,6 +129,7 @@ class Robot:
         next_steps_from_llm = get_actions_from_llm(
             context,
             self.character,
+            model=self.model,
         )
 
         # Add some steps where we just wait
