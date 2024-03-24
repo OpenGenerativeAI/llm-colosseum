@@ -175,7 +175,6 @@ class Robot:
         side = self.side
         obs_own = self.observations[-1]["character_position"]
         obs_opp = self.observations[-1]["ennemy_position"]
-        relative_position = tuple(a - b for a, b in zip(obs_own, obs_opp))
 
         relative_position = np.array(obs_own) - np.array(obs_opp)
         normalized_relative_position = [
