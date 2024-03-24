@@ -11,7 +11,13 @@ def build_system_prompt(character: str) -> str:
     You're playing Street Fighter III 3rd strike with the character {character}. \
 Your goal it to beat the other opponent. You can do the following moves:
 {move_list}
-You reply with a bullet point list of moves. The format should be: `- <name of the move>` separated by a new line."""
+You reply with a bullet point list of moves. The format should be: `- <name of the move>` separated by a new line.
+For example a good answer would be:
+- Move closer
+- Fireball
+- Medium Punch
+And if the enemy is far away a good answer could be:
+"""
     return system_prompt
 
 

@@ -101,7 +101,7 @@ def get_actions_from_llm(
         logger.debug("DISABLE_LLM is True, returning a random move")
         return [random.choice(list(MOVES.values()))]
 
-    while len(valid_moves) == 0 or len(invalid_moves) > 2:
+    while len(valid_moves) == 0:
         llm_response = call_llm(
             context_prompt=context_prompt,
             character=character,
@@ -113,7 +113,8 @@ def get_actions_from_llm(
         )
 
         # The response is a bullet point list of moves. Use regex
-        moves = re.findall(r"- (\w+)", llm_response)
+        matches = re.findall(r"- ([\w ]+)", llm_response)
+        moves = ["".join(match) for match in matches]
         invalid_moves = []
         valid_moves = []
         for move in moves:
