@@ -1,5 +1,49 @@
+-i https://pypi.org/simple
+annotated-types==0.6.0; python_version >= '3.8'
+anyio==4.3.0; python_version >= '3.8'
+certifi==2024.2.2; python_version >= '3.6'
+cloudpickle==3.0.0; python_version >= '3.8'
+contourpy==1.2.0; python_version >= '3.9'
+cycler==0.12.1; python_version >= '3.8'
+cython==3.0.9; sys_platform == 'darwin'
+dacite==1.8.1; python_version >= '3.6'
 diambra==0.0.17
 diambra-arena==2.2.6
-openai==1.14.2
-python-dotenv==1.0.1
-loguru==0.7.2
+diambra-engine==2.2.1; python_version >= '3.6'
+distro==1.9.0; python_version >= '3.6'
+farama-notifications==0.0.4
+fonttools==4.50.0; python_version >= '3.8'
+grpcio==1.62.1; python_version >= '3.7'
+gymnasium==0.29.1; python_version >= '3.8'
+h11==0.14.0; python_version >= '3.7'
+httpcore==1.0.4; python_version >= '3.8'
+httpx==0.27.0; python_version >= '3.8'
+idna==3.6; python_version >= '3.5'
+inputs==0.5
+kiwisolver==1.4.5; python_version >= '3.7'
+loguru==0.7.2; python_version >= '3.5'
+matplotlib==3.8.3; python_version >= '3.9'
+numpy==1.26.4; python_version >= '3.9'
+openai==1.14.2; python_full_version >= '3.7.1'
+opencv-python==4.9.0.80; python_version >= '3.6'
+packaging==24.0; python_version >= '3.7'
+pandas==2.2.1; python_version >= '3.9'
+pillow==10.2.0; python_version >= '3.8'
+pip==24.0; python_version >= '3.7'
+protobuf==3.20.3; python_version >= '3.7'
+pydantic==2.6.4; python_version >= '3.8'
+pydantic-core==2.16.3; python_version >= '3.8'
+pyobjc-core==10.2; python_version >= '3.8'
+pyobjc-framework-cocoa==10.2; sys_platform == 'darwin'
+pyparsing==3.1.2; python_full_version >= '3.6.8'
+python-dateutil==2.9.0.post0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
+python-dotenv==1.0.1; python_version >= '3.8'
+pytz==2024.1
+screeninfo==0.8.1; python_full_version >= '3.6.2' and python_full_version < '4.0.0'
+setuptools==69.2.0; python_version >= '3.8'
+six==1.16.0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
+sniffio==1.3.1; python_version >= '3.7'
+tk==0.1.0
+tqdm==4.66.2; python_version >= '3.7'
+typing-extensions==4.10.0; python_version >= '3.8'
+tzdata==2024.1; python_version >= '2'

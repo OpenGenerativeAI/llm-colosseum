@@ -197,8 +197,8 @@ class Game:
         Runs the game with the given settings.
         """
 
-        self.player_1.robot.observe(self.observation, {})
-        self.player_2.robot.observe(self.observation, {})
+        self.player_1.robot.observe(self.observation, {}, 0.0)
+        self.player_2.robot.observe(self.observation, {}, 0.0)
         # Initialize the episode
 
         episode = Episode(player_1=self.player_1, player_2=self.player_2)
@@ -232,6 +232,7 @@ class Game:
                 del actions["agent_1"]
 
             self.observation = observation
+            self.reward = reward
 
             p1_wins = observation["P1"]["wins"][0]
             p2_wins = observation["P2"]["wins"][0]
@@ -266,7 +267,7 @@ class PlanAndActPlayer1(PlanAndAct):
                 self.game.actions["agent_0"] = self.game.player_1.robot.act()
                 # Observe the environment
                 self.game.player_1.robot.observe(
-                    self.game.observation, self.game.actions
+                    self.game.observation, self.game.actions, self.game.reward
                 )
 
 
@@ -283,6 +284,6 @@ class PlanAndActPlayer2(PlanAndAct):
                     self.game.observation, self.game.actions
                 )
                 self.game.player_2.robot.observe(
-                    self.game.observation, self.game.actions
+                    self.game.observation, self.game.actions, -self.game.reward
                 )
                 time.sleep(0.1)
