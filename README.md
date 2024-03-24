@@ -21,7 +21,11 @@ They need to be:
 
 ### 1 VS 1: Mistral 7B vs Mistral 7B
 
-https://github.com/OpenGenerativeAI/llm-colosseum/assets/19614572/ec3f2d4b-66b8-4e51-9897-cdab3b160025
+
+
+https://github.com/OpenGenerativeAI/llm-colosseum/assets/19614572/79b58e26-7902-4687-af5d-0e1e845ecaf8
+
+
 
 
 ### 1 VS 1 X 6 : Mistral 7B vs Mistral 7B
