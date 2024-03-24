@@ -1,7 +1,8 @@
 import numpy as np
 
 KEN_RED = [248, 0, 0]
-KEN_GREEN = [48, 88, 152]
+# KEN_GREEN = [48, 88, 152]
+KEN_GREEN = [88, 176, 40]
 
 
 def detect_position_from_color(
