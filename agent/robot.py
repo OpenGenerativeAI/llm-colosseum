@@ -205,7 +205,9 @@ class Robot:
         {position_prompt}
         Your last action was {str_act_own}
         The opponent's last action was {str_act_opp}
-        Your current score is {reward}. There is a direct relation between the position of the characters and the actions taken. You need to maximize it.
+        Your current score is {reward}. 
+        There is a direct relation between your actions and your score. 
+        You need to maximize it. Attack him to increase your score. Defend yourself to avoid losing points.
         """
 
         logger.debug(f"Context: {context}")
