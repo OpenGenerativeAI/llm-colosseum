@@ -38,7 +38,9 @@ def call_llm(
     # Generate the prompts
     system_prompt = build_system_prompt(character)
     main_prompt = build_main_prompt(context_prompt, wrong_answer)
+
     start_time = time.time()
+
     completion = client.chat.completions.create(
         model=model_name,
         messages=[

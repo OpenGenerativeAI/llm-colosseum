@@ -126,9 +126,12 @@ class Robot:
             self.character,
         )
 
+        # Add some steps where we just wait
+        next_steps_from_llm.extend([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
         self.next_steps.extend(next_steps_from_llm)
 
-    def observe(self, observation: dict, actions: dict ,reward: float):
+    def observe(self, observation: dict, actions: dict, reward: float):
         """
         The robot will observe the environment by calling this method.
 
