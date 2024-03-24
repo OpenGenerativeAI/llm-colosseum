@@ -14,10 +14,10 @@ load_dotenv()
 def main():
     # Environment Settings
     # Environment Settings
+    while True:
+        game = Game(render=True, save_game=True, openai=True)
 
-    game = Game(render=True, save_game=True, openai=True)
-
-    game.run()
+        game.run()
 
 
 if __name__ == "__main__":
