@@ -36,6 +36,7 @@ class Robot:
     only_punch: Optional[bool] = False  # if the robot only punch
 
     model: str  # model of the robot
+    player_nb: int  # player number
 
     def __init__(
         self,
@@ -47,6 +48,7 @@ class Robot:
         sleepy: bool = False,
         only_punch: bool = False,
         model: str = "mistral:mistral-large-latest",
+        player_nb: int = 0,  # 0 means not specified
     ):
         self.action_space = action_space
         self.character = character
@@ -65,6 +67,7 @@ class Robot:
         self.model = model
         self.previous_actions = defaultdict(list)
         self.actions = {}
+        self.player_nb = player_nb
 
     def act(self) -> int:
         """
@@ -145,6 +148,7 @@ class Robot:
             self.character,
             model=self.model,
             temperature=0.7,
+            player_nb=self.player_nb,
         )
 
         next_button_press = [
