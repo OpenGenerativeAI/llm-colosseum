@@ -6,7 +6,7 @@ from loguru import logger
 from .observer import detect_position_from_color, KEN_RED, KEN_GREEN
 from .actions import get_actions_from_llm
 
-from .config import MOVES, INDEX_TO_MOVE
+from .config import MOVES, INDEX_TO_MOVE, X_SIZE, Y_SIZE
 
 
 class Robot:
@@ -160,13 +160,16 @@ class Robot:
         side = self.side
         obs_own = self.observations[-1]["character_position"]
         obs_opp = self.observations[-1]["ennemy_position"]
+        relative_position = tuple((a - b) / divisor for (a, b), divisor in zip(zip(obs_own, obs_opp), (X_SIZE, Y_SIZE)))
 
         # Handle the first observation setting, if self.actions == {}
         if self.actions == {}:
             return f"""
             It's the first observation of the game, the game just started.
-            The observation for you is {obs_own}
-            The observation for the opponent is {obs_opp}
+            The frame has a size of {X_SIZE}x{Y_SIZE}.
+            Your position is {obs_own}
+            The opponent location is {obs_opp}
+            The relative position between you and your opponent is {relative_position}
             """
 
         act_own = self.actions["agent_" + str(side)]
@@ -176,11 +179,12 @@ class Robot:
         reward = self.reward
 
         context = f"""
-        Your last action was {str_act_own}
-        The opponent's last action was {str_act_opp}
         The opponent location is {obs_opp}
         Your position is {obs_own}
-        Your current score is {reward}. You need to maximize it.
+        The relative position between you and your opponent is {relative_position}
+        Your last action was {str_act_own}
+        The opponent's last action was {str_act_opp}
+        Your current score is {reward}. There is a direct relation between the position of the characters and the actions taken. You need to maximize it.
         """
 
         logger.debug(f"Context: {context}")
