@@ -20,12 +20,25 @@ They need to be:
 https://github.com/OpenGenerativeAI/llm-colosseum/assets/19614572/ec3f2d4b-66b8-4e51-9897-cdab3b160025
 
 
-![LLM colosseum](multi_agents.png)
-
-
 ### 1 VS 1 X 6 : Mistral 7B vs Mistral 7B
 https://github.com/OpenGenerativeAI/llm-colosseum/assets/19614572/2935455f-a78c-436c-92df-a3c3d853c1d3
 
+
+
+## A new kind of benchmark ? 
+
+Street Fighter III assesses the ability of LLMs to understand their environment and take actions based on a specific context.
+As opposed to RL models, which blindly take actions based on the reward function, LLMs are fully aware of the context and act accordingly.
+
+# Results 
+
+Our experimentations (342 fights so far) led to the following leader board. 
+Each LLM has an ELO score based on its results 
+
+## Ranking
+
+
+![Win rate matrix](notebooks/win_rate_matrix.png)
 
 
 # Explanation
@@ -36,16 +49,6 @@ We send to the LLM a text description of the screen. The LLM decide on the next 
 - Agent based
 - Multithreading
 - Real time
-
-## A new kind of benchmark ? 
-
-Street Fighter III assesses the ability of LLMs to understand their environment and take actions based on a specific context.
-As opposed to RL models, which blindly take actions based on the reward function, LLMs are fully aware of the context and act accordingly.
-
-## Results
-
-Our experimentations (342 fights so far) led to the following leader board. 
-Each LLM has an ELO score based on its results 
 
 # Installation
 
@@ -68,3 +71,9 @@ It will choose the action randomly.
 ## Logging
 
 Change the logging level in the `script.py` file.
+
+
+
+# Credits
+
+Made with ❤️ by the OpenGenerativeAI team @oulianov @Pierre-LouisBJT @Platinn @StanGirard during Mistral Hackathon 2024 in San Francisco
