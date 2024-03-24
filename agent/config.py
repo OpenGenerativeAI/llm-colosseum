@@ -70,7 +70,6 @@ SPECIAL_MOVES = {
             MOVES["Right"],
             MOVES["Down"],
             MOVES["Down+Right"],
-            MOVES["High Punch"],
             MOVES["Low Kick"]], "left":[MOVES["Left"], MOVES["Down"], MOVES["Down+Left"], MOVES["Left"], MOVES["Down"], MOVES["Down+Left"],MOVES["Low Kick"]]},
 }
 
@@ -80,10 +79,10 @@ META_INSTRUCTIONS = {
     "Fireball": COMBOS["Fireball (Hadouken)"],
     "Dragon Punch": COMBOS["Dragon Punch (Shoryuken)"],
     "Hurricane Kick": COMBOS["Hurricane Kick (Tatsumaki Senpukyaku)"],
-    "EX-Fireball": SPECIAL_MOVES["EX-Fireball (Hadouken)"],
-    "EX-Dragon Punch": SPECIAL_MOVES["EX-Dragon Punch (Shoryuken)"],
+    "EX Fireball": SPECIAL_MOVES["EX-Fireball (Hadouken)"],
+    "EX Dragon Punch": SPECIAL_MOVES["EX-Dragon Punch (Shoryuken)"],
     "Super Dragon Punch": SPECIAL_MOVES["Super Dragon Punch (Shouryuu-Reppa)"],
-    "Shippuu-Jinrai-Kyaku": SPECIAL_MOVES["Shippuu-Jinrai-Kyaku"],
+    "Shippuu Jinrai Kyaku": SPECIAL_MOVES["Shippuu-Jinrai-Kyaku"],
     **{
         move_name: {"right": [move_nb, 0], "left": [move_nb, 0]}
         for move_name, move_nb in MOVES.items()

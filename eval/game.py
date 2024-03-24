@@ -15,7 +15,6 @@ import time
 
 from .result import display_win_screen
 
-
 class Player:
     nickname: str
     model: str
@@ -98,6 +97,7 @@ class Game:
         save_game: bool = False,
         splash_screen: bool = False,
         characters: List[str] = ["Ken", "Ken"],
+        super_arts: List[int] = [3,3],
         outfits: List[int] = [1, 3],
         frame_shape: List[int] = [0, 0, 0],
         seed: int = 42,
@@ -118,6 +118,7 @@ class Game:
         self.splash_screen = splash_screen
         self.save_game = save_game
         self.characters = characters
+        self.super_arts = super_arts
         self.outfits = outfits
         self.frame_shape = frame_shape
         self.seed = seed
@@ -153,6 +154,8 @@ class Game:
         settings.outfits = self.outfits
 
         settings.frame_shape = self.frame_shape
+
+        settings.super_art = self.super_arts
 
         return settings
 

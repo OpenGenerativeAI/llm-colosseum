@@ -36,6 +36,7 @@ class Robot:
     only_punch: Optional[bool] = False  # if the robot only punch
 
     model: str  # model of the robot
+    super_bar_own: int
 
     def __init__(
         self,
@@ -47,6 +48,7 @@ class Robot:
         sleepy: bool = False,
         only_punch: bool = False,
         model: str = "mistral:mistral-large-latest",
+        
     ):
         self.action_space = action_space
         self.character = character
@@ -204,6 +206,7 @@ class Robot:
         side = self.side
         obs_own = self.observations[-1]["character_position"]
         obs_opp = self.observations[-1]["ennemy_position"]
+        super_bar_own = self.observations[-1]["P"+str(side+1)]["super_bar"][0]
 
         if obs_own is not None and obs_opp is not None:
             relative_position = np.array(obs_own) - np.array(obs_opp)
@@ -227,6 +230,11 @@ class Robot:
         else:
             position_prompt += "You are close to the opponent. You should attack him."
 
+        power_prompt =""
+        if super_bar_own >= 30 :
+            power_prompt = "You can now use a powerfull move. The names of the powerful moves are: EX Dragon Punch, EX Fireball."
+        if super_bar_own >= 120 or super_bar_own==0:
+            power_prompt = "You can now only use very powerfull moves. The names of the very powerful moves are: Super Dragon Punch, Shippuu Jinrai Kyaku"
         # Create the last action prompt
         last_action_prompt = ""
         if len(self.previous_actions.keys()) >= 0:
@@ -260,6 +268,7 @@ class Robot:
 
         # Assemble everything
         context = f"""{position_prompt}
+{power_prompt}
 {last_action_prompt}
 Your current score is {reward}. {score_prompt}
 To increase your score, move toward the opponent and attack the opponent. To prevent your score from decreasing, don't get hit by the opponent.
