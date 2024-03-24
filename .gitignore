@@ -4,3 +4,5 @@ __pycache__
 test.py
 myenv/
 eval/diambra
+
+results.csv

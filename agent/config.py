@@ -50,7 +50,7 @@ META_INSTRUCTIONS = {
     "Hurricane Kick": COMBOS["Hurricane Kick (Tatsumaki Senpukyaku)"],
     **{
         move_name: {"right": [move_nb, 0], "left": [move_nb, 0]}
-        for move_name, move_nb in MOVES.keys()
+        for move_name, move_nb in MOVES.items()
         if "Punch" in move_name or "Kick" in move_name
     },
 }
