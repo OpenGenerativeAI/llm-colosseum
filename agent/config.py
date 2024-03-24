@@ -24,6 +24,10 @@ MOVES = {
     "Medium Punch+Medium Kick": 16,
     "High Punch+High Kick": 17,
 }
+MOVES_WITH_LOWER = {
+    **MOVES,
+    **{key.lower(): value for key, value in MOVES.items()},
+}
 COMBOS = {
     "Fireball (Hadouken)": {"right": [7, 6, 5, 10], "left": [7, 8, 1, 10]},
     # Refacto with command names
@@ -43,8 +47,8 @@ COMBOS = {
 }
 
 META_INSTRUCTIONS = {
-    "Move closer": {"right": [5, 5, 5, 5], "left": [1, 1, 1, 1]},
-    "Move away": {"right": [1, 1, 1, 1], "left": [5, 5, 5, 5]},
+    "Move Closer": {"right": [5, 5, 5, 5], "left": [1, 1, 1, 1]},
+    "Move Away": {"right": [1, 1, 1, 1], "left": [5, 5, 5, 5]},
     "Fireball": COMBOS["Fireball (Hadouken)"],
     "Dragon Punch": COMBOS["Dragon Punch (Shoryuken)"],
     "Hurricane Kick": COMBOS["Hurricane Kick (Tatsumaki Senpukyaku)"],
@@ -54,7 +58,15 @@ META_INSTRUCTIONS = {
         if "Punch" in move_name or "Kick" in move_name
     },
 }
-
+META_INSTRUCTIONS_WITH_LOWER = {
+    **META_INSTRUCTIONS,
+    **{key.lower(): value for key, value in META_INSTRUCTIONS.items()},
+    ## Also add the combos for Lower, Medium and High
+    "lower": {"right": [12, 0], "left": [12, 0]},
+    "medium": {"right": [13, 0], "left": [13, 0]},
+    "med": {"right": [13, 0], "left": [13, 0]},
+    "high": {"right": [14, 0], "left": [14, 0]},
+}
 
 INDEX_TO_MOVE = {v: k for k, v in MOVES.items()}
 

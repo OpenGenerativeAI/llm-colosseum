@@ -130,7 +130,7 @@ class Game:
         self.player_2 = (
             player_2
             if player_2
-            else Player2(nickname="Player 2", model="openai:gpt-4-0125-preview")
+            else Player2(nickname="Player 2", model="openai:gpt-3.5-turbo")
         )
 
     def _init_settings(self) -> EnvironmentSettingsMultiAgent:
@@ -242,7 +242,7 @@ class Game:
             if "agent_1" in self.actions:
                 del actions["agent_1"]
 
-            self.observation = observation   
+            self.observation = observation
             self.reward += reward
 
             p1_wins = observation["P1"]["wins"][0]

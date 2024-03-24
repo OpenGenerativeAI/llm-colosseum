@@ -16,6 +16,7 @@ from .config import (
     NB_FRAME_WAIT,
     COMBOS,
     META_INSTRUCTIONS,
+    META_INSTRUCTIONS_WITH_LOWER,
 )
 
 
@@ -149,7 +150,9 @@ class Robot:
         next_button_press = [
             button
             for combo in next_steps_from_llm
-            for button in META_INSTRUCTIONS[combo][self.current_direction.lower()]
+            for button in META_INSTRUCTIONS_WITH_LOWER[combo][
+                self.current_direction.lower()
+            ]
         ]
 
         # Add some steps where we just wait

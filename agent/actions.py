@@ -12,7 +12,7 @@ from loguru import logger
 
 from agent.language_models import get_sync_client, get_provider_and_model
 
-from .config import MOVES, META_INSTRUCTIONS
+from .config import MOVES, META_INSTRUCTIONS, META_INSTRUCTIONS_WITH_LOWER
 from .prompts import build_main_prompt, build_system_prompt
 
 
@@ -120,10 +120,12 @@ def get_actions_from_llm(
         invalid_moves = []
         valid_moves = []
         for move in moves:
-            if move in META_INSTRUCTIONS.keys():
-                valid_moves.append(move)
+            cleaned_move_name = move.strip().lower()
+            if cleaned_move_name in META_INSTRUCTIONS_WITH_LOWER.keys():
+                valid_moves.append(cleaned_move_name)
             else:
                 logger.debug(f"Invalid completion: {move}")
+                logger.debug(f"Cleaned move name: {cleaned_move_name}")
                 invalid_moves.append(move)
 
         if len(invalid_moves) > 2:
