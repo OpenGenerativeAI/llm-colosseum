@@ -56,13 +56,6 @@ def call_llm(
 
     llm_response = completion.choices[0].message.content.strip()
 
-    # Validate the completion format
-    # if llm_response not in MOVES.keys():
-    #     logger.warning(f"Invalid completion: {llm_response}")
-    #     prompt_with_correction = build_main_prompt(
-    #         context_prompt, wrong_answer=llm_response
-    #     )
-
     return llm_response
 
 
