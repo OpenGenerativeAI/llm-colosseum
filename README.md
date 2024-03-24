@@ -1,6 +1,6 @@
 # llm-collosseum
 
-Make LLM fight each other in Street Fighter III.
+Make LLM fight each other in real time in Street Fighter III.
 
 Which LLM will be the best fighter ?
 
@@ -12,11 +12,22 @@ https://github.com/OpenGenerativeAI/llm-colosseum/assets/19614572/ec3f2d4b-66b8-
 
 ## Explanation
 
-Each player is controlled by an LLM. We send to the LLM a text description of the screen. The LLM decide on the next moves its character will make.
+Each player is controlled by an LLM. 
+We send to the LLM a text description of the screen. The LLM decide on the next moves its character will make. The next moves depends on its previous moves, the moves of its opponents, its power and health bars. 
 
 - Agent based
 - Multithreading
-- Realtime
+- Real time
+
+## A new kind of benchmark ? 
+
+Street Fighter III assesses the ability of LLMs to understand their environment and take actions based on a specific context.
+As opposed to RL models, which blindly take actions based on the reward function, LLMs are fully aware of the context and act accordingly.
+
+## Results
+
+Our experimentations (342 fights so far) led to the following leader board. 
+Each LLM has an ELO score based on its results 
 
 ## Installation
 
