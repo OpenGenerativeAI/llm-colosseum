@@ -213,18 +213,16 @@ class Robot:
 
         position_prompt = ""
         if abs(normalized_relative_position[0]) > 0.1:
-            position_prompt += "You are very far from the opponent."
+            position_prompt += (
+                "You are very far from the opponent. Move closer to the opponent."
+            )
             if normalized_relative_position[0] < 0:
-                position_prompt += (
-                    "Your opponent is on the right. Move towards the opponent. You need to move to the right."
-                )
+                position_prompt += "Your opponent is on the right."
             else:
-                position_prompt += (
-                    "Your opponent is on the left. Move towards the opponent. You need to move to the left."
-                )
+                position_prompt += "Your opponent is on the left."
 
         else:
-            position_prompt += "You are close to the opponent. You need to attack him."
+            position_prompt += "You are close to the opponent. You should attack him."
 
         # Create the last action prompt
         last_action_prompt = ""
@@ -253,7 +251,9 @@ class Robot:
         if reward > 0:
             score_prompt += "You are winning. Keep attacking the opponent."
         elif reward < 0:
-            score_prompt += "You are losing. Continue to attack the opponent but don't get hit."
+            score_prompt += (
+                "You are losing. Continue to attack the opponent but don't get hit."
+            )
 
         # Assemble everything
         context = f"""{position_prompt}

@@ -34,8 +34,10 @@ def call_llm(
     client = get_sync_client(provider_name)
 
     # Generate the prompts
-    system_prompt = build_system_prompt(character)
-    main_prompt = build_main_prompt(context_prompt, wrong_answer)
+    system_prompt = build_system_prompt(
+        character=character, context_prompt=context_prompt
+    )
+    main_prompt = build_main_prompt()
 
     start_time = time.time()
 
