@@ -7,13 +7,16 @@ from loguru import logger
 from .observer import detect_position_from_color, KEN_RED, KEN_GREEN
 from .actions import get_actions_from_llm
 
-from .config import MOVES, INDEX_TO_MOVE, X_SIZE, Y_SIZE
+from .config import MOVES, INDEX_TO_MOVE, X_SIZE, Y_SIZE, NB_FRAME_WAIT
 
 
 class Robot:
     observations: List[Optional[dict]] = None  # memory
     next_steps: List[int]  # action plan
     actions: dict  # actions of the agents during a step of the game
+    previous_actions: List[
+        dict
+    ]  # actions of the agents during the previous step of the game
     reward: float  # reward of the agent
 
     action_space: spaces.Space
@@ -51,6 +54,7 @@ class Robot:
         self.sleepy = sleepy
         self.only_punch = only_punch
         self.model = model
+        self.previous_actions = []
 
     def act(self) -> int:
         """
@@ -130,10 +134,13 @@ class Robot:
             context,
             self.character,
             model=self.model,
+            temperature=0.7,
         )
 
+        logger.info(f"Next steps from LLM: {self.previous_actions}")
+
         # Add some steps where we just wait
-        next_steps_from_llm.extend([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        next_steps_from_llm.extend([0] * NB_FRAME_WAIT)
 
         self.next_steps.extend(next_steps_from_llm)
 
@@ -159,6 +166,7 @@ class Robot:
 
         self.actions = actions
         self.reward = reward
+        self.previous_actions.append(actions)
 
     def context_prompt(self):
         """
