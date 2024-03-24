@@ -184,6 +184,8 @@ class Robot:
         "The action history is Up"
         """
 
+
+        # Create the position prompt
         side = self.side
         obs_own = self.observations[-1]["character_position"]
         obs_opp = self.observations[-1]["ennemy_position"]
@@ -197,39 +199,12 @@ class Robot:
         else:
             normalized_relative_position = [0.3, 0]
 
-        # Handle the first observation setting, if self.actions == {}
-        if len(self.previous_actions.keys()) == 0:
-            return f"""
-            It's the first observation of the game, the game just started.
-            The frame has a size of {X_SIZE}x{Y_SIZE}.
-            Your position is {obs_own}
-            The opponent location is {obs_opp}
-            The relative position between you and your opponent is {normalized_relative_position}
-            """
-
-        act_own_list = self.previous_actions["agent_" + str(side)]
-        act_opp_list = self.previous_actions["agent_" + str(abs(1 - side))]
-
-        if len(act_own_list) == 0:
-            act_own = 0
-        else:
-            act_own = act_own_list[-1]
-        if len(act_opp_list) == 0:
-            act_opp = 0
-        else:
-            act_opp = act_opp_list[-1]
-
-        str_act_own = INDEX_TO_MOVE[act_own]
-        str_act_opp = INDEX_TO_MOVE[act_opp]
-        reward = self.reward
-
         position_prompt = ""
-
         if abs(normalized_relative_position[0]) > 0.2:
-            position_prompt += "You are super far from the opponent."
+            position_prompt += "You are very far from the opponent."
             if normalized_relative_position[0] > 0:
                 position_prompt += (
-                    "Your opponent is on the right. You need to move to the rigth."
+                    "Your opponent is on the right. You need to move to the right."
                 )
             else:
                 position_prompt += (
@@ -238,19 +213,42 @@ class Robot:
 
         else:
             position_prompt += "You are close to the opponent. You need to attack him."
-        # Handle the first observation setting, if self.actions == {}
 
-        context = f"""
-        The opponent location is {obs_opp}
-        Your position is {obs_own}
-        The relative position between you and your opponent is {normalized_relative_position}
-        Here is a decription of the scene {position_prompt}
-        Your last action was {str_act_own}
-        The opponent's last action was {str_act_opp}
-        Your current score is {reward}. There is a direct relation between the position of the characters and the actions taken. 
-        You need to maximize it.
-        If your attack him your score will be higher. Don't get hit by the opponent to avoid losing points.
-        """
+        # Create the last action prompt
+        last_action_prompt = ""
+        if len(self.previous_actions.keys()) >= 0:
+            act_own_list = self.previous_actions["agent_" + str(side)]
+            act_opp_list = self.previous_actions["agent_" + str(abs(1 - side))]
 
-        logger.debug(f"Context: {context}")
+            if len(act_own_list) == 0:
+                act_own = 0
+            else:
+                act_own = act_own_list[-1]
+            if len(act_opp_list) == 0:
+                act_opp = 0
+            else:
+                act_opp = act_opp_list[-1]
+
+            str_act_own = INDEX_TO_MOVE[act_own]
+            str_act_opp = INDEX_TO_MOVE[act_opp]
+
+            last_action_prompt += f"Your last action was {str_act_own}. The opponent's last action was {str_act_opp}."
+
+
+        reward = self.reward
+
+        # Create the score prompt
+        score_prompt = ""
+        if reward > 0:
+            score_prompt += "You are winning. Keep attacking the opponent."
+        elif reward < 0:
+            score_prompt += "You are losing. You need to flee the opponent."
+
+        # Assemble everything
+        context = f"""{position_prompt}
+{last_action_prompt}
+Your current score is {reward}. {score_prompt}
+To increase your score, attack the opponent. To prevent your score from decreasing, don't get hit by the opponent.
+"""
+
         return context

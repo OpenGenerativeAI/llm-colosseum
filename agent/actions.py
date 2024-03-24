@@ -49,7 +49,7 @@ def call_llm(
         max_tokens=max_tokens,
         top_p=top_p,
     )
-    logger.debug(f"LLM call: {system_prompt}\n\n\n{main_prompt}")
+    logger.debug(f"LLM call to {model}: {system_prompt}\n\n\n{main_prompt}")
     logger.debug(f"LLM call to {model}: {time.time() - start_time} s")
 
     llm_response = completion.choices[0].message.content.strip()
