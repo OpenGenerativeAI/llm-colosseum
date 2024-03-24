@@ -30,10 +30,8 @@ def call_llm(
     Get actions from the language model
     context_prompt: str, the prompt to describe the situation to the LLM. Will be placed inside the main prompt template.
     """
-
     # Get the correct provider, default is mistral
     client = get_sync_client(provider_name)
-    logger.debug(f"Using provider: {provider_name}")
 
     # Generate the prompts
     system_prompt = build_system_prompt(character)
@@ -133,5 +131,7 @@ def get_actions_from_llm(
 
     # Cast the moves to their index
     valid_moves = [MOVES[m] for m in valid_moves]
+
+    logger.debug(f"Next moves: {valid_moves}")
 
     return valid_moves

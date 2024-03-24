@@ -1,6 +1,7 @@
 from typing import Optional
-from .config import REAL_MOVE_LIST
+from .config import REAL_MOVE_LIST, NB_FRAME_WAIT
 import random
+from typing import List
 
 
 def build_system_prompt(character: str) -> str:
@@ -13,13 +14,18 @@ You reply with a bullet point list of moves. The format should be: `- move` sepa
     return system_prompt
 
 
-def build_main_prompt(context: str, wrong_answer: Optional[str] = None) -> str:
+def build_main_prompt(
+    context: str, previous_actions: List[dict], wrong_answer: Optional[str] = None
+) -> str:
     """
     TODO: Takes as argument an observation of the world and returns a prompt for the language model
     wrong_answer: str, the wrong answer, to inject in the prompt to ask for a regenrated answer
     """
     # Generate a random float to avoid caching
     random_seed = random.random()
+
+    # Generate the text of the previous actions
+    # We remove the frames where we wait
 
     prompt = f"""Time of the game: {random_seed}
 The context of the game is:
