@@ -8,7 +8,15 @@ from loguru import logger
 from .observer import detect_position_from_color, KEN_RED, KEN_GREEN
 from .actions import get_actions_from_llm
 
-from .config import MOVES, INDEX_TO_MOVE, X_SIZE, Y_SIZE, NB_FRAME_WAIT, COMBOS
+from .config import (
+    MOVES,
+    INDEX_TO_MOVE,
+    X_SIZE,
+    Y_SIZE,
+    NB_FRAME_WAIT,
+    COMBOS,
+    META_INSTRUCTIONS,
+)
 
 
 class Robot:
@@ -137,8 +145,6 @@ class Robot:
             model=self.model,
             temperature=0.7,
         )
-
-        logger.info(f"Next steps from LLM: {self.previous_actions}")
 
         # Add some steps where we just wait
         next_steps_from_llm.extend([0] * NB_FRAME_WAIT)
