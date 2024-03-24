@@ -1,5 +1,8 @@
 import os
+import dotenv
 from typing import Tuple
+
+dotenv.load_dotenv()
 
 try:
     from openai import AsyncOpenAI, OpenAI
