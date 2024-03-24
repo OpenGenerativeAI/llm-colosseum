@@ -239,24 +239,6 @@ class Robot:
         else:
             position_prompt += "You are close to the opponent. You need to attack him."
         # Handle the first observation setting, if self.actions == {}
-        if self.actions == {}:
-            return f"""
-            It's the first observation of the game, the game just started.
-            The frame has a size of {X_SIZE}x{Y_SIZE}.
-            Your position is {obs_own}
-            The opponent location is {obs_opp}
-            Here is a decription of the scene {position_prompt}
-            The relative position between you and your opponent is {normalized_relative_position}
-            Your current score is 0. There is a direct relation between the position of the characters and the actions taken. 
-            You need to maximize it.
-            If your attack him your score will be higher. Don't get hit by the opponent to avoid losing points.
-            """
-
-        act_own = self.actions["agent_" + str(side)]
-        act_opp = self.actions["agent_" + str(abs(1 - side))]
-        str_act_own = INDEX_TO_MOVE[act_own]
-        str_act_opp = INDEX_TO_MOVE[act_opp]
-        reward = self.reward
 
         context = f"""
         The opponent location is {obs_opp}
