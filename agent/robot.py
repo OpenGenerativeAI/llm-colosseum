@@ -166,9 +166,9 @@ class Robot:
 
         self.reward = reward
 
-        if actions.get("agent_0") is not None:
+        if actions.get("agent_0") is not None and actions.get("agent_0") != 0:
             self.previous_actions["agent_0"].append(actions["agent_0"])
-        if actions.get("agent_1") is not None:
+        if actions.get("agent_1") is not None and actions.get("agent_1") != 0:
             self.previous_actions["agent_1"].append(actions["agent_1"])
 
         for key, value in actions.items():
