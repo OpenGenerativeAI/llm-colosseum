@@ -125,12 +125,14 @@ class Game:
         self.player_1 = (
             player_1
             if player_1
-            else Player1(nickname="Player 1", model="mistral:mistral-large-latest")
+            # else Player1(nickname="Player 1", model="mistral:mistral-large-latest")
+            else Player2(nickname="Player 1", model="mistral:mistral-small")
         )
         self.player_2 = (
             player_2
             if player_2
-            else Player2(nickname="Player 2", model="openai:gpt-3.5-turbo")
+            else Player2(nickname="Player 2", model="openai:gpt-4-turbo-preview")
+            # else Player2(nickname="Player 2", model="mistral:mistral-medium")
         )
 
     def _init_settings(self) -> EnvironmentSettingsMultiAgent:
@@ -254,8 +256,8 @@ class Game:
 
                 episode.player_1_won = p1_wins == 1
                 episode.save()
-                self.env.close()
-                return 0
+                # self.env.close()
+                # return 0
 
 
 class PlanAndAct(Thread):
