@@ -31,7 +31,7 @@ def call_llm(
     """
 
     # If we are in the test environment, we don't want to call the LLM
-    if os.getenv("DISABLE_LLM", "False") == "True":
+    if os.getenv("DISABLE_LLM", False) == "True":
         # Choose a random move
         return random.choice(list(MOVES.keys()))
 
@@ -56,12 +56,25 @@ def call_llm(
 
     llm_response = completion.choices[0].message.content.strip()
 
-    # Validate the completion format
-    if llm_response not in MOVES.keys():
-        logger.warning(f"Invalid completion: {llm_response}")
-        prompt_with_correction = build_main_prompt(
-            context_prompt, wrong_answer=llm_response
-        )
+    return llm_response
+
+
+def get_simple_actions_from_llm(
+    context_prompt: str,
+    character: str,
+    model_name: str = "mistral-large-latest",
+    temperature: float = 0.1,
+    max_tokens: int = 20,
+    top_p: float = 1.0,
+) -> List[int]:
+    """
+    Get actions from the language model
+    context_prompt: str, the prompt to describe the situation to the LLM.
+    Return one action and then wait for the next observation
+
+    Will be placed inside the main prompt template.
+    """
+    pass
 
 
 def get_actions_from_llm(
