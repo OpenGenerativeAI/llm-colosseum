@@ -15,10 +15,7 @@ def main():
     # Environment Settings
     # Environment Settings
 
-    game = Game(
-        render=True,
-        save_game=True,
-    )
+    game = Game(render=True, save_game=True, openai=True, mistral=False)
 
     game.run()
 

@@ -1,3 +1,20 @@
+MODELS = {
+    "OPENAI": {
+        "openai:gpt-4-0125-preview",
+        "openai:gpt-4-1106-preview",
+        "openai:gpt-4",
+        "openai:gpt-3.5-turbo-0125",
+        "openai:gpt-3.5-turbo-instruct",
+    },
+    "MISTRAL": {
+        "mistral:mistral-small-latest",
+        "mistral:mistral-medium-latest",
+        "mistral:mistral-large-latest",
+        # "groq:mistral-8x6b-32768",
+    },
+}
+
+
 MOVES = {
     "No-Move": 0,
     "Left": 1,
