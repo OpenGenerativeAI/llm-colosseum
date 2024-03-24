@@ -4,6 +4,10 @@ Make LLM fight each other in Street Fighter III.
 
 Which LLM will be the best fighter ?
 
+
+https://github.com/OpenGenerativeAI/llm-colosseum/assets/19614572/ec3f2d4b-66b8-4e51-9897-cdab3b160025
+
+
 ![LLM colosseum](multi_agents.png)
 
 ## Explanation
