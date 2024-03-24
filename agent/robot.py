@@ -176,26 +176,15 @@ class Robot:
         obs_own = self.observations[-1]["character_position"]
         obs_opp = self.observations[-1]["ennemy_position"]
 
-        relative_position = np.array(obs_own) - np.array(obs_opp)
-        normalized_relative_position = [
-            relative_position[0] / X_SIZE,
-            relative_position[1] / Y_SIZE,
-        ]
-        # Handle the first observation setting, if self.actions == {}
-        if self.actions == {}:
-            return f"""
-            It's the first observation of the game, the game just started.
-            The frame has a size of {X_SIZE}x{Y_SIZE}.
-            Your position is {obs_own}
-            The opponent location is {obs_opp}
-            The relative position between you and your opponent is {normalized_relative_position}
-            """
+        if obs_own is not None and obs_opp is not None:
+            relative_position = np.array(obs_own) - np.array(obs_opp)
+            normalized_relative_position = [
+                relative_position[0] / X_SIZE,
+                relative_position[1] / Y_SIZE,
+            ]
+        else:
+            normalized_relative_position = [0.3, 0]
 
-        act_own = self.actions["agent_" + str(side)]
-        act_opp = self.actions["agent_" + str(abs(1 - side))]
-        str_act_own = INDEX_TO_MOVE[act_own]
-        str_act_opp = INDEX_TO_MOVE[act_opp]
-        reward = self.reward
         position_prompt = ""
 
         if abs(normalized_relative_position[0]) > 0.2:
@@ -211,15 +200,36 @@ class Robot:
 
         else:
             position_prompt += "You are close to the opponent. You need to attack him."
+        # Handle the first observation setting, if self.actions == {}
+        if self.actions == {}:
+            return f"""
+            It's the first observation of the game, the game just started.
+            The frame has a size of {X_SIZE}x{Y_SIZE}.
+            Your position is {obs_own}
+            The opponent location is {obs_opp}
+            Here is a decription of the scene {position_prompt}
+            The relative position between you and your opponent is {normalized_relative_position}
+            Your current score is 0. There is a direct relation between the position of the characters and the actions taken. 
+            You need to maximize it.
+            If your attack him your score will be higher. Don't get hit by the opponent to avoid losing points.
+            """
+
+        act_own = self.actions["agent_" + str(side)]
+        act_opp = self.actions["agent_" + str(abs(1 - side))]
+        str_act_own = INDEX_TO_MOVE[act_own]
+        str_act_opp = INDEX_TO_MOVE[act_opp]
+        reward = self.reward
 
         context = f"""
         The opponent location is {obs_opp}
         Your position is {obs_own}
         The relative position between you and your opponent is {normalized_relative_position}
-        {position_prompt}
+        Here is a decription of the scene {position_prompt}
         Your last action was {str_act_own}
         The opponent's last action was {str_act_opp}
-        Your current score is {reward}. There is a direct relation between the position of the characters and the actions taken. You need to maximize it.
+        Your current score is {reward}. There is a direct relation between the position of the characters and the actions taken. 
+        You need to maximize it.
+        If your attack him your score will be higher. Don't get hit by the opponent to avoid losing points.
         """
 
         logger.debug(f"Context: {context}")
