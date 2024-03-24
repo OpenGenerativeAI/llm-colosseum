@@ -9,9 +9,7 @@ def build_system_prompt(character: str) -> str:
 
     system_prompt = f"""You are the best and most aggressive player in the world. \
     You're playing Street Fighter III 3rd strike with the character {character}. \
-Your goal it to beat the other opponent. You can do the following moves:
-{move_list}
-You reply with a bullet point list of moves. The format should be: `- move` separated by a new line."""
+You reply the moves you want to do in the next frames"""
     return system_prompt
 
 
@@ -31,9 +29,8 @@ def build_main_prompt(
     prompt = f"""Time of the game: {random_seed}
 The context of the game is:
 {context}
-Response with a bullet point list of the moves you want to do. Do not \
-include moves that are not in the list of moves. Do not include any other information. \
-The format should be: `- move` separated by a new line.
+Use the function to answer with the moves you want.  Do not \
+include moves that are not in the list of moves. Do not include any other information. Only use the function \
 """
 
     if wrong_answer:
