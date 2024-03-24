@@ -259,7 +259,7 @@ class Robot:
         context = f"""{position_prompt}
 {last_action_prompt}
 Your current score is {reward}. {score_prompt}
-To increase your score, attack the opponent. To prevent your score from decreasing, don't get hit by the opponent.
+To increase your score, move toward the opponent and attack the opponent. To prevent your score from decreasing, don't get hit by the opponent.
 """
 
         return context
