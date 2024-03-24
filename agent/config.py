@@ -45,19 +45,16 @@ COMBOS = {
 META_INSTRUCTIONS = {
     "Move closer": {"right": [5, 5, 5, 5], "left": [1, 1, 1, 1]},
     "Move away": {"right": [1, 1, 1, 1], "left": [5, 5, 5, 5]},
-    "Normal punch": {"right": [10, 0], "left": [10, 0]},
-    "Normal kick": {"right": [13, 0], "left": [13, 0]},
     "Fireball": COMBOS["Fireball (Hadouken)"],
     "Dragon Punch": COMBOS["Dragon Punch (Shoryuken)"],
     "Hurricane Kick": COMBOS["Hurricane Kick (Tatsumaki Senpukyaku)"],
+    **{
+        move_name: {"right": [move_nb, 0], "left": [move_nb, 0]}
+        for move_name, move_nb in MOVES.keys()
+        if "Punch" in move_name or "Kick" in move_name
+    },
 }
 
-for key in MOVES.keys():
-    # Check if it's a kick or a punch
-    if "Punch" in key:
-        META_INSTRUCTIONS[key] = {"right": [MOVES[key], 0], "left": [MOVES[key], 0]}
-    elif "Kick" in key and "Punch" not in key:
-        META_INSTRUCTIONS[key] = {"right": [MOVES[key], 0], "left": [MOVES[key], 0]}
 
 INDEX_TO_MOVE = {v: k for k, v in MOVES.items()}
 
