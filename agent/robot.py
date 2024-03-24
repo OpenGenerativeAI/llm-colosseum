@@ -122,11 +122,17 @@ class Robot:
         logger.debug(f"Context: {context}")
 
         # Call the LLM to get the next steps
-        next_steps_from_llm = get_actions_from_llm(context, self.character)
+        next_steps_from_llm = get_actions_from_llm(
+            context,
+            self.character,
+        )
+
+        # Add some steps where we just wait
+        next_steps_from_llm.extend([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
         self.next_steps.extend(next_steps_from_llm)
 
-    def observe(self, observation: dict, actions: dict ,reward: float):
+    def observe(self, observation: dict, actions: dict, reward: float):
         """
         The robot will observe the environment by calling this method.
 
