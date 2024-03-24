@@ -17,3 +17,7 @@ It will choose the action randomly.
 
 - x is between 0 and 384
 - y is between 0 and 224
+
+## Logging
+
+Change the logging level in the `script.py` file.

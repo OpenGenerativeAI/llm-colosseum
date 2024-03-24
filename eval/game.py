@@ -33,6 +33,7 @@ class Player1(Player):
             ennemy_color=KEN_GREEN,
             only_punch=os.getenv("TEST_MODE", False),
             model=model,
+            player_nb=1,
         )
 
 
@@ -48,6 +49,7 @@ class Player2(Player):
             ennemy_color=KEN_RED,
             sleepy=os.getenv("TEST_MODE", False),
             model=model,
+            player_nb=2,
         )
 
 
@@ -125,14 +127,14 @@ class Game:
         self.player_1 = (
             player_1
             if player_1
-            else Player1(nickname="Player 1", model="mistral:mistral-large-latest")
+            else Player1(nickname="Player 1", model="mistral:mistral-small-latest")
             # else Player1(nickname="Player 1", model="grok:mixtral-8x7b-32768")
         )
         self.player_2 = (
             player_2
             if player_2
-            else Player2(nickname="Player 2", model="openai:gpt-4-turbo-preview")
-            # else Player2(nickname="Player 2", model="mistral:mistral-medium")
+            # else Player2(nickname="Player 2", model="openai:gpt-4-turbo-preview")
+            else Player2(nickname="Player 2", model="mistral:mistral-small-latest")
         )
 
     def _init_settings(self) -> EnvironmentSettingsMultiAgent:

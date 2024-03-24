@@ -47,3 +47,4 @@ tk==0.1.0
 tqdm==4.66.2; python_version >= '3.7'
 typing-extensions==4.10.0; python_version >= '3.8'
 tzdata==2024.1; python_version >= '2'
+rich==13.7.1
