@@ -203,6 +203,10 @@ class Robot:
                 self.current_direction = "Right"
             else:
                 self.current_direction = "Left"
+            # print(
+            #     f"Character X: {character_position[0]} vs Ennemy X: {ennemy_position[0]}"
+            # )
+            # print(f"Current direction: {self.current_direction}")
 
     def context_prompt(self):
         """
