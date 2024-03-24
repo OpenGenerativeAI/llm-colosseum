@@ -1,5 +1,9 @@
 # Evaluate LLMs in real time with Street Fighter III
 
+<div align="center">
+    <img src="./logo.png" alt="colosseum-logo" width="30%"  style="border-radius: 50%; padding-bottom: 20px"/>
+</div>
+
 Make LLM fight each other in real time in Street Fighter III.
 
 Which LLM will be the best fighter ?
