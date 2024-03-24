@@ -1,6 +1,7 @@
 import abc
+from collections import defaultdict
 import numpy as np
-from typing import List, Optional, Literal
+from typing import Dict, List, Optional, Literal
 from gymnasium import spaces
 from loguru import logger
 
@@ -14,9 +15,8 @@ class Robot:
     observations: List[Optional[dict]] = None  # memory
     next_steps: List[int]  # action plan
     actions: dict  # actions of the agents during a step of the game
-    previous_actions: List[
-        dict
-    ]  # actions of the agents during the previous step of the game
+    # actions of the agents during the previous step of the game
+    previous_actions: Dict[str, List[int]]
     reward: float  # reward of the agent
 
     action_space: spaces.Space
@@ -54,7 +54,7 @@ class Robot:
         self.sleepy = sleepy
         self.only_punch = only_punch
         self.model = model
-        self.previous_actions = []
+        self.previous_actions = defaultdict(list)
 
     def act(self) -> int:
         """
@@ -164,9 +164,16 @@ class Robot:
         if len(self.observations) > 10:
             self.observations.pop(0)
 
-        self.actions = actions
         self.reward = reward
-        self.previous_actions.append(actions)
+
+        if actions.get("agent_0") is not None:
+            self.previous_actions["agent_0"].append(actions["agent_0"])
+        if actions.get("agent_1") is not None:
+            self.previous_actions["agent_1"].append(actions["agent_1"])
+
+        for key, value in actions.items():
+            if len(self.previous_actions[key]) > 10:
+                self.previous_actions[key].pop(0)
 
     def context_prompt(self):
         """
@@ -187,7 +194,7 @@ class Robot:
             relative_position[1] / Y_SIZE,
         ]
         # Handle the first observation setting, if self.actions == {}
-        if self.actions == {}:
+        if len(self.previous_actions.keys()) == 0:
             return f"""
             It's the first observation of the game, the game just started.
             The frame has a size of {X_SIZE}x{Y_SIZE}.
@@ -196,8 +203,9 @@ class Robot:
             The relative position between you and your opponent is {normalized_relative_position}
             """
 
-        act_own = self.actions["agent_" + str(side)]
-        act_opp = self.actions["agent_" + str(abs(1 - side))]
+        act_own = self.previous_actions["agent_" + str(side)][-1] or 0
+        act_opp = self.previous_actions["agent_" + str(abs(1 - side))][-1] or 0
+
         str_act_own = INDEX_TO_MOVE[act_own]
         str_act_opp = INDEX_TO_MOVE[act_opp]
         reward = self.reward
