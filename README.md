@@ -25,7 +25,11 @@ https://github.com/OpenGenerativeAI/llm-colosseum/assets/19614572/ec3f2d4b-66b8-
 
 
 ### 1 VS 1 X 6 : Mistral 7B vs Mistral 7B
-https://github.com/OpenGenerativeAI/llm-colosseum/assets/19614572/2935455f-a78c-436c-92df-a3c3d853c1d3
+
+
+
+https://github.com/OpenGenerativeAI/llm-colosseum/assets/19614572/5d3d386b-150a-48a5-8f68-7e2954ec18db
+
 
 
 
