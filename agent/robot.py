@@ -121,7 +121,10 @@ class Robot:
         logger.debug(f"Context: {context}")
 
         # Call the LLM to get the next steps
-        next_steps_from_llm = get_actions_from_llm(context, self.character)
+        next_steps_from_llm = get_actions_from_llm(
+            context,
+            self.character,
+        )
 
         self.next_steps.extend(next_steps_from_llm)
 
