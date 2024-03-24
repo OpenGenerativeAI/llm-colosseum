@@ -216,6 +216,8 @@ class Game:
             "agent_1": 0,
         }
 
+        self.reward = 0.0
+
         # Start the thread
         player1_thread = PlanAndActPlayer1(game=self, episode=episode)
         player2_thread = PlanAndActPlayer2(game=self, episode=episode)
@@ -240,8 +242,9 @@ class Game:
             if "agent_1" in self.actions:
                 del actions["agent_1"]
 
-            self.observation = observation
-            self.reward = reward
+            self.observation = observation   
+            if reward != 0.0:
+                self.reward = reward
 
             p1_wins = observation["P1"]["wins"][0]
             p2_wins = observation["P2"]["wins"][0]
