@@ -8,7 +8,7 @@ from loguru import logger
 from .observer import detect_position_from_color, KEN_RED, KEN_GREEN
 from .actions import get_actions_from_llm
 
-from .config import MOVES, INDEX_TO_MOVE, X_SIZE, Y_SIZE, NB_FRAME_WAIT
+from .config import MOVES, INDEX_TO_MOVE, X_SIZE, Y_SIZE, NB_FRAME_WAIT, COMBOS
 
 
 class Robot:
@@ -55,6 +55,7 @@ class Robot:
         self.only_punch = only_punch
         self.model = model
         self.previous_actions = defaultdict(list)
+        self.actions = {}
 
     def act(self) -> int:
         """
@@ -130,12 +131,22 @@ class Robot:
         logger.debug(f"Context: {context}")
 
         # Call the LLM to get the next steps
-        next_steps_from_llm = get_actions_from_llm(
-            context,
-            self.character,
-            model=self.model,
-            temperature=0.7,
-        )
+        # next_steps_from_llm = get_actions_from_llm(
+        #     context,
+        #     self.character,
+        #     model=self.model,
+        #     temperature=0.7,
+        # )
+
+        # TEST overide
+        if self.current_direction == "Right":
+            next_steps_from_llm = COMBOS["Hurricane Kick (Tatsumaki Senpukyaku)"][
+                "right"
+            ]
+        else:
+            next_steps_from_llm = COMBOS["Hurricane Kick (Tatsumaki Senpukyaku)"][
+                "left"
+            ]
 
         logger.info(f"Next steps from LLM: {self.previous_actions}")
 

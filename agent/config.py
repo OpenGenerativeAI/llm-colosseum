@@ -24,6 +24,20 @@ MOVES = {
     "Medium Punch+Medium Kick": 16,
     "High Punch+High Kick": 17,
 }
+COMBOS = {
+    "Fireball (Hadouken)": {"right": [7, 6, 5, 10], "left": [7, 8, 1, 10]},
+    "Dragon Punch (Shoryuken)": {"right": [1, 3, 10], "left": [5, 3, 10]},
+    "Hurricane Kick (Tatsumaki Senpukyaku)": {"right": [7, 5, 13], "left": [7, 1, 13]},
+}
+
+META_INSTRUCTIONS = {
+    "Move closer": {"right": [5, 5, 5, 5], "left": [1, 1, 1, 1]},
+    "Move away": {"right": [1, 1, 1, 1], "left": [5, 5, 5, 5]},
+    "Normal punch": {"right": [10, 0, 10, 0], "left": [10, 0, 10, 0]},
+    "Normal kick": {"right": [13, 0, 13, 0], "left": [13, 0, 13, 0]},
+    "Fireball (Hadouken)": COMBOS["Fireball (Hadouken)"],
+}
+
 INDEX_TO_MOVE = {v: k for k, v in MOVES.items()}
 
 X_SIZE = 384
