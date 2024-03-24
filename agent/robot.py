@@ -7,7 +7,7 @@ from loguru import logger
 from .observer import detect_position_from_color, KEN_RED, KEN_GREEN
 from .actions import get_actions_from_llm
 
-from .config import MOVES, INDEX_TO_MOVE, X_SIZE, Y_SIZE, POSITION_TO_MOVE
+from .config import MOVES, INDEX_TO_MOVE, X_SIZE, Y_SIZE
 
 
 class Robot:
@@ -170,7 +170,10 @@ class Robot:
         relative_position = tuple(a - b for a, b in zip(obs_own, obs_opp))
 
         relative_position = np.array(obs_own) - np.array(obs_opp)
-        normalized_relative_position = [relative_position[0] / X_SIZE, relative_position[1] / Y_SIZE]
+        normalized_relative_position = [
+            relative_position[0] / X_SIZE,
+            relative_position[1] / Y_SIZE,
+        ]
         # Handle the first observation setting, if self.actions == {}
         if self.actions == {}:
             return f"""
@@ -186,14 +189,18 @@ class Robot:
         str_act_own = INDEX_TO_MOVE[act_own]
         str_act_opp = INDEX_TO_MOVE[act_opp]
         reward = self.reward
-        position_prompt=""
+        position_prompt = ""
 
         if abs(normalized_relative_position[0]) > 0.2:
             position_prompt += "You are super far from the opponent."
             if normalized_relative_position[0] > 0:
-                position_prompt += "Your opponent is on the right. You need to move to the rigth."
+                position_prompt += (
+                    "Your opponent is on the right. You need to move to the rigth."
+                )
             else:
-                position_prompt += "Your opponent is on the left. You need to move to the left."
+                position_prompt += (
+                    "Your opponent is on the left. You need to move to the left."
+                )
 
         else:
             position_prompt += "You are close to the opponent. You need to attack him."
