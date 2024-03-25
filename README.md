@@ -105,4 +105,4 @@ Change the logging level in the `script.py` file.
 
 # Credits
 
-Made with ❤️ by the OpenGenerativeAI team @oulianov @Pierre-LouisBJT @Platinn @StanGirard during Mistral Hackathon 2024 in San Francisco
+Made with ❤️ by the OpenGenerativeAI team from [phospho](https://phospho.ai) (@oulianov @Pierre-LouisBJT @Platinn) and [Quivr](https://www.quivr.app) (@StanGirard) during Mistral Hackathon 2024 in San Francisco
