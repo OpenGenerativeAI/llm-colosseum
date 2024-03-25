@@ -14,7 +14,6 @@ load_dotenv()
 def main():
     # Environment Settings
     # Environment Settings
-
     player1 = Player1(
         nickname="Baby",
         model="mistral:mistral-small-latest",
@@ -32,6 +31,7 @@ def main():
     )
 
     game.run()
+    return 0
 
 
 if __name__ == "__main__":

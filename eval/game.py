@@ -17,6 +17,8 @@ import random
 
 from agent.config import MODELS
 
+from diambra.arena.utils.controller import get_diambra_controller
+
 
 def generate_model(openai: bool = False, mistral: bool = True):
     models_available = []
@@ -32,6 +34,7 @@ def generate_model(openai: bool = False, mistral: bool = True):
     random_model = random.choice(models_available)
 
     return random_model
+
 
 class Player:
     nickname: str
@@ -137,7 +140,7 @@ class Game:
         save_game: bool = False,
         splash_screen: bool = False,
         characters: List[str] = ["Ken", "Ken"],
-        super_arts: List[int] = [3,3],
+        super_arts: List[int] = [3, 3],
         outfits: List[int] = [1, 3],
         frame_shape: List[int] = [0, 0, 0],
         seed: int = 42,
@@ -181,6 +184,9 @@ class Game:
             # else Player2(nickname="Player 2", model="openai:gpt-4-turbo-preview")
             else Player2(nickname="Player 2", openai=self.openai, mistral=self.mistral)
         )
+
+        self.controller = get_diambra_controller(self.env.get_actions_tuples())
+        self.controller.start()
 
     def _init_settings(self) -> EnvironmentSettingsMultiAgent:
         """
@@ -271,17 +277,24 @@ class Game:
 
             # Start the thread
             player1_thread = PlanAndActPlayer1(game=self, episode=episode)
-            player2_thread = PlanAndActPlayer2(game=self, episode=episode)
+            # player2_thread = PlanAndActPlayer2(game=self, episode=episode)
 
             player1_thread.start()
-            player2_thread.start()
+            # player2_thread.start()
+
+            first_frame = True
 
             while True:
                 # Render the game
                 if self.render:
                     self.env.render()
+                    if first_frame:
+                        input("PRESS ENTER TO START THE GAME")
+                        first_frame = False
 
                 actions = self.actions
+                actions["agent_1"] = self.controller.get_actions()
+
                 if "agent_0" not in actions:
                     actions["agent_0"] = 0
                 if "agent_1" not in actions:
@@ -303,7 +316,7 @@ class Game:
 
                 if p1_wins == 1 or p2_wins == 1:
                     player1_thread.running = False
-                    player2_thread.running = False
+                    # player2_thread.running = False
 
                     episode.player_1_won = p1_wins == 1
                     episode.save()
@@ -312,6 +325,9 @@ class Game:
         except Exception:
             self.env.close()
             print("Game Finished")
+        self.controller.stop()
+        self.env.close()
+        return 0
 
 
 class PlanAndAct(Thread):
@@ -340,14 +356,18 @@ class PlanAndActPlayer1(PlanAndAct):
 
 class PlanAndActPlayer2(PlanAndAct):
     def run(self) -> None:
+        # Controller initialization
+
         while self.running:
             if "agent_1" not in self.game.actions:
                 # Plan
-                self.game.player_2.robot.plan()
-                # Act
-                self.game.actions["agent_1"] = self.game.player_2.robot.act()
-                # Observe the environment
-                self.game.player_2.robot.observe(
-                    self.game.observation, self.game.actions, -self.game.reward
-                )
-                time.sleep(0.1)
+                # self.game.player_2.robot.plan()
+                # # Act
+                # self.game.actions["agent_1"] = self.game.player_2.robot.act()
+                # # Observe the environment
+                # self.game.player_2.robot.observe(
+                #     self.game.observation, self.game.actions, -self.game.reward
+                # )
+                # time.sleep(0.1)
+                # self.game.controller.get_actions()
+                pass

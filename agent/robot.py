@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Literal
 from gymnasium import spaces
 from loguru import logger
 
+
 from .observer import detect_position_from_color, KEN_RED, KEN_GREEN
 from .actions import get_actions_from_llm
 

@@ -14,11 +14,14 @@ load_dotenv()
 def main():
     # Environment Settings
     # Environment Settings
-    while True:
-        game = Game(render=True, save_game=True, openai=True)
+    game = Game(render=True, save_game=True, openai=True)
 
-        game.run()
+    game.run()
+    return 0
 
 
 if __name__ == "__main__":
     main()
+
+    # pip install pyobjc
+    # https://stackoverflow.com/questions/76434535/attributeerror-super-object-has-no-attribute-init
