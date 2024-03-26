@@ -335,7 +335,7 @@ To increase your score, move toward the opponent and attack the opponent. To pre
         # Generate the prompts
         move_list = "- " + "\n - ".join([move for move in META_INSTRUCTIONS])
         system_prompt = f"""You are the best and most aggressive Street Fighter III 3rd strike player in the world.
-Your character is {self.character}. Your goal it to beat the other opponent. You respond with a bullet point list of moves.
+Your character is {self.character}. Your goal is to beat the other opponent. You respond with a bullet point list of moves.
 {self.context_prompt()}
 The moves you can use are:
 {move_list}
