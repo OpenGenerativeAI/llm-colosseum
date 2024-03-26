@@ -16,9 +16,7 @@ def main():
     # Environment Settings
     game = Game(
         render=True,
-        save_game=False,
-        openai=True,
-        player_1=Player1(nickname="Daddy", model=generate_random_model(mistra=True)),
+        player_1=Player1(nickname="Daddy", model=generate_random_model(mistral=True)),
         player_2=Player2(nickname="Baby", model=generate_random_model(openai=True)),
     )
 
@@ -28,6 +26,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-    # pip install pyobjc
-    # https://stackoverflow.com/questions/76434535/attributeerror-super-object-has-no-attribute-init

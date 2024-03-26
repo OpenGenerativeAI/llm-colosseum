@@ -283,6 +283,10 @@ class Game:
 
                 actions = self.actions
                 try:
+                    # On MacOS we need to install pyobjc
+                    # pip install pyobjc
+                    # https://stackoverflow.com/questions/76434535/attributeerror-super-object-has-no-attribute-init
+
                     controller_actions = self.controller.get_actions()
                     actions["agent_1"] = controller_actions[0] + controller_actions[1]
                 except Exception as e:
