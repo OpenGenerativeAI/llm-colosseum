@@ -1,13 +1,8 @@
-from typing import Optional
 from .config import META_INSTRUCTIONS
-import random
-from typing import List
 
 
 def build_system_prompt(character: str, context_prompt: str) -> str:
     move_list = "- " + "\n - ".join([move for move in META_INSTRUCTIONS])
-    # Generate a random float to avoid caching
-    random_seed = random.random()
 
     system_prompt = f"""You are the best and most aggressive Street Fighter III 3rd strike player in the world. 
 Your character is {character}. Your goal it to beat the other opponent. You respond with a bullet point list of moves.
