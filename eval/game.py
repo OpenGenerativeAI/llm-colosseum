@@ -316,9 +316,13 @@ class Game:
                     player2_thread.running = False
                     episode.player_1_won = p1_wins == 1
                     if episode.player_1_won:
-                        print(f"[red] Player1 {self.player_1.nickname} won!")
+                        print(
+                            f"[red] Player1 {self.player_1.robot.model} '{self.player_1.nickname}' won!"
+                        )
                     else:
-                        print(f"[green] Player2 {self.player_2.nickname} won!")
+                        print(
+                            f"[green] Player2 {self.player_2.robot.model} {self.player_2.nickname} won!"
+                        )
                     episode.save()
                     self.env.close()
                     break
