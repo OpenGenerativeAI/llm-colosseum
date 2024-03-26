@@ -7,6 +7,7 @@ from diambra.arena import (
 )
 import os
 import datetime
+import traceback
 
 from agent import Robot, KEN_RED, KEN_GREEN
 from threading import Thread
@@ -185,7 +186,7 @@ class Game:
             else Player2(nickname="Player 2", openai=self.openai, mistral=self.mistral)
         )
 
-        self.controller = get_diambra_controller(self.env.get_actions_tuples())
+        self.controller = get_diambra_controller(self.env.unwrapped.get_actions_tuples())
         self.controller.start()
 
     def _init_settings(self) -> EnvironmentSettingsMultiAgent:
@@ -289,11 +290,15 @@ class Game:
                 if self.render:
                     self.env.render()
                     if first_frame:
-                        input("PRESS ENTER TO START THE GAME")
+                        # input("PRESS ENTER TO START THE GAME")
                         first_frame = False
 
                 actions = self.actions
-                actions["agent_1"] = self.controller.get_actions()
+                try:
+                    controller_actions = self.controller.get_actions()
+                    actions["agent_1"] = controller_actions[0] + controller_actions[1] + controller_actions[2]
+                except Exception as e:
+                    print(e)
 
                 if "agent_0" not in actions:
                     actions["agent_0"] = 0
@@ -322,9 +327,11 @@ class Game:
                     episode.save()
                     self.env.close()
                     break
-        except Exception:
-            self.env.close()
-            print("Game Finished")
+        except Exception as e:
+            # self.env.close()
+            print(f"Exception: {e}")
+            traceback.print_exception(limit=10)
+            traceback.print_tb(limit=40)
         self.controller.stop()
         self.env.close()
         return 0
