@@ -22,7 +22,6 @@ from .config import (
     Y_SIZE,
 )
 from .observer import detect_position_from_color
-from .prompts import build_main_prompt, build_system_prompt
 
 
 class Robot:
