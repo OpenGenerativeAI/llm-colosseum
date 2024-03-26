@@ -296,7 +296,7 @@ class Game:
                 actions = self.actions
                 try:
                     controller_actions = self.controller.get_actions()
-                    actions["agent_1"] = controller_actions[0] + controller_actions[1] + controller_actions[2]
+                    actions["agent_1"] = controller_actions[0] + controller_actions[1]
                 except Exception as e:
                     print(e)
 
