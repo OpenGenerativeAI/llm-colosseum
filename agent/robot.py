@@ -8,9 +8,8 @@ from typing import Dict, List, Literal, Optional
 import numpy as np
 from gymnasium import spaces
 from loguru import logger
+from phospho.lab import get_provider_and_model, get_sync_client
 from rich import print
-
-from agent.language_models import get_provider_and_model, get_sync_client
 
 from .config import (
     INDEX_TO_MOVE,

@@ -1,3 +1,7 @@
+import dotenv
+
+dotenv.load_dotenv()
+
 MODELS = {
     "OPENAI": {
         "openai:gpt-4-0125-preview",

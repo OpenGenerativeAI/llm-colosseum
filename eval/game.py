@@ -1,21 +1,19 @@
-from typing import List, Optional
-from diambra.arena import (
-    SpaceTypes,
-    EnvironmentSettingsMultiAgent,
-    make,
-    RecordingSettings,
-)
-import os
 import datetime
-import traceback
-
-from agent import Robot, KEN_RED, KEN_GREEN
-from threading import Thread
-from rich import print
-
+import os
 import random
+import traceback
+from threading import Thread
+from typing import List, Optional
 
+from agent import KEN_GREEN, KEN_RED, Robot
 from agent.config import MODELS
+from diambra.arena import (
+    EnvironmentSettingsMultiAgent,
+    RecordingSettings,
+    SpaceTypes,
+    make,
+)
+from rich import print
 
 
 def generate_random_model(openai: bool = False, mistral: bool = True):

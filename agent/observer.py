@@ -13,6 +13,8 @@ def detect_position_from_color(
     It works by finding the first pixel that matches the color.
 
     Returns a tuple of (x, y) coordinates.
+    - x is between 0 and 384
+    - y is between 0 and 224
     """
     frame = observation["frame"]
     # the screen is a np.array of RGB colors (3 channels)
