@@ -15,7 +15,6 @@ def get_async_client(provider: str) -> AsyncOpenAI:
     if provider == "openai":
         return AsyncOpenAI()
     if provider == "mistral":
-        assert os.getenv("MISTRAL_API_KEY") is not None
         return AsyncOpenAI(
             base_url="https://api.mistral.ai/v1/", api_key=os.getenv("MISTRAL_API_KEY")
         )
@@ -28,7 +27,6 @@ def get_sync_client(provider: str) -> OpenAI:
     if provider == "openai":
         return OpenAI()
     if provider == "mistral":
-        assert os.getenv("MISTRAL_API_KEY") is not None
         return OpenAI(
             base_url="https://api.mistral.ai/v1/", api_key=os.getenv("MISTRAL_API_KEY")
         )
