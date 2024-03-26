@@ -13,7 +13,6 @@ from rich import print
 from agent.language_models import get_provider_and_model, get_sync_client
 
 from .config import (
-    COMBOS,
     INDEX_TO_MOVE,
     META_INSTRUCTIONS,
     META_INSTRUCTIONS_WITH_LOWER,
@@ -128,37 +127,22 @@ class Robot:
         https://www.eventhubs.com/guides/2008/may/09/ryu-street-fighter-3-third-strike-character-guide/
         """
 
-        # Detect own position
-        own_position = self.observations[-1]["character_position"]
-        ennemy_position = self.observations[-1]["ennemy_position"]
-
-        # Note: at the beginning of the game, the position is None
-
         # If we already have a next step, we don't need to plan
         if len(self.next_steps) > 0:
             return
 
-        # Get the context
-        context = self.context_prompt()
-
-        logger.debug(f"Context: {context}")
-
         # Call the LLM to get the next steps
         next_steps_from_llm = self.get_moves_from_llm()
-
-        next_button_press = [
+        next_buttons_to_press = [
             button
             for combo in next_steps_from_llm
             for button in META_INSTRUCTIONS_WITH_LOWER[combo][
                 self.current_direction.lower()
             ]
+            # We add a wait time after each button press
             + [0] * NB_FRAME_WAIT
         ]
-
-        # Add some steps where we just wait
-        # next_button_press.extend([0] * NB_FRAME_WAIT)
-
-        self.next_steps.extend(next_button_press)
+        self.next_steps.extend(next_buttons_to_press)
 
     def observe(self, observation: dict, actions: dict, reward: float):
         """
@@ -205,10 +189,6 @@ class Robot:
                 self.current_direction = "Right"
             else:
                 self.current_direction = "Left"
-            # print(
-            #     f"Character X: {character_position[0]} vs Ennemy X: {ennemy_position[0]}"
-            # )
-            # print(f"Current direction: {self.current_direction}")
 
     def context_prompt(self) -> str:
         """
@@ -293,42 +273,6 @@ To increase your score, move toward the opponent and attack the opponent. To pre
 
         return context
 
-    def _call_llm(
-        self,
-        temperature: float = 0.7,
-        max_tokens: int = 20,
-        top_p: float = 1.0,
-    ) -> str:
-        """
-        Make an API call to the language model
-        """
-        provider_name, model_name = get_provider_and_model(self.model)
-        client = get_sync_client(provider_name)
-
-        # Generate the prompts
-        system_prompt = build_system_prompt(
-            character=self.character, context_prompt=self.context_prompt()
-        )
-        main_prompt = build_main_prompt()
-
-        start_time = time.time()
-
-        completion = client.chat.completions.create(
-            model=model_name,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": main_prompt},
-            ],
-            temperature=temperature,
-            max_tokens=max_tokens,
-            top_p=top_p,
-        )
-        logger.debug(f"LLM call to {self.model}: {system_prompt}\n\n\n{main_prompt}")
-        logger.debug(f"LLM call to {self.model}: {time.time() - start_time} s")
-
-        llm_response = completion.choices[0].message.content.strip()
-        return llm_response
-
     def get_moves_from_llm(
         self,
     ) -> List[str]:
@@ -376,3 +320,50 @@ To increase your score, move toward the opponent and attack the opponent. To pre
 
         logger.debug(f"Next moves: {valid_moves}")
         return valid_moves
+
+    def _call_llm(
+        self,
+        temperature: float = 0.7,
+        max_tokens: int = 50,
+        top_p: float = 1.0,
+    ) -> str:
+        """
+        Make an API call to the language model
+        """
+        provider_name, model_name = get_provider_and_model(self.model)
+        client = get_sync_client(provider_name)
+
+        # Generate the prompts
+        move_list = "- " + "\n - ".join([move for move in META_INSTRUCTIONS])
+        system_prompt = f"""You are the best and most aggressive Street Fighter III 3rd strike player in the world.
+Your character is {self.character}. Your goal it to beat the other opponent. You respond with a bullet point list of moves.
+{self.context_prompt()}
+The moves you can use are:
+{move_list}
+----
+Reply with a bullet point list of moves. The format should be: `- <name of the move>` separated by a new line.
+Example if the opponent is close:
+- Move closer
+- Medium Punch
+
+Example if the opponent is far:
+- Fireball
+- Move closer"""
+
+        start_time = time.time()
+
+        completion = client.chat.completions.create(
+            model=model_name,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": "Your next moves are:"},
+            ],
+            temperature=temperature,
+            max_tokens=max_tokens,
+            top_p=top_p,
+        )
+        logger.debug(f"LLM call to {self.model}: {system_prompt}")
+        logger.debug(f"LLM call to {self.model}: {time.time() - start_time}s")
+
+        llm_response = completion.choices[0].message.content.strip()
+        return llm_response

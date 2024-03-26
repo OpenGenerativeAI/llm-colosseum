@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import List, Optional
 from diambra.arena import (
     SpaceTypes,
     EnvironmentSettingsMultiAgent,
@@ -13,7 +13,6 @@ from agent import Robot, KEN_RED, KEN_GREEN
 from threading import Thread
 from rich import print
 
-import time
 import random
 
 from agent.config import MODELS
