@@ -17,8 +17,6 @@ import random
 
 from agent.config import MODELS
 
-from diambra.arena.utils.controller import get_diambra_controller
-
 
 def generate_random_model(openai: bool = False, mistral: bool = True):
     models_available = []
@@ -167,11 +165,13 @@ class Game:
         self.settings = self._init_settings()
         self.env = self._init_env(self.settings)
         self.observation, self.info = self.env.reset(seed=self.seed)
-        if self.player_1 is not None:
+        if player_1 is not None:
             self.player_1 = player_1
         else:
             # If player 1 is not provided, we will use the controller
             # The human player will be able to play with the controller
+            from diambra.arena.utils.controller import get_diambra_controller
+
             self.player_1 = None
             self.controller = get_diambra_controller(
                 self.env.unwrapped.get_actions_tuples(),

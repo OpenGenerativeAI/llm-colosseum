@@ -14,12 +14,16 @@ def main():
     # Environment Settings
     game = Game(
         render=True,
-        player_1=Player1(nickname="Daddy", model=generate_random_model(mistral=True)),
-        player_2=Player2(nickname="Baby", model=generate_random_model(openai=True)),
+        player_1=Player1(
+            nickname="Daddy",
+            model=generate_random_model(mistral=True),
+        ),
+        player_2=Player2(
+            nickname="Baby",
+            model=generate_random_model(openai=True),
+        ),
     )
-
-    game.run()
-    return 0
+    return game.run()
 
 
 if __name__ == "__main__":
