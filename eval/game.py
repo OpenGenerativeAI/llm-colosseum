@@ -332,8 +332,13 @@ class Game:
             print(f"Exception: {e}")
             traceback.print_exception(limit=10)
             traceback.print_tb(limit=40)
-        self.controller.stop()
-        self.env.close()
+            self.controller.stop()
+            self.env.close()
+        try:
+            self.controller.stop()
+            self.env.close()
+        except:
+            pass
         return 0
 
 
