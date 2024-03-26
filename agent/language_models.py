@@ -1,6 +1,7 @@
 import os
-import dotenv
 from typing import Tuple
+
+import dotenv
 
 dotenv.load_dotenv()
 

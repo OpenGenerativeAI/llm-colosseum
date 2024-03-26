@@ -1,7 +1,6 @@
 import numpy as np
 
 KEN_RED = [248, 0, 0]
-# KEN_GREEN = [48, 88, 152]
 KEN_GREEN = [88, 176, 40]
 
 
@@ -19,8 +18,7 @@ def detect_position_from_color(
     # the screen is a np.array of RGB colors (3 channels)
     # Select the frames where the characters play: between 80 vertical and 200 vertical
 
-    # dump the observation to a file
-
+    # dump the observation to a file for debugging
     if save_frame:
         np.save("observation.npy", frame)
 
