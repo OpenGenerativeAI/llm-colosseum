@@ -42,20 +42,16 @@ class Player:
     model: str
     robot: Optional[Robot] = None
     temperature: Optional[float] = 0.0
-    openai: Optional[bool] = False
-    mistral: Optional[bool] = True
 
 
 class Player1(Player):
     def __init__(
         self,
         nickname: str,
-        model: Optional[str] = None,
-        openai: bool = False,
-        mistral: bool = True,
+        model: str,
     ):
         self.nickname = nickname
-        self.model = model or generate_random_model(openai=openai, mistral=mistral)
+        self.model = model
         self.openai = False
         self.mistral = True
         self.robot = Robot(
@@ -75,12 +71,10 @@ class Player2(Player):
     def __init__(
         self,
         nickname: str,
-        model: Optional[str] = None,
-        openai: bool = False,
-        mistral: bool = True,
+        model: str,
     ):
         self.nickname = nickname
-        self.model = model or generate_random_model(openai=openai, mistral=mistral)
+        self.model = model
         self.robot = Robot(
             action_space=None,
             character="Ken",
@@ -127,6 +121,9 @@ class Episode:
 
 
 class Game:
+    player_1: Optional[Player1] = None  # First player. None if Human
+    player_2: Player2
+
     render: Optional[bool] = False
     splash_screen: Optional[bool] = False
     save_game: Optional[bool] = False
@@ -136,13 +133,11 @@ class Game:
     seed: Optional[int] = 42
     settings: EnvironmentSettingsMultiAgent = None  # Settings of the game
     env = None  # Environment of the game
-    player_1: Optional[Player1] = None  # First player. None if Human
-    player_2: Player2 = None  # Second player
-    openai: Optional[bool] = False
-    mistral: Optional[bool] = True
 
     def __init__(
         self,
+        player_1: Optional[Player1],
+        player_2: Player2,
         render: bool = False,
         save_game: bool = False,
         splash_screen: bool = False,
@@ -151,10 +146,6 @@ class Game:
         outfits: List[int] = [1, 3],
         frame_shape: List[int] = [0, 0, 0],
         seed: int = 42,
-        player_1: Optional[Player1] = None,
-        player_2: Player2 = None,
-        openai: bool = False,
-        mistral: bool = True,
     ):
         """_summary_
 
@@ -177,8 +168,6 @@ class Game:
         self.settings = self._init_settings()
         self.env = self._init_env(self.settings)
         self.observation, self.info = self.env.reset(seed=self.seed)
-        self.openai = openai
-        self.mistral = mistral
         if self.player_1:
             self.player_1 = (
                 player_1
@@ -192,14 +181,11 @@ class Game:
             # The human player will be able to play with the controller
             self.player_1 = None
             self.controller = get_diambra_controller(
-                self.env.unwrapped.get_actions_tuples(), force_configure=True
+                self.env.unwrapped.get_actions_tuples(),
+                # force_configure=True,
             )
             self.controller.start()
-        self.player_2 = (
-            player_2
-            if player_2
-            else Player2(nickname="Player 2", openai=self.openai, mistral=self.mistral)
-        )
+        self.player_2 = player_2
 
     def _init_settings(self) -> EnvironmentSettingsMultiAgent:
         """
@@ -375,8 +361,6 @@ class PlanAndActPlayer1(PlanAndAct):
 
 class PlanAndActPlayer2(PlanAndAct):
     def run(self) -> None:
-        # Controller initialization
-
         while self.running:
             if "agent_1" not in self.game.actions:
                 # Plan
@@ -387,4 +371,3 @@ class PlanAndActPlayer2(PlanAndAct):
                 self.game.player_2.robot.observe(
                     self.game.observation, self.game.actions, -self.game.reward
                 )
-                time.sleep(0.1)

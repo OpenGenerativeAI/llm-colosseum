@@ -144,7 +144,7 @@ class Robot:
         logger.debug(f"Context: {context}")
 
         # Call the LLM to get the next steps
-        next_steps_from_llm = self.get_actions_from_llm()
+        next_steps_from_llm = self.get_moves_from_llm()
 
         next_button_press = [
             button
@@ -210,7 +210,7 @@ class Robot:
             # )
             # print(f"Current direction: {self.current_direction}")
 
-    def context_prompt(self):
+    def context_prompt(self) -> str:
         """
         Return a str of the context
 
@@ -298,7 +298,7 @@ To increase your score, move toward the opponent and attack the opponent. To pre
         temperature: float = 0.7,
         max_tokens: int = 20,
         top_p: float = 1.0,
-    ):
+    ) -> str:
         """
         Make an API call to the language model
         """
@@ -329,7 +329,7 @@ To increase your score, move toward the opponent and attack the opponent. To pre
         llm_response = completion.choices[0].message.content.strip()
         return llm_response
 
-    def get_actions_from_llm(
+    def get_moves_from_llm(
         self,
     ) -> List[str]:
         """
@@ -347,7 +347,7 @@ To increase your score, move toward the opponent and attack the opponent. To pre
             return [random.choice(list(MOVES.values()))]
 
         while len(valid_moves) == 0:
-            llm_response = self.call_llm()
+            llm_response = self._call_llm()
 
             # The response is a bullet point list of moves. Use regex
             matches = re.findall(r"- ([\w ]+)", llm_response)
@@ -371,8 +371,8 @@ To increase your score, move toward the opponent and attack the opponent. To pre
                     logger.debug(f"Cleaned move name: {cleaned_move_name}")
                     invalid_moves.append(move)
 
-            if len(invalid_moves) > 2:
-                logger.warning(f"Too many invalid moves: {invalid_moves}")
+            if len(invalid_moves) > 1:
+                logger.warning(f"Many invalid moves: {invalid_moves}")
 
         logger.debug(f"Next moves: {valid_moves}")
         return valid_moves

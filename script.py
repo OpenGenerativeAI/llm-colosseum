@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from eval.game import Game, Player1
+from eval.game import Game, Player1, Player2, generate_random_model
 
 import sys
 
@@ -14,11 +14,12 @@ load_dotenv()
 def main():
     # Environment Settings
     # Environment Settings
-    game = Game(render=True, save_game=False, openai=True, 
-        player_1 = Player1(
-        nickname="Baby",
-        model="mistral:mistral-small-latest",
-    )
+    game = Game(
+        render=True,
+        save_game=False,
+        openai=True,
+        player_1=Player1(nickname="Daddy", model=generate_random_model(mistra=True)),
+        player_2=Player2(nickname="Baby", model=generate_random_model(openai=True)),
     )
 
     game.run()
