@@ -1,23 +1,27 @@
-import abc
+import os
+import random
+import re
+import time
 from collections import defaultdict
+from typing import Dict, List, Literal, Optional
+
 import numpy as np
-from typing import Dict, List, Optional, Literal
 from gymnasium import spaces
 from loguru import logger
+from rich import print
 
-from .observer import detect_position_from_color, KEN_RED, KEN_GREEN
-from .actions import get_actions_from_llm
+from agent.language_models import get_provider_and_model, get_sync_client
 
 from .config import (
-    MOVES,
     INDEX_TO_MOVE,
-    X_SIZE,
-    Y_SIZE,
-    NB_FRAME_WAIT,
-    COMBOS,
     META_INSTRUCTIONS,
     META_INSTRUCTIONS_WITH_LOWER,
+    MOVES,
+    NB_FRAME_WAIT,
+    X_SIZE,
+    Y_SIZE,
 )
+from .observer import detect_position_from_color
 
 
 class Robot:
@@ -122,43 +126,22 @@ class Robot:
         https://www.eventhubs.com/guides/2008/may/09/ryu-street-fighter-3-third-strike-character-guide/
         """
 
-        # Detect own position
-        own_position = self.observations[-1]["character_position"]
-        ennemy_position = self.observations[-1]["ennemy_position"]
-
-        # Note: at the beginning of the game, the position is None
-
         # If we already have a next step, we don't need to plan
         if len(self.next_steps) > 0:
             return
 
-        # Get the context
-        context = self.context_prompt()
-
-        logger.debug(f"Context: {context}")
-
         # Call the LLM to get the next steps
-        next_steps_from_llm = get_actions_from_llm(
-            context,
-            self.character,
-            model=self.model,
-            temperature=0.7,
-            player_nb=self.player_nb,
-        )
-
-        next_button_press = [
+        next_steps_from_llm = self.get_moves_from_llm()
+        next_buttons_to_press = [
             button
             for combo in next_steps_from_llm
             for button in META_INSTRUCTIONS_WITH_LOWER[combo][
                 self.current_direction.lower()
             ]
+            # We add a wait time after each button press
             + [0] * NB_FRAME_WAIT
         ]
-
-        # Add some steps where we just wait
-        # next_button_press.extend([0] * NB_FRAME_WAIT)
-
-        self.next_steps.extend(next_button_press)
+        self.next_steps.extend(next_buttons_to_press)
 
     def observe(self, observation: dict, actions: dict, reward: float):
         """
@@ -205,12 +188,8 @@ class Robot:
                 self.current_direction = "Right"
             else:
                 self.current_direction = "Left"
-            # print(
-            #     f"Character X: {character_position[0]} vs Ennemy X: {ennemy_position[0]}"
-            # )
-            # print(f"Current direction: {self.current_direction}")
 
-    def context_prompt(self):
+    def context_prompt(self) -> str:
         """
         Return a str of the context
 
@@ -292,3 +271,98 @@ To increase your score, move toward the opponent and attack the opponent. To pre
 """
 
         return context
+
+    def get_moves_from_llm(
+        self,
+    ) -> List[str]:
+        """
+        Get a list of moves from the language model.
+        """
+
+        # Filter the moves that are not in the list of moves
+        invalid_moves = []
+        valid_moves = []
+
+        # If we are in the test environment, we don't want to call the LLM
+        if os.getenv("DISABLE_LLM", "False") == "True":
+            # Choose a random int from the list of moves
+            logger.debug("DISABLE_LLM is True, returning a random move")
+            return [random.choice(list(MOVES.values()))]
+
+        while len(valid_moves) == 0:
+            llm_response = self._call_llm()
+
+            # The response is a bullet point list of moves. Use regex
+            matches = re.findall(r"- ([\w ]+)", llm_response)
+            moves = ["".join(match) for match in matches]
+            invalid_moves = []
+            valid_moves = []
+            for move in moves:
+                cleaned_move_name = move.strip().lower()
+                if cleaned_move_name in META_INSTRUCTIONS_WITH_LOWER.keys():
+                    if self.player_nb == 1:
+                        print(
+                            f"[red] Player {self.player_nb} move: {cleaned_move_name}"
+                        )
+                    elif self.player_nb == 2:
+                        print(
+                            f"[green] Player {self.player_nb} move: {cleaned_move_name}"
+                        )
+                    valid_moves.append(cleaned_move_name)
+                else:
+                    logger.debug(f"Invalid completion: {move}")
+                    logger.debug(f"Cleaned move name: {cleaned_move_name}")
+                    invalid_moves.append(move)
+
+            if len(invalid_moves) > 1:
+                logger.warning(f"Many invalid moves: {invalid_moves}")
+
+        logger.debug(f"Next moves: {valid_moves}")
+        return valid_moves
+
+    def _call_llm(
+        self,
+        temperature: float = 0.7,
+        max_tokens: int = 50,
+        top_p: float = 1.0,
+    ) -> str:
+        """
+        Make an API call to the language model
+        """
+        provider_name, model_name = get_provider_and_model(self.model)
+        client = get_sync_client(provider_name)
+
+        # Generate the prompts
+        move_list = "- " + "\n - ".join([move for move in META_INSTRUCTIONS])
+        system_prompt = f"""You are the best and most aggressive Street Fighter III 3rd strike player in the world.
+Your character is {self.character}. Your goal is to beat the other opponent. You respond with a bullet point list of moves.
+{self.context_prompt()}
+The moves you can use are:
+{move_list}
+----
+Reply with a bullet point list of moves. The format should be: `- <name of the move>` separated by a new line.
+Example if the opponent is close:
+- Move closer
+- Medium Punch
+
+Example if the opponent is far:
+- Fireball
+- Move closer"""
+
+        start_time = time.time()
+
+        completion = client.chat.completions.create(
+            model=model_name,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": "Your next moves are:"},
+            ],
+            temperature=temperature,
+            max_tokens=max_tokens,
+            top_p=top_p,
+        )
+        logger.debug(f"LLM call to {self.model}: {system_prompt}")
+        logger.debug(f"LLM call to {self.model}: {time.time() - start_time}s")
+
+        llm_response = completion.choices[0].message.content.strip()
+        return llm_response
