@@ -167,14 +167,8 @@ class Game:
         self.settings = self._init_settings()
         self.env = self._init_env(self.settings)
         self.observation, self.info = self.env.reset(seed=self.seed)
-        if self.player_1:
-            self.player_1 = (
-                player_1
-                if player_1
-                else Player1(
-                    nickname="Player 1", openai=self.openai, mistral=self.mistral
-                )
-            )
+        if self.player_1 is not None:
+            self.player_1 = player_1
         else:
             # If player 1 is not provided, we will use the controller
             # The human player will be able to play with the controller
@@ -263,14 +257,14 @@ class Game:
             }
             self.reward = 0.0
 
-            if self.player_1:
+            if self.player_1 is not None:
                 self.player_1.robot.observe(self.observation, {}, 0.0)
 
             self.player_2.robot.observe(self.observation, {}, 0.0)
             # Initialize the episode
             episode = Episode(player_1=self.player_1, player_2=self.player_2)
             # Start the threads that make API calls
-            if self.player_1:
+            if self.player_1 is not None:
                 player1_thread = PlanAndActPlayer1(game=self, episode=episode)
                 player1_thread.start()
             player2_thread = PlanAndActPlayer2(game=self, episode=episode)
@@ -282,15 +276,20 @@ class Game:
                     self.env.render()
 
                 actions = self.actions
-                try:
-                    # On MacOS we need to install pyobjc
-                    # pip install pyobjc
-                    # https://stackoverflow.com/questions/76434535/attributeerror-super-object-has-no-attribute-init
 
-                    controller_actions = self.controller.get_actions()
-                    actions["agent_1"] = controller_actions[0] + controller_actions[1]
-                except Exception as e:
-                    print(e)
+                if self.player_1 is None:
+                    # If player 1 is not provided, we use the controller
+                    try:
+                        # On MacOS we need to install pyobjc
+                        # pip install pyobjc
+                        # https://stackoverflow.com/questions/76434535/attributeerror-super-object-has-no-attribute-init
+
+                        controller_actions = self.controller.get_actions()
+                        actions["agent_1"] = (
+                            controller_actions[0] + controller_actions[1]
+                        )
+                    except Exception as e:
+                        print(e)
 
                 if "agent_0" not in actions:
                     actions["agent_0"] = 0
@@ -312,14 +311,14 @@ class Game:
                 p2_wins = observation["P2"]["wins"][0]
 
                 if p1_wins == 1 or p2_wins == 1:
-                    if self.player_1:
+                    if self.player_1 is not None:
                         player1_thread.running = False
                     player2_thread.running = False
                     episode.player_1_won = p1_wins == 1
                     if episode.player_1_won:
-                        print(f"Player1 {self.player_1.nickname} won!")
+                        print(f"[red] Player1 {self.player_1.nickname} won!")
                     else:
-                        print(f"Player2 {self.player_2.nickname} won!")
+                        print(f"[green] Player2 {self.player_2.nickname} won!")
                     episode.save()
                     self.env.close()
                     break
@@ -328,10 +327,12 @@ class Game:
             print(f"Exception: {e}")
             traceback.print_exception(limit=10)
             traceback.print_tb(limit=40)
-            self.controller.stop()
+            if self.player_1 is None:
+                self.controller.stop()
             self.env.close()
         try:
-            self.controller.stop()
+            if self.player_1 is None:
+                self.controller.stop()
             self.env.close()
         except Exception as e:
             pass  # Ignore the exception
