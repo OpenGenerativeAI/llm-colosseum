@@ -85,6 +85,42 @@ It will choose the action randomly.
 
 Change the logging level in the `script.py` file.
 
+## Local model
+
+You can run the arena with local models.
+
+1. Make sure you have ollama installed, running, and with a model downloaded (run `ollama serve mistral` in the terminal for example)
+
+2. Make sure you pulled the latest version from the `main` branch:
+
+```
+git checkout main
+git pull
+```
+
+4. In `script.py`, replace the main function with the following one.
+
+```python
+def main():
+    # Environment Settings
+    game = Game(
+        render=True,
+        player_1=Player1(
+            nickname="Daddy",
+            model="ollama:mistral",
+        ),
+        player_2=Player2(
+            nickname="Baby",
+            model="ollama:mistral",
+        ),
+    )
+    return game.run()
+```
+
+The convention we use is `model_provider:model_name`. If you want to use another local model than Mistral, you can do `ollama:some_other_model`
+
+5. Run the simulation: `make`
+
 # Credits
 
 Made with ❤️ by the OpenGenerativeAI team from [phospho](https://phospho.ai) (@oulianov @Pierre-LouisBJT @Platinn) and [Quivr](https://www.quivr.app) (@StanGirard) during Mistral Hackathon 2024 in San Francisco
