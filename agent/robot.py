@@ -289,7 +289,7 @@ To increase your score, move toward the opponent and attack the opponent. To pre
             return [random.choice(list(MOVES.values()))]
 
         while len(valid_moves) == 0:
-            llm_response = self._call_llm()
+            llm_response = self.call_llm()
 
             # The response is a bullet point list of moves. Use regex
             matches = re.findall(r"- ([\w ]+)", llm_response)
@@ -319,14 +319,16 @@ To increase your score, move toward the opponent and attack the opponent. To pre
         logger.debug(f"Next moves: {valid_moves}")
         return valid_moves
 
-    def _call_llm(
+    def call_llm(
         self,
         temperature: float = 0.7,
         max_tokens: int = 50,
         top_p: float = 1.0,
     ) -> str:
         """
-        Make an API call to the language model
+        Make an API call to the language model.
+
+        Edit this method to change the behavior of the robot!
         """
         provider_name, model_name = get_provider_and_model(self.model)
         client = get_sync_client(provider_name)
@@ -349,7 +351,6 @@ Example if the opponent is far:
 - Move closer"""
 
         start_time = time.time()
-
         completion = client.chat.completions.create(
             model=model_name,
             messages=[
@@ -362,6 +363,5 @@ Example if the opponent is far:
         )
         logger.debug(f"LLM call to {self.model}: {system_prompt}")
         logger.debug(f"LLM call to {self.model}: {time.time() - start_time}s")
-
         llm_response = completion.choices[0].message.content.strip()
         return llm_response

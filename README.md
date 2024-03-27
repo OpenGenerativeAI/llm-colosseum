@@ -121,6 +121,64 @@ The convention we use is `model_provider:model_name`. If you want to use another
 
 5. Run the simulation: `make`
 
+## How to make my own LLM model play? Can I improve the prompts?
+
+The LLM is called in `Robot.call_llm()` method of the `agent/robot.py` file.
+
+```python
+    def call_llm(
+        self,
+        temperature: float = 0.7,
+        max_tokens: int = 50,
+        top_p: float = 1.0,
+    ) -> str:
+        """
+        Make an API call to the language model.
+
+        Edit this method to change the behavior of the robot!
+        """
+        # self.model is a slug like mistral:mistral-small-latest or ollama:mistral
+        provider_name, model_name = get_provider_and_model(self.model)
+        client = get_sync_client(provider_name) # OpenAI client
+
+        # Generate the prompts
+        move_list = "- " + "\n - ".join([move for move in META_INSTRUCTIONS])
+        system_prompt = f"""You are the best and most aggressive Street Fighter III 3rd strike player in the world.
+Your character is {self.character}. Your goal is to beat the other opponent. You respond with a bullet point list of moves.
+{self.context_prompt()}
+The moves you can use are:
+{move_list}
+----
+Reply with a bullet point list of moves. The format should be: `- <name of the move>` separated by a new line.
+Example if the opponent is close:
+- Move closer
+- Medium Punch
+
+Example if the opponent is far:
+- Fireball
+- Move closer"""
+
+        # Call the LLM
+        completion = client.chat.completions.create(
+            model=model_name,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": "Your next moves are:"},
+            ],
+            temperature=temperature,
+            max_tokens=max_tokens,
+            top_p=top_p,
+        )
+
+        # Return the string to be parsed with regex
+        llm_response = completion.choices[0].message.content.strip()
+        return llm_response
+```
+
+To use another model or other prompts, make a call to another client in this function, change the system prompt, or make any fancy stuff.
+
+You want to submit your edits to the LLM Colosseum? Create a new class herited from `Robot` that has the changes you want to make and open a PR. We'll do our best to add it to the ranking!
+
 # Credits
 
 Made with ❤️ by the OpenGenerativeAI team from [phospho](https://phospho.ai) (@oulianov @Pierre-LouisBJT @Platinn) and [Quivr](https://www.quivr.app) (@StanGirard) during Mistral Hackathon 2024 in San Francisco
