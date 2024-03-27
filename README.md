@@ -121,7 +121,7 @@ The convention we use is `model_provider:model_name`. If you want to use another
 
 5. Run the simulation: `make`
 
-## How to make my own LLM model play? Can I improve the prompts?
+## How to make my own LLM model play? Can I improve the prompts?
 
 The LLM is called in `Robot.call_llm()` method of the `agent/robot.py` file.
 
@@ -177,7 +177,11 @@ Example if the opponent is far:
 
 To use another model or other prompts, make a call to another client in this function, change the system prompt, or make any fancy stuff.
 
-You want to submit your edits to the LLM Colosseum? Create a new class herited from `Robot` that has the changes you want to make and open a PR. We'll do our best to add it to the ranking!
+### Submit your model
+
+Create a new class herited from `Robot` that has the changes you want to make and open a PR.
+
+We'll do our best to add it to the ranking!
 
 # Credits
 
