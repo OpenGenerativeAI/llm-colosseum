@@ -72,14 +72,15 @@ We send to the LLM a text description of the screen. The LLM decide on the next 
 
 - Follow instructions in https://docs.diambra.ai/#installation
 - Download the ROM and put it in `~/.diambra/roms`
-- Install with `pip3 install -r requirements`
+- (Optional) Create and activate a [new python venv](https://docs.python.org/3/library/venv.html)
+- Install dependencies with `make install` or `pip install -r requirements.txt`
 - Create a `.env` file and fill it with the content like in the `.env.example` file
 - Run with `make run`
 
 ## Test mode
 
 To disable the LLM calls, set `DISABLE_LLM` to `True` in the `.env` file.
-It will choose the action randomly.
+It will choose the actions randomly.
 
 ## Logging
 
@@ -87,39 +88,35 @@ Change the logging level in the `script.py` file.
 
 ## Local model
 
-You can run the arena with local models.
+You can run the arena with local models using [Ollama](https://ollama.com/).
 
 1. Make sure you have ollama installed, running, and with a model downloaded (run `ollama serve mistral` in the terminal for example)
 
-2. Make sure you pulled the latest version from the `main` branch:
+2. Run `make local` to start the fight.
 
-```
-git checkout main
-git pull
-```
-
-4. In `script.py`, replace the main function with the following one.
+By default, it runs mistral against mistral. To use other models, you need to change the parameter model in `ollama.py`.
 
 ```python
+from eval.game import Game, Player1, Player2
+
 def main():
-    # Environment Settings
     game = Game(
         render=True,
+        save_game=True,
         player_1=Player1(
-            nickname="Daddy",
-            model="ollama:mistral",
+            nickname="Baby",
+            model="ollama:mistral", # change this
         ),
         player_2=Player2(
-            nickname="Baby",
-            model="ollama:mistral",
+            nickname="Daddy",
+            model="ollama:mistral", # change this
         ),
     )
-    return game.run()
+    game.run()
+    return 0
 ```
 
 The convention we use is `model_provider:model_name`. If you want to use another local model than Mistral, you can do `ollama:some_other_model`
-
-5. Run the simulation: `make`
 
 ## How to make my own LLM model play? Can I improve the prompts?
 
