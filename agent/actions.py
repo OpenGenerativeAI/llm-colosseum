@@ -32,6 +32,7 @@ def call_llm(
     """
     # Get the correct provider, default is mistral
     provider_name, model_name = get_provider_and_model(model)
+    print("Provider", provider_name, model_name)
     client = get_sync_client(provider_name)
 
     # Generate the prompts

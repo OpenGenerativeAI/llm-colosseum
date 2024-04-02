@@ -15,7 +15,7 @@ def main():
     # Environment Settings
     # Environment Settings
     while True:
-        game = Game(render=True, save_game=True, openai=True)
+        game = Game(render=True, save_game=True, openai=True, solar=True, mistral=False)
 
         game.run()
 
