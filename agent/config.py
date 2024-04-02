@@ -6,10 +6,11 @@ MODELS = {
         # "openai:gpt-3.5-turbo-instruct", # not a chat model
     },
     "MISTRAL": {
-        # "mistral:mistral-small-latest",
+        "mistral:mistral-small-latest",
         # "mistral:mistral-medium-latest",
         # "mistral:mistral-large-latest",
-        "mistral:open-mistral-7b",
+        # "mistral:open-mistral-7b",
+        # "mistral:open-mixtral-8x7b",
     },
     "Solar": {
         "solar:solar-1-mini-chat",

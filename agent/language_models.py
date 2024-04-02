@@ -40,7 +40,6 @@ def get_sync_client(provider: str) -> OpenAI:
             base_url="https://api.mistral.ai/v1/", api_key=os.getenv("MISTRAL_API_KEY")
         )
     if provider == "solar":
-        print("solar key", os.getenv("SOLAR_API_KEY"))
         return OpenAI(
             base_url="https://api.upstage.ai/v1/solar", api_key=os.getenv("SOLAR_API_KEY")
     )

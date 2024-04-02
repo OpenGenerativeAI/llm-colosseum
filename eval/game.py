@@ -54,7 +54,7 @@ class Player1(Player):
         solar: bool = False,
     ):
         self.nickname = nickname
-        self.model = model or generate_model(openai=False, mistral=True, solar=False)
+        self.model = model or generate_model(openai=openai, mistral=mistral, solar=solar)
         self.openai = False
         self.mistral = True
         self.robot = Robot(
@@ -80,7 +80,7 @@ class Player2(Player):
         solar: bool = False,
     ):
         self.nickname = nickname
-        self.model = model or generate_model(openai=False, mistral=False, solar=solar)
+        self.model = model or generate_model(openai=openai, mistral=mistral, solar=solar)
         self.robot = Robot(
             action_space=None,
             character="Solar",
@@ -124,7 +124,8 @@ class Game:
     render: Optional[bool] = False
     splash_screen: Optional[bool] = False
     save_game: Optional[bool] = False
-    characters: Optional[List[str]] = ["Makoto", "Sean"]
+    # characters: Optional[List[str]] = ["Makoto", "Sean"]
+    characters: Optional[List[str]] = ["Ken", "Ken"]
     outfits: Optional[List[int]] = [1, 3]
     frame_shape: Optional[List[int]] = [0, 0, 0]
     seed: Optional[int] = 42
@@ -140,7 +141,8 @@ class Game:
         render: bool = False,
         save_game: bool = False,
         splash_screen: bool = False,
-        characters: List[str] = ["Makoto", "Sean"],
+        characters: List[str] = ["Ken", "Ken"],
+        # characters: List[str] = ["Makoto", "Sean"],
         super_arts: List[int] = [3,3],
         outfits: List[int] = [1, 3],
         frame_shape: List[int] = [0, 0, 0],
@@ -175,17 +177,18 @@ class Game:
         self.openai = openai
         self.mistral = mistral
         self.solar = solar
+        print("GAME", openai, mistral, solar, player_1, player_2)
         self.player_1 = (
             player_1
             if player_1
-            else Player1(nickname="Player 1", openai=self.openai, mistral=self.mistral, solar=self.solar)
+            else Player1(nickname="Player 1", openai=False, mistral=False, solar=True)
             # else Player1(nickname="Player 1", model="grok:mixtral-8x7b-32768")
         )
         self.player_2 = (
             player_2
             if player_2
             # else Player2(nickname="Player 2", model="openai:gpt-4-turbo-preview")
-            else Player2(nickname="Player 2", openai=self.openai, mistral=self.mistral, solar=self.solar)
+            else Player2(nickname="Player 2", openai=False, mistral=True, solar=False)
         )
 
     def _init_settings(self) -> EnvironmentSettingsMultiAgent:
