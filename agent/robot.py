@@ -8,7 +8,7 @@ from typing import Dict, List, Literal, Optional
 import numpy as np
 from gymnasium import spaces
 from loguru import logger
-from phospho.lab import get_provider_and_model, get_sync_client
+from llama_index.core.llms import ChatMessage
 from rich import print
 
 from .config import (
@@ -21,6 +21,7 @@ from .config import (
     Y_SIZE,
 )
 from .observer import detect_position_from_color
+from .llm import get_client
 
 
 class Robot:
@@ -330,8 +331,6 @@ To increase your score, move toward the opponent and attack the opponent. To pre
 
         Edit this method to change the behavior of the robot!
         """
-        provider_name, model_name = get_provider_and_model(self.model)
-        client = get_sync_client(provider_name)
 
         # Generate the prompts
         move_list = "- " + "\n - ".join([move for move in META_INSTRUCTIONS])
@@ -351,17 +350,15 @@ Example if the opponent is far:
 - Move closer"""
 
         start_time = time.time()
-        completion = client.chat.completions.create(
-            model=model_name,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": "Your next moves are:"},
-            ],
-            temperature=temperature,
-            max_tokens=max_tokens,
-            top_p=top_p,
-        )
+
+        client = get_client(self.model)
+
+        messages = [
+            ChatMessage(role="system", content=system_prompt),
+            ChatMessage(role="user", content="Your next moves are:"),
+        ]
+        llm_response = client.chat(messages).message.content
+
         logger.debug(f"LLM call to {self.model}: {system_prompt}")
         logger.debug(f"LLM call to {self.model}: {time.time() - start_time}s")
-        llm_response = completion.choices[0].message.content.strip()
         return llm_response

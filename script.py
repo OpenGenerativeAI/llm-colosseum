@@ -1,7 +1,7 @@
 import sys
 
 from dotenv import load_dotenv
-from eval.game import Game, Player1, Player2, generate_random_model
+from eval.game import Game, Player1, Player2
 from loguru import logger
 
 logger.remove()
@@ -16,11 +16,11 @@ def main():
         render=True,
         player_1=Player1(
             nickname="Daddy",
-            model=generate_random_model(mistral=True),
+            model="groq:mistral-8x6b-32768",
         ),
         player_2=Player2(
             nickname="Baby",
-            model=generate_random_model(openai=True),
+            model="anthropic:claude-3-haiku-20240307",
         ),
     )
     return game.run()

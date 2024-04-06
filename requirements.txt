@@ -47,3 +47,7 @@ tqdm==4.66.2; python_version >= '3.7'
 typing-extensions==4.10.0; python_version >= '3.8'
 tzdata==2024.1; python_version >= '2'
 rich==13.7.1
+llama-index
+llama-index-llms-openai
+llama-index-llms-anthropic
+llama-index-llms-groq
