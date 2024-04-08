@@ -35,11 +35,12 @@ https://github.com/OpenGenerativeAI/llm-colosseum/assets/19614572/79b58e26-7902-
 https://github.com/OpenGenerativeAI/llm-colosseum/assets/19614572/5d3d386b-150a-48a5-8f68-7e2954ec18db
 
 ### 1 VS 1: Mistral 7B vs Solar
-* mistral-small-latest vs solar-1-mini-chat
-
-* mistral-medium-latest vs solar-1-mini-chat
-
-* mistral-large-latest vs solar-1-mini-chat
+#### mistral-small-latest vs solar-1-mini-chat
+https://github.com/Tokkiu/llm-colosseum/assets/13414571/2a7e681d-d022-486c-9250-68fedff4b069
+#### mistral-medium-latest vs solar-1-mini-chat
+https://github.com/Tokkiu/llm-colosseum/assets/13414571/d0532e43-11e2-447e-b2b3-6023b9760f11
+#### mistral-large-latest vs solar-1-mini-chat
+https://github.com/Tokkiu/llm-colosseum/assets/13414571/4757d562-f800-40ef-8f1a-675b0e23b8ed
 
 
 ## A new kind of benchmark ? 
