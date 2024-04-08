@@ -34,7 +34,7 @@ https://github.com/OpenGenerativeAI/llm-colosseum/assets/19614572/79b58e26-7902-
 
 https://github.com/OpenGenerativeAI/llm-colosseum/assets/19614572/5d3d386b-150a-48a5-8f68-7e2954ec18db
 
-1 VS 1: Mistral 7B vs Solar
+### 1 VS 1: Mistral 7B vs Solar
 * mistral-small-latest vs solar-1-mini-chat
 
 * mistral-medium-latest vs solar-1-mini-chat
