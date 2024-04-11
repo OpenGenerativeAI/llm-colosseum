@@ -37,7 +37,7 @@ https://github.com/Tokkiu/llm-colosseum/assets/13414571/d0532e43-11e2-447e-b2b3-
 https://github.com/Tokkiu/llm-colosseum/assets/13414571/4757d562-f800-40ef-8f1a-675b0e23b8ed
 
 
-## A new kind of benchmark ? 
+## A new kind of benchmark ?
 
 Street Fighter III assesses the ability of LLMs to understand their environment and take actions based on a specific context.
 As opposed to RL models, which blindly take actions based on the reward function, LLMs are fully aware of the context and act accordingly.
