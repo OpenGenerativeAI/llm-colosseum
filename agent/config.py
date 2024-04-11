@@ -1,3 +1,7 @@
+import dotenv
+
+dotenv.load_dotenv()
+
 MODELS = {
     "OPENAI": {
         # "openai:gpt-4-0125-preview",
@@ -143,6 +147,7 @@ META_INSTRUCTIONS = {
         if "Punch" in move_name or "Kick" in move_name
     },
     "Jump Closer": {"right": [4, 4, 4, 4], "left": [2, 2, 2, 2]},
+    "Jump Away": {"right": [2, 2, 2, 2], "left": [4, 4, 4, 4]},
 }
 META_INSTRUCTIONS_WITH_LOWER = {
     **META_INSTRUCTIONS,

@@ -1,7 +1,7 @@
 import sys
 
 from dotenv import load_dotenv
-from eval.game import Game, Player1, Player2, generate_random_model
+from eval.game import Game, Player1, Player2
 from loguru import logger
 
 logger.remove()
@@ -12,18 +12,22 @@ load_dotenv()
 
 def main():
     # Environment Settings
+
     game = Game(
         render=True,
+        save_game=True,
         player_1=Player1(
-            nickname="Daddy",
-            model=generate_random_model(mistral=True),
+            nickname="Baby",
+            model="mistral:mistral-small-latest",
         ),
         player_2=Player2(
-            nickname="Baby",
-            model=generate_random_model(openai=True),
+            nickname="Daddy",
+            model="mistral:mistral-small-latest",
         ),
     )
-    return game.run()
+
+    game.run()
+    return 0
 
 
 if __name__ == "__main__":

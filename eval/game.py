@@ -1,24 +1,22 @@
-from typing import List, Optional, Union
-from diambra.arena import (
-    SpaceTypes,
-    EnvironmentSettingsMultiAgent,
-    make,
-    RecordingSettings,
-)
-import os
 import datetime
-
-from agent import Robot, KEN_RED, KEN_GREEN
+import os
+import random
+import traceback
 from threading import Thread
+from typing import List, Optional
+
+from agent import KEN_GREEN, KEN_RED, Robot
+from agent.config import MODELS
+from diambra.arena import (
+    EnvironmentSettingsMultiAgent,
+    RecordingSettings,
+    SpaceTypes,
+    make,
+)
 from rich import print
 
-import time
-import random
 
-from agent.config import MODELS
-
-
-def generate_model(openai: bool = False, mistral: bool = True, solar: bool = False):
+def generate_random_model(openai: bool = False, mistral: bool = True):
     models_available = []
 
     for model, models in MODELS.items():
@@ -26,40 +24,42 @@ def generate_model(openai: bool = False, mistral: bool = True, solar: bool = Fal
             models_available.extend(models)
         if mistral and model == "MISTRAL":
             models_available.extend(models)
-        if solar and model == "Solar":
-            models_available.extend(models)
-    print('models:', models_available)
+
     random.seed()
     # Generate a pair of random two models
     random_model = random.choice(models_available)
 
     return random_model
 
+
 class Player:
     nickname: str
     model: str
     robot: Optional[Robot] = None
     temperature: Optional[float] = 0.0
-    openai: Optional[bool] = False
-    mistral: Optional[bool] = True
+
+    def verify_provider_name(self):
+        if self.model.startswith("openai"):
+            assert (
+                os.environ.get("OPENAI_API_KEY") is not None
+            ), "OpenAI API key not set"
+        if self.model.startswith("mistral"):
+            assert (
+                os.environ.get("MISTRAL_API_KEY") is not None
+            ), "Mistral API key not set"
 
 
 class Player1(Player):
     def __init__(
         self,
         nickname: str,
-        model: Optional[str] = None,
-        openai: bool = False,
-        mistral: bool = True,
-        solar: bool = False,
+        model: str,
     ):
         self.nickname = nickname
-        self.model = model or generate_model(openai=openai, mistral=mistral, solar=solar)
-        self.openai = False
-        self.mistral = True
+        self.model = model
         self.robot = Robot(
             action_space=None,
-            character="Mistral",
+            character="Ken",
             side=0,
             character_color=KEN_RED,
             ennemy_color=KEN_GREEN,
@@ -68,22 +68,20 @@ class Player1(Player):
             player_nb=1,
         )
         print(f"[red] Player 1 using: {self.model}")
+        self.verify_provider_name()
 
 
 class Player2(Player):
     def __init__(
         self,
         nickname: str,
-        model: Optional[str] = None,
-        openai: bool = False,
-        mistral: bool = True,
-        solar: bool = False,
+        model: str,
     ):
         self.nickname = nickname
-        self.model = model or generate_model(openai=openai, mistral=mistral, solar=solar)
+        self.model = model
         self.robot = Robot(
             action_space=None,
-            character="Solar",
+            character="Ken",
             side=1,
             character_color=KEN_GREEN,
             ennemy_color=KEN_RED,
@@ -92,18 +90,24 @@ class Player2(Player):
             player_nb=2,
         )
         print(f"[green] Player 2 using: {self.model}")
+        self.verify_provider_name()
 
 
 class Episode:
-    player_1: Player1
+    player_1: Optional[Player1]
     player_2: Player2
     player_1_won: Optional[bool] = None
 
-    def __init__(self, player_1: Player1, player_2: Player2):
+    def __init__(self, player_1: Optional[Player1], player_2: Player2):
         self.player_1 = player_1
         self.player_2 = player_2
 
     def save(self):
+        if self.player_1 is None:
+            # Playing with the controller
+            # Results are not saved
+            return
+
         # Write the results to an existing csv with headers "player_1", "player_2", "winner"
         timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
@@ -111,47 +115,42 @@ class Episode:
         if not os.path.exists("results.csv"):
             with open("results.csv", "w") as f:
                 f.write(
-                    "id, player_1_model, player_1_temperature, player_2_model, player_2_temperature, player_1_won\n"
+                    "id,player_1_model,player_1_temperature,player_2_model,player_2_temperature,player_1_won\n"
                 )
 
         with open("results.csv", "a") as f:
             f.write(
-                f"{timestamp}, {self.player_1.model}, {self.player_1.temperature}, {self.player_2.model}, {self.player_2.temperature}, {self.player_1_won}\n"
+                f"{timestamp},{self.player_1.model},{self.player_1.temperature},"
+                + f"{self.player_2.model},{self.player_2.temperature},{self.player_1_won}\n"
             )
 
 
 class Game:
+    player_1: Optional[Player1] = None  # First player. None if Human
+    player_2: Player2
+
     render: Optional[bool] = False
     splash_screen: Optional[bool] = False
     save_game: Optional[bool] = False
-    # characters: Optional[List[str]] = ["Makoto", "Sean"]
     characters: Optional[List[str]] = ["Ken", "Ken"]
     outfits: Optional[List[int]] = [1, 3]
     frame_shape: Optional[List[int]] = [0, 0, 0]
     seed: Optional[int] = 42
     settings: EnvironmentSettingsMultiAgent = None  # Settings of the game
     env = None  # Environment of the game
-    player_1: Player1 = None  # First player
-    player_2: Player2 = None  # Second player
-    openai: Optional[bool] = False
-    mistral: Optional[bool] = True
 
     def __init__(
         self,
+        player_1: Optional[Player1],
+        player_2: Player2,
         render: bool = False,
         save_game: bool = False,
         splash_screen: bool = False,
         characters: List[str] = ["Ken", "Ken"],
-        # characters: List[str] = ["Makoto", "Sean"],
-        super_arts: List[int] = [3,3],
+        super_arts: List[int] = [3, 3],
         outfits: List[int] = [1, 3],
         frame_shape: List[int] = [0, 0, 0],
         seed: int = 42,
-        player_1: Player1 = None,
-        player_2: Player2 = None,
-        openai: bool = False,
-        mistral: bool = True,
-        solar: bool = False,
     ):
         """_summary_
 
@@ -174,22 +173,20 @@ class Game:
         self.settings = self._init_settings()
         self.env = self._init_env(self.settings)
         self.observation, self.info = self.env.reset(seed=self.seed)
-        self.openai = openai
-        self.mistral = mistral
-        self.solar = solar
-        print("GAME", openai, mistral, solar, player_1, player_2)
-        self.player_1 = (
-            player_1
-            if player_1
-            else Player1(nickname="Player 1", openai=False, mistral=False, solar=True)
-            # else Player1(nickname="Player 1", model="grok:mixtral-8x7b-32768")
-        )
-        self.player_2 = (
-            player_2
-            if player_2
-            # else Player2(nickname="Player 2", model="openai:gpt-4-turbo-preview")
-            else Player2(nickname="Player 2", openai=False, mistral=True, solar=False)
-        )
+        if player_1 is not None:
+            self.player_1 = player_1
+        else:
+            # If player 1 is not provided, we will use the controller
+            # The human player will be able to play with the controller
+            from diambra.arena.utils.controller import get_diambra_controller
+
+            self.player_1 = None
+            self.controller = get_diambra_controller(
+                self.env.unwrapped.get_actions_tuples(),
+                # force_configure=True,
+            )
+            self.controller.start()
+        self.player_2 = player_2
 
     def _init_settings(self) -> EnvironmentSettingsMultiAgent:
         """
@@ -201,13 +198,9 @@ class Game:
         )
 
         settings.action_space = (SpaceTypes.DISCRETE, SpaceTypes.DISCRETE)
-
         settings.characters = self.characters
-
         settings.outfits = self.outfits
-
         settings.frame_shape = self.frame_shape
-
         settings.super_art = self.super_arts
 
         return settings
@@ -266,23 +259,23 @@ class Game:
         Runs the game with the given settings.
         """
         try:
-            self.player_1.robot.observe(self.observation, {}, 0.0)
-            self.player_2.robot.observe(self.observation, {}, 0.0)
-            # Initialize the episode
-
-            episode = Episode(player_1=self.player_1, player_2=self.player_2)
             self.actions = {
                 "agent_0": 0,
                 "agent_1": 0,
             }
-
             self.reward = 0.0
 
-            # Start the thread
-            player1_thread = PlanAndActPlayer1(game=self, episode=episode)
-            player2_thread = PlanAndActPlayer2(game=self, episode=episode)
+            if self.player_1 is not None:
+                self.player_1.robot.observe(self.observation, {}, 0.0)
 
-            player1_thread.start()
+            self.player_2.robot.observe(self.observation, {}, 0.0)
+            # Initialize the episode
+            episode = Episode(player_1=self.player_1, player_2=self.player_2)
+            # Start the threads that make API calls
+            if self.player_1 is not None:
+                player1_thread = PlanAndActPlayer1(game=self, episode=episode)
+                player1_thread.start()
+            player2_thread = PlanAndActPlayer2(game=self, episode=episode)
             player2_thread.start()
 
             while True:
@@ -291,6 +284,21 @@ class Game:
                     self.env.render()
 
                 actions = self.actions
+
+                if self.player_1 is None:
+                    # If player 1 is not provided, we use the controller
+                    try:
+                        # On MacOS we need to install pyobjc
+                        # pip install pyobjc
+                        # https://stackoverflow.com/questions/76434535/attributeerror-super-object-has-no-attribute-init
+
+                        controller_actions = self.controller.get_actions()
+                        actions["agent_1"] = (
+                            controller_actions[0] + controller_actions[1]
+                        )
+                    except Exception as e:
+                        print(e)
+
                 if "agent_0" not in actions:
                     actions["agent_0"] = 0
                 if "agent_1" not in actions:
@@ -311,16 +319,36 @@ class Game:
                 p2_wins = observation["P2"]["wins"][0]
 
                 if p1_wins == 1 or p2_wins == 1:
-                    player1_thread.running = False
+                    if self.player_1 is not None:
+                        player1_thread.running = False
                     player2_thread.running = False
-
                     episode.player_1_won = p1_wins == 1
+                    if episode.player_1_won:
+                        print(
+                            f"[red] Player1 {self.player_1.robot.model} '{self.player_1.nickname}' won!"
+                        )
+                    else:
+                        print(
+                            f"[green] Player2 {self.player_2.robot.model} {self.player_2.nickname} won!"
+                        )
                     episode.save()
                     self.env.close()
                     break
-        except Exception:
+        except Exception as e:
+            # self.env.close()
+            print(f"Exception: {e}")
+            traceback.print_exception(limit=10)
+            traceback.print_tb(limit=40)
+            if self.player_1 is None:
+                self.controller.stop()
             self.env.close()
-            print("Game Finished")
+        try:
+            if self.player_1 is None:
+                self.controller.stop()
+            self.env.close()
+        except Exception as e:
+            pass  # Ignore the exception
+        return 0
 
 
 class PlanAndAct(Thread):
@@ -359,4 +387,3 @@ class PlanAndActPlayer2(PlanAndAct):
                 self.game.player_2.robot.observe(
                     self.game.observation, self.game.actions, -self.game.reward
                 )
-                time.sleep(0.1)
