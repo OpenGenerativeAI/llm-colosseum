@@ -1,5 +1,5 @@
 def get_client(model_str):
-    split_result = model.split(":")
+    split_result = model_str.split(":")
     if len(split_result) == 1:
         # Assume default provider to be openai
         provider = "openai"
@@ -14,12 +14,12 @@ def get_client(model_str):
     if provider == "openai":
         from llama_index.llms.openai import OpenAI
 
-        return OpenAI(model=model)
+        return OpenAI(model=model_name)
     elif provider == "anthropic":
         from llama_index.llms.anthropic import Anthropic
 
-        return Anthropic(model=model)
+        return Anthropic(model=model_name)
     elif provider == "mixtral" or provider == "groq":
         from llama_index.llms.groq import Groq
 
-        return Groq(model=model)
+        return Groq(model=model_name)
