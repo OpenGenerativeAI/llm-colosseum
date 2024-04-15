@@ -15,6 +15,8 @@ MODELS = {
         "mistral:mistral-large-latest",
         # "groq:mistral-8x6b-32768",
     },
+    "GROQ": {"groq:gemma-7b-it"},
+    "ANTHROPIC": {"anthropic:claude-3-haiku-20240307"},
 }
 
 
