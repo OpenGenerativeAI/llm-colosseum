@@ -16,7 +16,7 @@ def main():
         render=True,
         player_1=Player1(
             nickname="Daddy",
-            model="groq:gemma-7b-it",
+            model="ollama:llama3",
         ),
         player_2=Player2(
             nickname="Baby",

@@ -23,3 +23,8 @@ def get_client(model_str):
         from llama_index.llms.groq import Groq
 
         return Groq(model=model_name)
+
+    elif provider == "ollama":
+        from llama_index.llms.ollama import Ollama
+
+        return Ollama(model=model_name)

@@ -51,3 +51,4 @@ llama-index
 llama-index-llms-openai
 llama-index-llms-anthropic
 llama-index-llms-groq
+llama-index-llms-ollama
