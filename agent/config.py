@@ -4,16 +4,20 @@ dotenv.load_dotenv()
 
 MODELS = {
     "OPENAI": {
-        "openai:gpt-4-0125-preview",
-        "openai:gpt-4",
+        # "openai:gpt-4-0125-preview",
+        # "openai:gpt-4",
         "openai:gpt-3.5-turbo-0125",
         # "openai:gpt-3.5-turbo-instruct", # not a chat model
     },
     "MISTRAL": {
         "mistral:mistral-small-latest",
-        "mistral:mistral-medium-latest",
-        "mistral:mistral-large-latest",
-        # "groq:mistral-8x6b-32768",
+        # "mistral:mistral-medium-latest",
+        # "mistral:mistral-large-latest",
+        # "mistral:open-mistral-7b",
+        # "mistral:open-mixtral-8x7b",
+    },
+    "Solar": {
+        "solar:solar-1-mini-chat",
     },
     "GROQ": {"groq:gemma-7b-it"},
     "ANTHROPIC": {"anthropic:claude-3-haiku-20240307"},
