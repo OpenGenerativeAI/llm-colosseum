@@ -35,7 +35,7 @@ As opposed to RL models, which blindly take actions based on the reward function
 
 # Results
 
-Our experimentations (342 fights so far) led to the following leader board.
+Our experimentations (342 fights so far) led to the following leaderboard.
 Each LLM has an ELO score based on its results
 
 ## Ranking
