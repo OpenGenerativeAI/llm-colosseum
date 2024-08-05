@@ -28,3 +28,7 @@ def get_client(model_str):
         from llama_index.llms.ollama import Ollama
 
         return Ollama(model=model_name)
+    elif provider == "bedrock":
+        from llama_index.llms.bedrock import Bedrock
+        
+        return Bedrock(model=model_name)
