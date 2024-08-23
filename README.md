@@ -77,6 +77,46 @@ We send to the LLM a text description of the screen. The LLM decide on the next 
 - Create a `.env` file and fill it with the content like in the `.env.example` file
 - Run with `make run`
 
+## Running with Docker
+
+You can also run the application using Docker.
+
+### Building the Docker Image
+
+To build the Docker image, use the following command:
+
+```bash
+docker build -t diambra-app .
+```
+### Running the Docker Container
+To run the Docker container, use the following command:
+
+```bash
+docker run --name diambra-container -v ~/.diambra/roms:/app/roms diambra-app
+```
+
+* If you encounter a conflict with an existing container name, you can remove the existing container with:
+
+```bash
+docker rm diambra-container
+```
+
+### Running with Docker Compose on Ollama locally
+
+To start the services, use the following command:
+
+```bash
+docker-compose up
+```
+
+### Stopping the Services
+
+To stop the services, use:
+
+```bash
+docker-compose down
+```
+
 ## Test mode
 
 To disable the LLM calls, set `DISABLE_LLM` to `True` in the `.env` file.
