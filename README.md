@@ -88,14 +88,16 @@ To build the Docker image, use the following command:
 ```bash
 docker build -t diambra-app .
 ```
+
 ### Running the Docker Container
+
 To run the Docker container, use the following command:
 
 ```bash
 docker run --name diambra-container -v ~/.diambra/roms:/app/roms diambra-app
 ```
 
-* If you encounter a conflict with an existing container name, you can remove the existing container with:
+- If you encounter a conflict with an existing container name, you can remove the existing container with:
 
 ```bash
 docker rm diambra-container
@@ -134,7 +136,7 @@ You can run the arena with local models using [Ollama](https://ollama.com/).
 
 2. Run `make local` to start the fight.
 
-By default, it runs mistral against mistral. To use other models, you need to change the parameter model in `ollama.py`.
+By default, it runs mistral against mistral. To use other models, you need to change the parameter model in `local.py`.
 
 ```python
 from eval.game import Game, Player1, Player2
