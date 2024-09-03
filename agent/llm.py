@@ -36,3 +36,4 @@ def get_client(model_str):
         from llama_index.llms.cerebras import Cerebras
 
         return Cerebras(model=model_name)
+        
