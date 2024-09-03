@@ -53,3 +53,4 @@ llama-index-llms-anthropic
 llama-index-llms-groq
 llama-index-llms-ollama
 llama-index-llms-bedrock
+llama-index-llms-cerebras

@@ -32,3 +32,7 @@ def get_client(model_str):
         from llama_index.llms.bedrock import Bedrock
         
         return Bedrock(model=model_name)
+    elif provider == "cerebras":
+        from llama_index.llms.cerebras import Cerebras
+
+        return Cerebras(model=model_name)
