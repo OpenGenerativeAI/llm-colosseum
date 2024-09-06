@@ -1,4 +1,7 @@
-def get_client(model_str):
+from llama_index.core.llms.function_calling import FunctionCallingLLM
+
+
+def get_client(model_str: str) -> FunctionCallingLLM:
     split_result = model_str.split(":")
     if len(split_result) == 1:
         # Assume default provider to be openai
@@ -11,6 +14,7 @@ def get_client(model_str):
     else:
         provider = split_result[0]
         model_name = split_result[1]
+
     if provider == "openai":
         from llama_index.llms.openai import OpenAI
 
@@ -19,7 +23,11 @@ def get_client(model_str):
         from llama_index.llms.anthropic import Anthropic
 
         return Anthropic(model=model_name)
-    elif provider == "mixtral" or provider == "groq":
+    elif provider == "mistral":
+        from llama_index.llms.mistralai import MistralAI
+
+        return MistralAI(model=model_name)
+    elif provider == "groq":
         from llama_index.llms.groq import Groq
 
         return Groq(model=model_name)
@@ -30,10 +38,11 @@ def get_client(model_str):
         return Ollama(model=model_name)
     elif provider == "bedrock":
         from llama_index.llms.bedrock import Bedrock
-        
+
         return Bedrock(model=model_name)
     elif provider == "cerebras":
         from llama_index.llms.cerebras import Cerebras
 
         return Cerebras(model=model_name)
-        
+
+    raise ValueError(f"Provider {provider} not found")
