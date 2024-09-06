@@ -16,11 +16,11 @@ def main():
         render=True,
         player_1=Player1(
             nickname="Daddy",
-            model="ollama:llama3",
+            model="openai:gpt-4o",
         ),
         player_2=Player2(
             nickname="Baby",
-            model="anthropic:claude-3-haiku-20240307",
+            model="openai:gpt-4o-mini",
         ),
     )
     return game.run()
