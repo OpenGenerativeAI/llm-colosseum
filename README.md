@@ -71,7 +71,7 @@ We send to the LLM a text description of the screen. The LLM decide on the next 
 # Installation
 
 - Follow instructions in https://docs.diambra.ai/#installation
-- Download the ROM and put it in `~/.diambra/roms`
+- Download the ROM and put it in `~/.diambra/roms` (no need to dezip the content)
 - (Optional) Create and activate a [new python venv](https://docs.python.org/3/library/venv.html)
 - Install dependencies with `make install` or `pip install -r requirements.txt`
 - Create a `.env` file and fill it with the content like in the `.env.example` file

@@ -329,6 +329,8 @@ To increase your score, move toward the opponent and attack the opponent. To pre
             logger.debug(f"Next moves: {valid_moves}")
             return valid_moves
 
+        return []
+
     def call_llm(
         self,
         temperature: float = 0.7,
