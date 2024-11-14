@@ -11,11 +11,11 @@ import base64
 from gymnasium import spaces
 from loguru import logger
 
-from llama_index.multi_modal_llms.ollama import OllamaMultiModal
 from llama_index.core.schema import ImageNode
 from llama_index.core.llms import ChatMessage, ChatResponse
 from rich import print
 from PIL import Image
+from llama_index.core.base.llms.types import CompletionResponse
 
 from .config import (
     INDEX_TO_MOVE,
@@ -27,7 +27,7 @@ from .config import (
     Y_SIZE,
 )
 from .observer import detect_position_from_color
-from .llm import get_client
+from .llm import get_client, get_client_multimodal
 import abc
 
 
@@ -216,7 +216,9 @@ class Robot(metaclass=abc.ABCMeta):
         temperature: float = 0.7,
         max_tokens: int = 50,
         top_p: float = 1.0,
-    ) -> Generator[ChatResponse, None, None]:
+    ) -> (
+        Generator[ChatResponse, None, None] | Generator[CompletionResponse, None, None]
+    ):
         """
         Make an API call to the language model.
 
@@ -420,25 +422,6 @@ class VisionRobot(Robot):
         if len(self.observations) > 10:
             self.observations.pop(0)
 
-    def last_image_to_base64(self) -> str:
-        if len(self.observations) == 0:
-            return ""
-
-        rgb_array = self.observations[-1]["frame"]
-        img = Image.fromarray(rgb_array)
-
-        # Créer un buffer en mémoire
-        buffer = io.BytesIO()
-
-        # Sauvegarder l'image en format PNG dans le buffer
-        img.save(buffer, format="PNG")
-
-        # Obtenir les bytes de l'image encodée
-        img_bytes = buffer.getvalue()
-
-        # Encoder en base64
-        return base64.b64encode(img_bytes).decode("utf-8")
-
     def last_image_to_image_node(self) -> ImageNode:
         if len(self.observations) == 0:
             return ImageNode()
@@ -466,7 +449,7 @@ class VisionRobot(Robot):
         temperature: float = 0.7,
         max_tokens: int = 50,
         top_p: float = 1.0,
-    ) -> Generator[ChatResponse, None, None]:
+    ) -> Generator[CompletionResponse, None, None]:
         """
         Make an API call to the language model.
 
@@ -483,7 +466,7 @@ The current state of the game is given in the following image.
 The moves you can use are:
 {move_list}
 ----
-Reply with a bullet point list of 10 moves. The format should be: `- <name of the move>` separated by a new line.
+Reply with a bullet point list of 5 moves. The format should be: `- <name of the move>` separated by a new line.
 Example if the opponent is close:
 - Move closer
 - Medium Punch
@@ -493,19 +476,10 @@ Example if the opponent is far:
 - Move closer"""
 
         start_time = time.time()
-        model = OllamaMultiModal(model="llava", max_tokens=max_tokens)
 
-        # messages = [
-        #     ChatMessage(
-        #         role="system",
-        #         content=system_prompt,
-        #         additional_kwargs={
-        #             "images": ,
-        #         },
-        #     ),
-        #     ChatMessage(role="user", content="Your next moves are:"),
-        # ]
-        resp = model.stream_complete(
+        client = get_client_multimodal(self.model)
+
+        resp = client.stream_complete(
             prompt=system_prompt, image_documents=[self.last_image_to_image_node()]
         )
 
