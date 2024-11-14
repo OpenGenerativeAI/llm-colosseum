@@ -20,7 +20,7 @@ def main():
         ),
         player_2=Player2(
             nickname="Baby",
-            model="openai:gpt-4o-mini",
+            model="ollama:llava",
         ),
     )
     return game.run()

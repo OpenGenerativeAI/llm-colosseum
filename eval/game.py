@@ -5,7 +5,7 @@ import traceback
 from threading import Thread
 from typing import List, Optional
 
-from agent import KEN_GREEN, KEN_RED, TextRobot
+from agent import KEN_GREEN, KEN_RED, TextRobot, VisionRobot
 from agent.config import MODELS
 from diambra.arena import (
     EnvironmentSettingsMultiAgent,
@@ -58,22 +58,35 @@ class Player1(Player):
         self,
         nickname: str,
         model: str,
-        use_vision: bool = False,
     ):
         self.nickname = nickname
         self.model = model
-        self.use_vision = use_vision
-        self.robot = TextRobot(
-            action_space=None,
-            character="Ken",
-            side=0,
-            character_color=KEN_RED,
-            ennemy_color=KEN_GREEN,
-            only_punch=os.getenv("TEST_MODE", False),
-            model=self.model,
-            use_vision=self.use_vision,
-            player_nb=1,
-        )
+        # TODO : Make this smarter
+        if model == "ollama:llava":
+            self.robot = VisionRobot(
+                action_space=None,
+                character="Ken",
+                side=0,
+                character_color=KEN_RED,
+                ennemy_color=KEN_GREEN,
+                # TODO : uncomment
+                # only_punch=os.getenv("TEST_MODE", False),
+                only_punch=True,
+                player_nb=1,
+            )
+        else:
+            self.robot = TextRobot(
+                action_space=None,
+                character="Ken",
+                side=0,
+                character_color=KEN_RED,
+                ennemy_color=KEN_GREEN,
+                # TODO : uncomment
+                # only_punch=os.getenv("TEST_MODE", False),
+                only_punch=True,
+                model=self.model,
+                player_nb=1,
+            )
         print(f"[red] Player 1 using: {self.model}")
         self.verify_provider_name()
 
@@ -83,22 +96,30 @@ class Player2(Player):
         self,
         nickname: str,
         model: str,
-        use_vision: bool = False,
     ):
         self.nickname = nickname
         self.model = model
-        self.use_vision = use_vision
-        self.robot = TextRobot(
-            action_space=None,
-            character="Ken",
-            side=1,
-            character_color=KEN_GREEN,
-            ennemy_color=KEN_RED,
-            sleepy=os.getenv("TEST_MODE", False),
-            model=self.model,
-            use_vision=self.use_vision,
-            player_nb=2,
-        )
+        if model == "ollama:llava":
+            self.robot = VisionRobot(
+                action_space=None,
+                character="Ken",
+                side=0,
+                character_color=KEN_RED,
+                ennemy_color=KEN_GREEN,
+                only_punch=os.getenv("TEST_MODE", False),
+                player_nb=1,
+            )
+        else:
+            self.robot = TextRobot(
+                action_space=None,
+                character="Ken",
+                side=1,
+                character_color=KEN_GREEN,
+                ennemy_color=KEN_RED,
+                sleepy=os.getenv("TEST_MODE", False),
+                model=self.model,
+                player_nb=2,
+            )
         print(f"[green] Player 2 using: {self.model}")
         self.verify_provider_name()
 
