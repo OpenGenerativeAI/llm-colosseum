@@ -10,6 +10,9 @@ import numpy as np
 import base64
 from gymnasium import spaces
 from loguru import logger
+
+from llama_index.multi_modal_llms.ollama import OllamaMultiModal
+from llama_index.core.schema import ImageNode
 from llama_index.core.llms import ChatMessage, ChatResponse
 from rich import print
 from PIL import Image
@@ -436,9 +439,9 @@ class VisionRobot(Robot):
         # Encoder en base64
         return base64.b64encode(img_bytes).decode("utf-8")
 
-    def last_image_to_image_document(self) -> str:
+    def last_image_to_image_node(self) -> ImageNode:
         if len(self.observations) == 0:
-            return ""
+            return ImageNode()
 
         rgb_array = self.observations[-1]["frame"]
         img = Image.fromarray(rgb_array)
@@ -452,15 +455,11 @@ class VisionRobot(Robot):
         # Obtenir les bytes de l'image encodée
         img_bytes = buffer.getvalue()
 
-        # Encoder en base64
-        return base64.b64encode(img_bytes).decode("utf-8")
-
-    def last_rgb_to_Image(self) -> Image:
-        if len(self.observations) == 0:
-            return Image.new("RGB", (100, 200))
-
-        rgb_array = self.observations[-1]["frame"]
-        return Image.fromarray(rgb_array)
+        # Create an ImageDocument
+        return ImageNode(
+            image=base64.b64encode(img_bytes).decode("utf-8"),
+            image_mimetype="png",
+        )
 
     def call_llm(
         self,
@@ -493,8 +492,6 @@ Example if the opponent is far:
 - Fireball
 - Move closer"""
 
-        from llama_index.multi_modal_llms.ollama import OllamaMultiModal
-
         start_time = time.time()
         model = OllamaMultiModal(model="llava", max_tokens=max_tokens)
 
@@ -509,15 +506,8 @@ Example if the opponent is far:
         #     ChatMessage(role="user", content="Your next moves are:"),
         # ]
         resp = model.stream_complete(
-            prompt=system_prompt, image_documents=[self.last_image_to_base64()]
+            prompt=system_prompt, image_documents=[self.last_image_to_image_node()]
         )
-
-        # Call it with .complete and log the output
-        control_response = model.complete(
-            prompt="Describe what you see",
-            image_documents=[self.last_rgb_to_Image()],
-        )
-        logger.info(f"Control response: {control_response}")
 
         logger.debug(f"LLM call to {self.model}: {system_prompt}")
         logger.debug(f"LLM call to {self.model}: {time.time() - start_time}s")
