@@ -5,7 +5,7 @@ import traceback
 from threading import Thread
 from typing import List, Optional
 
-from agent import KEN_GREEN, KEN_RED, Robot
+from agent import KEN_GREEN, KEN_RED, TextRobot
 from agent.config import MODELS
 from diambra.arena import (
     EnvironmentSettingsMultiAgent,
@@ -35,7 +35,7 @@ def generate_random_model(openai: bool = False, mistral: bool = True):
 class Player:
     nickname: str
     model: str
-    robot: Optional[Robot] = None
+    robot: Optional[TextRobot] = None
     temperature: Optional[float] = 0.0
 
     def verify_provider_name(self):
@@ -52,15 +52,18 @@ class Player:
                 os.environ.get("CEREBRAS_API_KEY") is not None
             ), "Cerebras API key not set"
 
+
 class Player1(Player):
     def __init__(
         self,
         nickname: str,
         model: str,
+        use_vision: bool = False,
     ):
         self.nickname = nickname
         self.model = model
-        self.robot = Robot(
+        self.use_vision = use_vision
+        self.robot = TextRobot(
             action_space=None,
             character="Ken",
             side=0,
@@ -68,6 +71,7 @@ class Player1(Player):
             ennemy_color=KEN_GREEN,
             only_punch=os.getenv("TEST_MODE", False),
             model=self.model,
+            use_vision=self.use_vision,
             player_nb=1,
         )
         print(f"[red] Player 1 using: {self.model}")
@@ -79,10 +83,12 @@ class Player2(Player):
         self,
         nickname: str,
         model: str,
+        use_vision: bool = False,
     ):
         self.nickname = nickname
         self.model = model
-        self.robot = Robot(
+        self.use_vision = use_vision
+        self.robot = TextRobot(
             action_space=None,
             character="Ken",
             side=1,
@@ -90,6 +96,7 @@ class Player2(Player):
             ennemy_color=KEN_RED,
             sleepy=os.getenv("TEST_MODE", False),
             model=self.model,
+            use_vision=self.use_vision,
             player_nb=2,
         )
         print(f"[green] Player 2 using: {self.model}")
