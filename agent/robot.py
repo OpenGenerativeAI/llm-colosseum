@@ -4,7 +4,7 @@ import random
 import re
 import time
 from collections import defaultdict
-from typing import Dict, Generator, List, Literal, Optional
+from typing import Any, Dict, Generator, List, Literal, Optional
 
 import numpy as np
 import base64
@@ -29,7 +29,7 @@ import abc
 
 
 class Robot(metaclass=abc.ABCMeta):
-    observations: List[Optional[dict]] = None  # memory
+    observations: List[Optional[Dict[str, Any]]]  # memory
     next_steps: List[int]  # action plan
     actions: dict  # actions of the agents during a step of the game
     # actions of the agents during the previous step of the game
@@ -412,92 +412,15 @@ Example if the opponent is far:
 
 class VisionRobot(Robot):
     def observe(self, observation: dict, actions: dict, reward: float):
-        pass
-
-    # def context_prompt(self) -> str:
-    #     """
-    #     Return a str of the context
-
-    #     "The observation for you is Left"
-    #     "The observation for the opponent is Left+Up"
-    #     "The action history is Up"
-    #     """
-
-    #     # Create the position prompt
-    #     side = self.side
-    #     obs_own = self.observations[-1]["character_position"]
-    #     obs_opp = self.observations[-1]["ennemy_position"]
-    #     super_bar_own = self.observations[-1]["P" + str(side + 1)]["super_bar"][0]
-
-    #     if obs_own is not None and obs_opp is not None:
-    #         relative_position = np.array(obs_own) - np.array(obs_opp)
-    #         normalized_relative_position = [
-    #             relative_position[0] / X_SIZE,
-    #             relative_position[1] / Y_SIZE,
-    #         ]
-    #     else:
-    #         normalized_relative_position = [0.3, 0]
-
-    #     position_prompt = ""
-    #     if abs(normalized_relative_position[0]) > 0.1:
-    #         position_prompt += (
-    #             "You are very far from the opponent. Move closer to the opponent."
-    #         )
-    #         if normalized_relative_position[0] < 0:
-    #             position_prompt += "Your opponent is on the right."
-    #         else:
-    #             position_prompt += "Your opponent is on the left."
-
-    #     else:
-    #         position_prompt += "You are close to the opponent. You should attack him."
-
-    #     power_prompt = ""
-    #     if super_bar_own >= 30:
-    #         power_prompt = "You can now use a powerfull move. The names of the powerful moves are: Megafireball, Super attack 2."
-    #     if super_bar_own >= 120 or super_bar_own == 0:
-    #         power_prompt = "You can now only use very powerfull moves. The names of the very powerful moves are: Super attack 3, Super attack 4"
-    #     # Create the last action prompt
-    #     last_action_prompt = ""
-    #     if len(self.previous_actions.keys()) >= 0:
-    #         act_own_list = self.previous_actions["agent_" + str(side)]
-    #         act_opp_list = self.previous_actions["agent_" + str(abs(1 - side))]
-
-    #         if len(act_own_list) == 0:
-    #             act_own = 0
-    #         else:
-    #             act_own = act_own_list[-1]
-    #         if len(act_opp_list) == 0:
-    #             act_opp = 0
-    #         else:
-    #             act_opp = act_opp_list[-1]
-
-    #         str_act_own = INDEX_TO_MOVE[act_own]
-    #         str_act_opp = INDEX_TO_MOVE[act_opp]
-
-    #         last_action_prompt += f"Your last action was {str_act_own}. The opponent's last action was {str_act_opp}."
-
-    #     reward = self.reward
-
-    #     # Create the score prompt
-    #     score_prompt = ""
-    #     if reward > 0:
-    #         score_prompt += "You are winning. Keep attacking the opponent."
-    #     elif reward < 0:
-    #         score_prompt += (
-    #             "You are losing. Continue to attack the opponent but don't get hit."
-    #         )
-
-    #     # Assemble everything
-    #     context = f"""{position_prompt}
-    # {power_prompt}
-    # {last_action_prompt}
-    # Your current score is {reward}. {score_prompt}
-    # To increase your score, move toward the opponent and attack the opponent. To prevent your score from decreasing, don't get hit by the opponent.
-    # """
-
-    #     return context
+        self.observations.append(observation)
+        # we delete the oldest observation if we have more than 10 observations
+        if len(self.observations) > 10:
+            self.observations.pop(0)
 
     def last_image_to_base64(self) -> str:
+        if len(self.observations) == 0:
+            return ""
+
         rgb_array = self.observations[-1]["frame"]
         img = Image.fromarray(rgb_array)
 
@@ -512,6 +435,32 @@ class VisionRobot(Robot):
 
         # Encoder en base64
         return base64.b64encode(img_bytes).decode("utf-8")
+
+    def last_image_to_image_document(self) -> str:
+        if len(self.observations) == 0:
+            return ""
+
+        rgb_array = self.observations[-1]["frame"]
+        img = Image.fromarray(rgb_array)
+
+        # Créer un buffer en mémoire
+        buffer = io.BytesIO()
+
+        # Sauvegarder l'image en format PNG dans le buffer
+        img.save(buffer, format="PNG")
+
+        # Obtenir les bytes de l'image encodée
+        img_bytes = buffer.getvalue()
+
+        # Encoder en base64
+        return base64.b64encode(img_bytes).decode("utf-8")
+
+    def last_rgb_to_Image(self) -> Image:
+        if len(self.observations) == 0:
+            return Image.new("RGB", (100, 200))
+
+        rgb_array = self.observations[-1]["frame"]
+        return Image.fromarray(rgb_array)
 
     def call_llm(
         self,
@@ -535,7 +484,7 @@ The current state of the game is given in the following image.
 The moves you can use are:
 {move_list}
 ----
-Reply with a bullet point list of moves. The format should be: `- <name of the move>` separated by a new line.
+Reply with a bullet point list of 10 moves. The format should be: `- <name of the move>` separated by a new line.
 Example if the opponent is close:
 - Move closer
 - Medium Punch
@@ -544,19 +493,31 @@ Example if the opponent is far:
 - Fireball
 - Move closer"""
 
+        from llama_index.multi_modal_llms.ollama import OllamaMultiModal
+
         start_time = time.time()
+        model = OllamaMultiModal(model="llava", max_tokens=max_tokens)
 
-        client = get_client(self.model)
+        # messages = [
+        #     ChatMessage(
+        #         role="system",
+        #         content=system_prompt,
+        #         additional_kwargs={
+        #             "images": ,
+        #         },
+        #     ),
+        #     ChatMessage(role="user", content="Your next moves are:"),
+        # ]
+        resp = model.stream_complete(
+            prompt=system_prompt, image_documents=[self.last_image_to_base64()]
+        )
 
-        messages = [
-            ChatMessage(
-                role="system",
-                content=system_prompt,
-                additional_kwargs={"images": [self.last_image_to_base64()]},
-            ),
-            ChatMessage(role="user", content="Your next moves are:"),
-        ]
-        resp = client.stream_chat(messages)
+        # Call it with .complete and log the output
+        control_response = model.complete(
+            prompt="Describe what you see",
+            image_documents=[self.last_rgb_to_Image()],
+        )
+        logger.info(f"Control response: {control_response}")
 
         logger.debug(f"LLM call to {self.model}: {system_prompt}")
         logger.debug(f"LLM call to {self.model}: {time.time() - start_time}s")

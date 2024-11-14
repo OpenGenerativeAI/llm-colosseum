@@ -15,6 +15,8 @@ from diambra.arena import (
 )
 from rich import print
 
+from agent.robot import Robot
+
 
 def generate_random_model(openai: bool = False, mistral: bool = True):
     models_available = []
@@ -35,7 +37,7 @@ def generate_random_model(openai: bool = False, mistral: bool = True):
 class Player:
     nickname: str
     model: str
-    robot: Optional[TextRobot] = None
+    robot: Optional[Robot] = None
     temperature: Optional[float] = 0.0
 
     def verify_provider_name(self):
@@ -62,16 +64,15 @@ class Player1(Player):
         self.nickname = nickname
         self.model = model
         # TODO : Make this smarter
-        if model == "ollama:llava":
+        if model in "ollama:llava":
             self.robot = VisionRobot(
                 action_space=None,
                 character="Ken",
                 side=0,
                 character_color=KEN_RED,
                 ennemy_color=KEN_GREEN,
-                # TODO : uncomment
-                # only_punch=os.getenv("TEST_MODE", False),
-                only_punch=True,
+                only_punch=os.getenv("TEST_MODE", False),
+                sleepy=False,
                 player_nb=1,
             )
         else:
@@ -81,9 +82,8 @@ class Player1(Player):
                 side=0,
                 character_color=KEN_RED,
                 ennemy_color=KEN_GREEN,
-                # TODO : uncomment
-                # only_punch=os.getenv("TEST_MODE", False),
-                only_punch=True,
+                only_punch=os.getenv("TEST_MODE", False),
+                sleepy=False,
                 model=self.model,
                 player_nb=1,
             )
@@ -103,11 +103,11 @@ class Player2(Player):
             self.robot = VisionRobot(
                 action_space=None,
                 character="Ken",
-                side=0,
-                character_color=KEN_RED,
-                ennemy_color=KEN_GREEN,
+                side=1,
+                character_color=KEN_GREEN,
+                ennemy_color=KEN_RED,
                 only_punch=os.getenv("TEST_MODE", False),
-                player_nb=1,
+                player_nb=2,
             )
         else:
             self.robot = TextRobot(
