@@ -17,10 +17,10 @@ def main():
         player_1=Player1(
             nickname="Daddy",
             model="openai:gpt-4o",
-            robot_type="vision",  # vision or text
+            robot_type="text",  # vision or text
         ),
         player_2=Player2(
-            nickname="Baby", model="mistral:pixtral-12b-2409", robot_type="vision"
+            nickname="Baby", model="mistral:pixtral-12b-2409", robot_type="text"
         ),
     )
     return game.run()
