@@ -56,15 +56,12 @@ class Player:
 
 
 class Player1(Player):
-    def __init__(
-        self,
-        nickname: str,
-        model: str,
-    ):
+    def __init__(self, nickname: str, model: str, robot_type="text"):
         self.nickname = nickname
         self.model = model
-        # TODO : Make this smarter
-        if model in "ollama:llava":
+        self.robot_type = robot_type
+
+        if robot_type == "vision":
             self.robot = VisionRobot(
                 action_space=None,
                 character="Ken",
@@ -97,10 +94,12 @@ class Player2(Player):
         self,
         nickname: str,
         model: str,
+        robot_type="text",
     ):
         self.nickname = nickname
         self.model = model
-        if model == "ollama:llava":
+        self.robot_type = robot_type
+        if robot_type == "vision":
             self.robot = VisionRobot(
                 action_space=None,
                 character="Ken",
@@ -108,7 +107,7 @@ class Player2(Player):
                 model=self.model,
                 character_color=KEN_GREEN,
                 ennemy_color=KEN_RED,
-                only_punch=os.getenv("TEST_MODE", False),
+                sleepy=os.getenv("TEST_MODE", False),
                 player_nb=2,
             )
         else:

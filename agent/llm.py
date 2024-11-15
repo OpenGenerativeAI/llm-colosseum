@@ -53,7 +53,7 @@ def get_client_multimodal(model_str: str) -> MultiModalLLM:
     split_result = model_str.split(":")
     if len(split_result) == 1:
         # Assume default provider to be openai
-        provider = "openai"
+        provider = "ollama"
         model_name = split_result[0]
     elif len(split_result) > 2:
         # Some model names have :, so we need to join the rest of the string

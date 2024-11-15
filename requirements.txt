@@ -25,3 +25,4 @@ llama-index-llms-ollama
 llama-index-llms-bedrock
 llama-index-llms-cerebras
 llama-index-llms-mistralai
+llama-index-multi-modal-llms-ollama
