@@ -46,7 +46,7 @@ def get_client(model_str: str) -> FunctionCallingLLM:
 
         return Cerebras(model=model_name)
 
-    raise ValueError(f"Provider {provider} not found")
+    raise ValueError(f"Provider {provider} not found in models")
 
 
 def get_client_multimodal(model_str: str) -> MultiModalLLM:
@@ -63,9 +63,19 @@ def get_client_multimodal(model_str: str) -> MultiModalLLM:
         provider = split_result[0]
         model_name = split_result[1]
 
+    if provider == "openai":
+        from llama_index.multi_modal_llms.openai import OpenAIMultiModal
+
+        return OpenAIMultiModal(model=model_name)
+
     if provider == "ollama":
         from llama_index.multi_modal_llms.ollama import OllamaMultiModal
 
         return OllamaMultiModal(model=model_name)
 
-    raise ValueError(f"Provider {provider} not found")
+    elif provider == "mistral":
+        from llama_index.multi_modal_llms.mistralai import MistralAIMultiModal
+
+        return MistralAIMultiModal(model=model_name)
+
+    raise ValueError(f"Provider {provider} not found in multimodal models")

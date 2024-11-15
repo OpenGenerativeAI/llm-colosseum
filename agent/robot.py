@@ -417,10 +417,32 @@ Example if the opponent is far:
 
 class VisionRobot(Robot):
     def observe(self, observation: dict, actions: dict, reward: float):
+        "We still use the same observation method to keep track of current characters direction"
         self.observations.append(observation)
         # we delete the oldest observation if we have more than 10 observations
-        if len(self.observations) > 10:
+        if len(self.observations) > 50:
             self.observations.pop(0)
+
+        # detect the position of characters and ennemy based on color
+        observation["character_position"] = detect_position_from_color(
+            observation, self.character_color
+        )
+        observation["ennemy_position"] = detect_position_from_color(
+            observation, self.ennemy_color
+        )
+
+        character_position = observation.get("character_position")
+        ennemy_position = observation.get("ennemy_position")
+        if (
+            character_position is not None
+            and ennemy_position is not None
+            and len(character_position) == 2
+            and len(ennemy_position) == 2
+        ):
+            if character_position[0] < ennemy_position[0]:
+                self.current_direction = "Right"
+            else:
+                self.current_direction = "Left"
 
     def last_image_to_image_node(self) -> ImageNode:
         if len(self.observations) == 0:
@@ -441,7 +463,7 @@ class VisionRobot(Robot):
         # Create an ImageDocument
         return ImageNode(
             image=base64.b64encode(img_bytes).decode("utf-8"),
-            image_mimetype="png",
+            image_mimetype="image/png",
         )
 
     def call_llm(
@@ -466,7 +488,7 @@ The current state of the game is given in the following image.
 The moves you can use are:
 {move_list}
 ----
-Reply with a bullet point list of 5 moves. The format should be: `- <name of the move>` separated by a new line.
+Reply with a bullet point list of 3 moves. The format should be: `- <name of the move>` separated by a new line.
 Example if the opponent is close:
 - Move closer
 - Medium Punch
@@ -477,7 +499,7 @@ Example if the opponent is far:
 
         start_time = time.time()
 
-        client = get_client_multimodal(self.model)
+        client = get_client_multimodal(self.model)  # MultiModalLLM
 
         resp = client.stream_complete(
             prompt=system_prompt, image_documents=[self.last_image_to_image_node()]
