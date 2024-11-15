@@ -1,15 +1,21 @@
 import os
+import io
 import random
 import re
 import time
 from collections import defaultdict
-from typing import Dict, List, Literal, Optional
+from typing import Any, Dict, Generator, List, Literal, Optional
 
 import numpy as np
+import base64
 from gymnasium import spaces
 from loguru import logger
-from llama_index.core.llms import ChatMessage
+
+from llama_index.core.schema import ImageNode
+from llama_index.core.llms import ChatMessage, ChatResponse
 from rich import print
+from PIL import Image
+from llama_index.core.base.llms.types import CompletionResponse
 
 from .config import (
     INDEX_TO_MOVE,
@@ -21,11 +27,12 @@ from .config import (
     Y_SIZE,
 )
 from .observer import detect_position_from_color
-from .llm import get_client
+from .llm import get_client, get_client_multimodal
+import abc
 
 
-class Robot:
-    observations: List[Optional[dict]] = None  # memory
+class Robot(metaclass=abc.ABCMeta):
+    observations: List[Optional[Dict[str, Any]]]  # memory
     next_steps: List[int]  # action plan
     actions: dict  # actions of the agents during a step of the game
     # actions of the agents during the previous step of the game
@@ -40,6 +47,7 @@ class Robot:
     only_punch: Optional[bool] = False  # if the robot only punch
 
     model: str  # model of the robot
+
     super_bar_own: int
     player_nb: int  # player number
 
@@ -143,6 +151,96 @@ class Robot:
         ]
         self.next_steps.extend(next_buttons_to_press)
 
+    def get_moves_from_llm(
+        self,
+    ) -> List[str]:
+        """
+        Get a list of moves from the language model.
+        """
+
+        # Filter the moves that are not in the list of moves
+        invalid_moves = []
+        valid_moves = []
+
+        # If we are in the test environment, we don't want to call the LLM
+        if os.getenv("DISABLE_LLM", "False") == "True":
+            # Choose a random int from the list of moves
+            logger.debug("DISABLE_LLM is True, returning a random move")
+            return [random.choice(list(MOVES.values()))]
+
+        while len(valid_moves) == 0:
+            llm_stream = self.call_llm()
+
+            # adding support for streaming the response
+            # this should make the players faster!
+
+            llm_response = ""
+
+            for r in llm_stream:
+                print(r.delta, end="")
+                llm_response += r.delta
+
+                # The response is a bullet point list of moves. Use regex
+                matches = re.findall(r"- ([\w ]+)", llm_response)
+                moves = ["".join(match) for match in matches]
+                invalid_moves = []
+                valid_moves = []
+                for move in moves:
+                    cleaned_move_name = move.strip().lower()
+                    if cleaned_move_name in META_INSTRUCTIONS_WITH_LOWER.keys():
+                        if self.player_nb == 1:
+                            print(
+                                f"[red] Player {self.player_nb} move: {cleaned_move_name}"
+                            )
+                        elif self.player_nb == 2:
+                            print(
+                                f"[green] Player {self.player_nb} move: {cleaned_move_name}"
+                            )
+                        valid_moves.append(cleaned_move_name)
+                    else:
+                        logger.debug(f"Invalid completion: {move}")
+                        logger.debug(f"Cleaned move name: {cleaned_move_name}")
+                        invalid_moves.append(move)
+
+                if len(invalid_moves) > 1:
+                    logger.warning(f"Many invalid moves: {invalid_moves}")
+
+            logger.debug(f"Next moves: {valid_moves}")
+            return valid_moves
+
+        return []
+
+    @abc.abstractmethod
+    def call_llm(
+        self,
+        temperature: float = 0.7,
+        max_tokens: int = 50,
+        top_p: float = 1.0,
+    ) -> (
+        Generator[ChatResponse, None, None] | Generator[CompletionResponse, None, None]
+    ):
+        """
+        Make an API call to the language model.
+
+        Edit this method to change the behavior of the robot!
+
+        This should return a streaming response. The response should be a list of ChatResponse objects.
+        Look into Llamaindex and make sure streaming is on.
+        """
+        raise NotImplementedError("call_llm method must be implemented")
+
+    @abc.abstractmethod
+    def observe(self, observation: dict, actions: dict, reward: float):
+        """
+        The robot will observe the environment by calling this method.
+
+        The latest observations are at the end of the list.
+        """
+        # By default, we don't observe anything.
+        pass
+
+
+class TextRobot(Robot):
     def observe(self, observation: dict, actions: dict, reward: float):
         """
         The robot will observe the environment by calling this method.
@@ -272,69 +370,12 @@ To increase your score, move toward the opponent and attack the opponent. To pre
 
         return context
 
-    def get_moves_from_llm(
-        self,
-    ) -> List[str]:
-        """
-        Get a list of moves from the language model.
-        """
-
-        # Filter the moves that are not in the list of moves
-        invalid_moves = []
-        valid_moves = []
-
-        # If we are in the test environment, we don't want to call the LLM
-        if os.getenv("DISABLE_LLM", "False") == "True":
-            # Choose a random int from the list of moves
-            logger.debug("DISABLE_LLM is True, returning a random move")
-            return [random.choice(list(MOVES.values()))]
-
-        while len(valid_moves) == 0:
-            llm_stream = self.call_llm()
-
-            # adding support for streaming the response
-            # this should make the players faster!
-
-            llm_response = ""
-
-            for r in llm_stream:
-                print(r.delta, end="")
-                llm_response += r.delta
-
-                # The response is a bullet point list of moves. Use regex
-                matches = re.findall(r"- ([\w ]+)", llm_response)
-                moves = ["".join(match) for match in matches]
-                invalid_moves = []
-                valid_moves = []
-                for move in moves:
-                    cleaned_move_name = move.strip().lower()
-                    if cleaned_move_name in META_INSTRUCTIONS_WITH_LOWER.keys():
-                        if self.player_nb == 1:
-                            print(
-                                f"[red] Player {self.player_nb} move: {cleaned_move_name}"
-                            )
-                        elif self.player_nb == 2:
-                            print(
-                                f"[green] Player {self.player_nb} move: {cleaned_move_name}"
-                            )
-                        valid_moves.append(cleaned_move_name)
-                    else:
-                        logger.debug(f"Invalid completion: {move}")
-                        logger.debug(f"Cleaned move name: {cleaned_move_name}")
-                        invalid_moves.append(move)
-
-                if len(invalid_moves) > 1:
-                    logger.warning(f"Many invalid moves: {invalid_moves}")
-
-            logger.debug(f"Next moves: {valid_moves}")
-            return valid_moves
-
     def call_llm(
         self,
         temperature: float = 0.7,
         max_tokens: int = 50,
         top_p: float = 1.0,
-    ) -> str:
+    ) -> Generator[ChatResponse, None, None]:
         """
         Make an API call to the language model.
 
@@ -367,6 +408,102 @@ Example if the opponent is far:
             ChatMessage(role="user", content="Your next moves are:"),
         ]
         resp = client.stream_chat(messages)
+
+        logger.debug(f"LLM call to {self.model}: {system_prompt}")
+        logger.debug(f"LLM call to {self.model}: {time.time() - start_time}s")
+
+        return resp
+
+
+class VisionRobot(Robot):
+    def observe(self, observation: dict, actions: dict, reward: float):
+        "We still use the same observation method to keep track of current characters direction"
+        self.observations.append(observation)
+        # we delete the oldest observation if we have more than 10 observations
+        if len(self.observations) > 50:
+            self.observations.pop(0)
+
+        # detect the position of characters and ennemy based on color
+        observation["character_position"] = detect_position_from_color(
+            observation, self.character_color
+        )
+        observation["ennemy_position"] = detect_position_from_color(
+            observation, self.ennemy_color
+        )
+
+        character_position = observation.get("character_position")
+        ennemy_position = observation.get("ennemy_position")
+        if (
+            character_position is not None
+            and ennemy_position is not None
+            and len(character_position) == 2
+            and len(ennemy_position) == 2
+        ):
+            if character_position[0] < ennemy_position[0]:
+                self.current_direction = "Right"
+            else:
+                self.current_direction = "Left"
+
+    def last_image_to_image_node(self) -> ImageNode:
+        if len(self.observations) == 0:
+            return ImageNode()
+
+        rgb_array = self.observations[-1]["frame"]
+        img = Image.fromarray(rgb_array)
+
+        # Créer un buffer en mémoire
+        buffer = io.BytesIO()
+
+        # Sauvegarder l'image en format PNG dans le buffer
+        img.save(buffer, format="PNG")
+
+        # Obtenir les bytes de l'image encodée
+        img_bytes = buffer.getvalue()
+
+        # Create an ImageDocument
+        return ImageNode(
+            image=base64.b64encode(img_bytes).decode("utf-8"),
+            image_mimetype="image/png",
+        )
+
+    def call_llm(
+        self,
+        temperature: float = 0.7,
+        max_tokens: int = 50,
+        top_p: float = 1.0,
+    ) -> Generator[CompletionResponse, None, None]:
+        """
+        Make an API call to the language model.
+
+        Edit this method to change the behavior of the robot!
+        """
+
+        # Generate the prompts
+        move_list = "- " + "\n - ".join([move for move in META_INSTRUCTIONS])
+        system_prompt = f"""You are the best and most aggressive Street Fighter III 3rd strike player in the world.
+Your character is {self.character}. Your goal is to beat the other opponent. You respond with a bullet point list of moves.
+
+The current state of the game is given in the following image.
+
+The moves you can use are:
+{move_list}
+----
+Reply with a bullet point list of 3 moves. The format should be: `- <name of the move>` separated by a new line.
+Example if the opponent is close:
+- Move closer
+- Medium Punch
+
+Example if the opponent is far:
+- Fireball
+- Move closer"""
+
+        start_time = time.time()
+
+        client = get_client_multimodal(self.model)  # MultiModalLLM
+
+        resp = client.stream_complete(
+            prompt=system_prompt, image_documents=[self.last_image_to_image_node()]
+        )
 
         logger.debug(f"LLM call to {self.model}: {system_prompt}")
         logger.debug(f"LLM call to {self.model}: {time.time() - start_time}s")

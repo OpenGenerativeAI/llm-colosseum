@@ -5,7 +5,7 @@ import traceback
 from threading import Thread
 from typing import List, Optional
 
-from agent import KEN_GREEN, KEN_RED, Robot
+from agent import KEN_GREEN, KEN_RED, TextRobot, VisionRobot
 from agent.config import MODELS
 from diambra.arena import (
     EnvironmentSettingsMultiAgent,
@@ -14,6 +14,8 @@ from diambra.arena import (
     make,
 )
 from rich import print
+
+from agent.robot import Robot
 
 
 def generate_random_model(openai: bool = False, mistral: bool = True):
@@ -52,24 +54,37 @@ class Player:
                 os.environ.get("CEREBRAS_API_KEY") is not None
             ), "Cerebras API key not set"
 
+
 class Player1(Player):
-    def __init__(
-        self,
-        nickname: str,
-        model: str,
-    ):
+    def __init__(self, nickname: str, model: str, robot_type="text"):
         self.nickname = nickname
         self.model = model
-        self.robot = Robot(
-            action_space=None,
-            character="Ken",
-            side=0,
-            character_color=KEN_RED,
-            ennemy_color=KEN_GREEN,
-            only_punch=os.getenv("TEST_MODE", False),
-            model=self.model,
-            player_nb=1,
-        )
+        self.robot_type = robot_type
+
+        if robot_type == "vision":
+            self.robot = VisionRobot(
+                action_space=None,
+                character="Ken",
+                side=0,
+                character_color=KEN_RED,
+                model=self.model,
+                ennemy_color=KEN_GREEN,
+                only_punch=os.getenv("TEST_MODE", False),
+                sleepy=False,
+                player_nb=1,
+            )
+        else:
+            self.robot = TextRobot(
+                action_space=None,
+                character="Ken",
+                side=0,
+                character_color=KEN_RED,
+                ennemy_color=KEN_GREEN,
+                only_punch=os.getenv("TEST_MODE", False),
+                sleepy=False,
+                model=self.model,
+                player_nb=1,
+            )
         print(f"[red] Player 1 using: {self.model}")
         self.verify_provider_name()
 
@@ -79,19 +94,33 @@ class Player2(Player):
         self,
         nickname: str,
         model: str,
+        robot_type="text",
     ):
         self.nickname = nickname
         self.model = model
-        self.robot = Robot(
-            action_space=None,
-            character="Ken",
-            side=1,
-            character_color=KEN_GREEN,
-            ennemy_color=KEN_RED,
-            sleepy=os.getenv("TEST_MODE", False),
-            model=self.model,
-            player_nb=2,
-        )
+        self.robot_type = robot_type
+        if robot_type == "vision":
+            self.robot = VisionRobot(
+                action_space=None,
+                character="Ken",
+                side=1,
+                model=self.model,
+                character_color=KEN_GREEN,
+                ennemy_color=KEN_RED,
+                sleepy=os.getenv("TEST_MODE", False),
+                player_nb=2,
+            )
+        else:
+            self.robot = TextRobot(
+                action_space=None,
+                character="Ken",
+                side=1,
+                character_color=KEN_GREEN,
+                ennemy_color=KEN_RED,
+                sleepy=os.getenv("TEST_MODE", False),
+                model=self.model,
+                player_nb=2,
+            )
         print(f"[green] Player 2 using: {self.model}")
         self.verify_provider_name()
 
