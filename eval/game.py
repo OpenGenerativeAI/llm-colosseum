@@ -165,7 +165,7 @@ class Episode:
 
         with open("results.csv", "a") as f:
             f.write(
-                f"{timestamp},{self.player_1.model},{self.player_1.robot_type},{self.player_1.temperature}"
+                f"{timestamp},{self.player_1.model},{self.player_1.robot_type},{self.player_1.temperature},"
                 + f"{self.player_2.model},{self.player_2.robot_type},{self.player_2.temperature},{self.player_1_won}\n"
             )
 

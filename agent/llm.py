@@ -45,6 +45,10 @@ def get_client(model_str: str, temperature: float = 0.7) -> FunctionCallingLLM:
         from llama_index.llms.cerebras import Cerebras
 
         return Cerebras(model=model_name, temperature=temperature)
+    elif provider == "gemini":
+        from llama_index.llms.gemini import Gemini
+
+        return Gemini(model=model_name, temperature=temperature)
 
     raise ValueError(f"Provider {provider} not found in models")
 
@@ -77,5 +81,15 @@ def get_client_multimodal(model_str: str, temperature: float = 0.7) -> MultiModa
         from llama_index.multi_modal_llms.mistralai import MistralAIMultiModal
 
         return MistralAIMultiModal(model=model_name, temperature=temperature)
+
+    elif provider == "gemini":
+        from llama_index.multi_modal_llms.gemini import GeminiMultiModal
+
+        return GeminiMultiModal(model=model_name, temperature=temperature)
+
+    elif provider == "anthropic":
+        from llama_index.multi_modal_llms.anthropic import AnthropicMultiModal
+
+        return AnthropicMultiModal(model=model_name, temperature=temperature)
 
     raise ValueError(f"Provider {provider} not found in multimodal models")
