@@ -9,7 +9,12 @@ logger.add(sys.stdout, level="INFO")
 
 load_dotenv()
 
+li_models = (
+    {"openai:gpt-4o", "mistral:pixtral-12b-2409", "ollama:llava", "openai:gpt-4o-mini"},
+)
 
+
+# Starting with vision tournamennt
 def main():
     # Environment Settings
     game = Game(
@@ -17,14 +22,15 @@ def main():
         player_1=Player1(
             nickname="Daddy",
             model="openai:gpt-4o",
-            robot_type="text",  # vision or text
+            robot_type="vision",  # vision or text
         ),
         player_2=Player2(
-            nickname="Baby", model="mistral:pixtral-12b-2409", robot_type="text"
+            nickname="Baby", model="mistral:pixtral-12b-2409", robot_type="vision"
         ),
     )
     return game.run()
 
 
 if __name__ == "__main__":
-    main()
+    for _ in range(2):
+        main()

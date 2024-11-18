@@ -365,7 +365,8 @@ class Game:
                         )
                     episode.save()
                     self.env.close()
-                    break
+                    ##TODO: Replace the line bellow by pass
+                    return episode.player_1_won
         except Exception as e:
             # self.env.close()
             print(f"Exception: {e}")
