@@ -10,10 +10,10 @@ logger.add(sys.stdout, level="INFO")
 load_dotenv()
 
 li_models = [
-    "anthropic:claude-3-5-sonnet-20241022",
+    "openai:gpt-4o-mini",
+    "anthropic:claude-3-haiku-20240307",
     "openai:gpt-4o",
     "mistral:pixtral-12b-2409",
-    "openai:gpt-4o-mini",
 ]
 
 
@@ -39,8 +39,8 @@ def main(model_1: str, model_2: str, type_1: str = "vision", type_2: str = "visi
 
 
 if __name__ == "__main__":
-    for i in range(20):
-        for j in range(20):
+    for i in range(3, 20):
+        for j in range(0, 20):
             model_1 = li_models[i % len(li_models)]
             model_2 = li_models[j % len(li_models)]
             main(
