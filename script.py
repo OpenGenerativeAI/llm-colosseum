@@ -17,20 +17,20 @@ li_models = [
 
 
 # Starting with vision tournamennt
-def main(model_1: str, model_2: str):
+def main(model_1: str, model_2: str, type_1: str = "vision", type_2: str = "vision"):
     # Environment Settings
     game = Game(
         render=True,
         player_1=Player1(
             nickname="Daddy",
             model=model_1,
-            robot_type="vision",  # vision or text
+            robot_type=type_1,  # vision or text
             temperature=0.7,
         ),
         player_2=Player2(
             nickname="Baby",
             model=model_2,
-            robot_type="vision",
+            robot_type=type_2,
             temperature=0.7,
         ),
     )
@@ -38,8 +38,13 @@ def main(model_1: str, model_2: str):
 
 
 if __name__ == "__main__":
-    for i in range(10):
-        for j in range(10):
+    for i in range(20):
+        for j in range(20):
             model_1 = li_models[i % len(li_models)]
             model_2 = li_models[j % len(li_models)]
-        main(model_1=model_1, model_2=model_2)
+            main(
+                model_1=model_1,
+                model_2=model_2,
+                type_1="vision" if i % 2 == 0 else "text",
+                type_2="vision" if j % 2 == 0 else "text",
+            )
