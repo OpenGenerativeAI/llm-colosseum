@@ -10,7 +10,7 @@ logger.add(sys.stdout, level="INFO")
 load_dotenv()
 
 li_models = [
-    "claude-3-5-sonnet-20241022",
+    "anthropic:claude-3-5-sonnet-20241022",
     "openai:gpt-4o",
     "mistral:pixtral-12b-2409",
     "openai:gpt-4o-mini",
