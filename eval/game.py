@@ -38,7 +38,7 @@ class Player:
     nickname: str
     model: str
     robot: Optional[Robot] = None
-    temperature: Optional[float] = 0.0
+    temperature: float = 0.7
 
     def verify_provider_name(self):
         if self.model.startswith("openai"):
@@ -56,10 +56,17 @@ class Player:
 
 
 class Player1(Player):
-    def __init__(self, nickname: str, model: str, robot_type="text"):
+    def __init__(
+        self,
+        nickname: str,
+        model: str,
+        robot_type: str = "text",
+        temperature: float = 0.7,
+    ):
         self.nickname = nickname
         self.model = model
         self.robot_type = robot_type
+        self.temperature = temperature
 
         if robot_type == "vision":
             self.robot = VisionRobot(
@@ -70,6 +77,7 @@ class Player1(Player):
                 model=self.model,
                 ennemy_color=KEN_GREEN,
                 only_punch=os.getenv("TEST_MODE", False),
+                temperature=self.temperature,
                 sleepy=False,
                 player_nb=1,
             )
@@ -81,6 +89,7 @@ class Player1(Player):
                 character_color=KEN_RED,
                 ennemy_color=KEN_GREEN,
                 only_punch=os.getenv("TEST_MODE", False),
+                temperature=self.temperature,
                 sleepy=False,
                 model=self.model,
                 player_nb=1,
@@ -94,11 +103,13 @@ class Player2(Player):
         self,
         nickname: str,
         model: str,
-        robot_type="text",
+        robot_type: str = "text",
+        temperature: float = 0.7,
     ):
         self.nickname = nickname
         self.model = model
         self.robot_type = robot_type
+        self.temperature = temperature
         if robot_type == "vision":
             self.robot = VisionRobot(
                 action_space=None,
@@ -107,6 +118,7 @@ class Player2(Player):
                 model=self.model,
                 character_color=KEN_GREEN,
                 ennemy_color=KEN_RED,
+                temperature=self.temperature,
                 sleepy=os.getenv("TEST_MODE", False),
                 player_nb=2,
             )
@@ -117,6 +129,7 @@ class Player2(Player):
                 side=1,
                 character_color=KEN_GREEN,
                 ennemy_color=KEN_RED,
+                temperature=self.temperature,
                 sleepy=os.getenv("TEST_MODE", False),
                 model=self.model,
                 player_nb=2,
@@ -147,13 +160,13 @@ class Episode:
         if not os.path.exists("results.csv"):
             with open("results.csv", "w") as f:
                 f.write(
-                    "id,player_1_model,player_1_temperature,player_2_model,player_2_temperature,player_1_won\n"
+                    "id,player_1_model,player_1_robot_type,player_2_model,player_2_robot_type,player_1_won\n"
                 )
 
         with open("results.csv", "a") as f:
             f.write(
-                f"{timestamp},{self.player_1.model},{self.player_1.temperature},"
-                + f"{self.player_2.model},{self.player_2.temperature},{self.player_1_won}\n"
+                f"{timestamp},{self.player_1.model},{self.player_1.robot_type},"
+                + f"{self.player_2.model},{self.player_2.robot_type},{self.player_1_won}\n"
             )
 
 

@@ -45,6 +45,7 @@ class Robot(metaclass=abc.ABCMeta):
     current_direction: Literal["Left", "Right"]  # current direction facing
     sleepy: Optional[bool] = False  # if the robot is sleepy
     only_punch: Optional[bool] = False  # if the robot only punch
+    temperature: float = 0.7  # temperature of the language model
 
     model: str  # model of the robot
 
@@ -60,6 +61,7 @@ class Robot(metaclass=abc.ABCMeta):
         ennemy_color: list,
         sleepy: bool = False,
         only_punch: bool = False,
+        temperature: float = 0.7,
         model: str = "mistral:mistral-large-latest",
         player_nb: int = 0,  # 0 means not specified
     ):
@@ -77,6 +79,7 @@ class Robot(metaclass=abc.ABCMeta):
         self.side = side
         self.sleepy = sleepy
         self.only_punch = only_punch
+        self.temperature = temperature
         self.model = model
         self.previous_actions = defaultdict(list)
         self.actions = {}
@@ -213,7 +216,6 @@ class Robot(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def call_llm(
         self,
-        temperature: float = 0.7,
         max_tokens: int = 50,
         top_p: float = 1.0,
     ) -> (
@@ -372,7 +374,6 @@ To increase your score, move toward the opponent and attack the opponent. To pre
 
     def call_llm(
         self,
-        temperature: float = 0.7,
         max_tokens: int = 50,
         top_p: float = 1.0,
     ) -> Generator[ChatResponse, None, None]:
@@ -401,7 +402,7 @@ Example if the opponent is far:
 
         start_time = time.time()
 
-        client = get_client(self.model)
+        client = get_client(self.model, temperature=self.temperature)
 
         messages = [
             ChatMessage(role="system", content=system_prompt),
@@ -468,7 +469,6 @@ class VisionRobot(Robot):
 
     def call_llm(
         self,
-        temperature: float = 0.7,
         max_tokens: int = 50,
         top_p: float = 1.0,
     ) -> Generator[CompletionResponse, None, None]:
@@ -499,7 +499,9 @@ Example if the opponent is far:
 
         start_time = time.time()
 
-        client = get_client_multimodal(self.model)  # MultiModalLLM
+        client = get_client_multimodal(
+            self.model, temperature=self.temperature
+        )  # MultiModalLLM
 
         resp = client.stream_complete(
             prompt=system_prompt, image_documents=[self.last_image_to_image_node()]

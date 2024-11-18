@@ -23,9 +23,13 @@ def main():
             nickname="Daddy",
             model="openai:gpt-4o",
             robot_type="vision",  # vision or text
+            temperature=0.7,
         ),
         player_2=Player2(
-            nickname="Baby", model="mistral:pixtral-12b-2409", robot_type="vision"
+            nickname="Baby",
+            model="mistral:pixtral-12b-2409",
+            robot_type="vision",
+            temperature=0.7,
         ),
     )
     return game.run()
