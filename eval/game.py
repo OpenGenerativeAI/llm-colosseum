@@ -160,13 +160,13 @@ class Episode:
         if not os.path.exists("results.csv"):
             with open("results.csv", "w") as f:
                 f.write(
-                    "id,player_1_model,player_1_robot_type,player_2_model,player_2_robot_type,player_1_won\n"
+                    "id,player_1_model,player_1_robot_type, player_1_temperature, player_2_model,player_2_robot_type,player_2_temperature, player_1_won\n"
                 )
 
         with open("results.csv", "a") as f:
             f.write(
-                f"{timestamp},{self.player_1.model},{self.player_1.robot_type},"
-                + f"{self.player_2.model},{self.player_2.robot_type},{self.player_1_won}\n"
+                f"{timestamp},{self.player_1.model},{self.player_1.robot_type},{self.player_1.temperature}"
+                + f"{self.player_2.model},{self.player_2.robot_type},{self.player_2.temperature},{self.player_1_won}\n"
             )
 
 
