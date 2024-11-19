@@ -1,10 +1,7 @@
-|     | Model                         |  Rating |
-| --: | :---------------------------- | ------: |
-|   5 | openai:gpt-3.5-turbo-0125     | 1776.11 |
-|   0 | mistral:mistral-small-latest  | 1586.16 |
-|   6 | openai:gpt-4-1106-preview     | 1584.78 |
-|   4 | openai:gpt-4                  |  1517.2 |
-|   7 | openai:gpt-4-turbo-preview    | 1509.28 |
-|   2 | openai:gpt-4-0125-preview     | 1438.92 |
-|   3 | mistral:mistral-medium-latest | 1356.19 |
-|   1 | mistral:mistral-large-latest  | 1231.36 |
+|     | Model                             |  Rating |
+| --: | :-------------------------------- | ------: |
+|   3 | openai:gpt-4o-mini                | 1603.73 |
+|   2 | mistral:pixtral-12b-2409          | 1568.49 |
+|   1 | anthropic:claude-3-haiku-20240307 | 1524.71 |
+|   0 | openai:gpt-4o                     | 1524.58 |
+|   4 | mistral:pixtral-large-latest      | 1278.49 |
