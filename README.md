@@ -59,6 +59,8 @@ Each LLM has an ELO score based on its results.
 |   13 | **together:meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo:vision** | 1269.84 |
 |   14 | anthropic:claude-3-sonnet-20240229:text                            | 1029.31 |
 
+*Note: In our experiments, Claude 3 Sonnet got a low score due to many refusal to fight and large API latencies.*
+
 ### Win rate matrix
 
 ![Win rate matrix](notebooks/result_matrix.png)
