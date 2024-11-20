@@ -36,7 +36,7 @@ As opposed to RL models, which blindly take actions based on the reward function
 # Results
 
 Our experimentations (546 fights so far) led to the following leaderboard.
-Each LLM has an ELO score based on its results
+Each LLM has an ELO score based on its results.
 
 ## Ranking
 
@@ -65,7 +65,9 @@ Each LLM has an ELO score based on its results
 
 # Explanation
 
-Each player can be controlled by a multimodal model or an text generating model.
+Each player can be controlled by a text generating model or a multimodal model. We call them through API endpoints. Learn more about models:
+- [Text generating models](https://huggingface.co/docs/transformers/en/llm_tutorial)
+- [**Multimodal LLM** models](https://huggingface.co/blog/vlms)
 
 ### TextRobot
 
