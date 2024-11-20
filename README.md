@@ -35,31 +35,40 @@ As opposed to RL models, which blindly take actions based on the reward function
 
 # Results
 
-Our experimentations (342 fights so far) led to the following leaderboard.
+Our experimentations (546 fights so far) led to the following leaderboard.
 Each LLM has an ELO score based on its results
 
 ## Ranking
 
 ### ELO ranking
 
-| Model                          |  Rating |
-| ------------------------------ | ------: |
-| 🥇openai:gpt-3.5-turbo-0125    | 1776.11 |
-| 🥈mistral:mistral-small-latest | 1586.16 |
-| 🥉openai:gpt-4-1106-preview    | 1584.78 |
-| openai:gpt-4                   |  1517.2 |
-| openai:gpt-4-turbo-preview     | 1509.28 |
-| openai:gpt-4-0125-preview      | 1438.92 |
-| mistral:mistral-medium-latest  | 1356.19 |
-| mistral:mistral-large-latest   | 1231.36 |
+| Rank | Model                                                              |  Rating |
+| ---: | :----------------------------------------------------------------- | ------: |
+|    1 | 🥇openai:gpt-4o:text                                               |  1912.5 |
+|    2 | 🥈**openai:gpt-4o-mini:vision**                                    | 1835.27 |
+|    3 | 🥉openai:gpt-4o-mini:text                                          | 1670.89 |
+|    4 | **openai:gpt-4o:vision**                                           | 1656.93 |
+|    5 | **mistral:pixtral-large-latest:vision**                            | 1654.61 |
+|    6 | **mistral:pixtral-12b-2409:vision**                                | 1590.77 |
+|    7 | mistral:pixtral-12b-2409:text                                      | 1569.03 |
+|    8 | together:meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo:text       | 1441.45 |
+|    9 | **anthropic:claude-3-haiku-20240307:vision**                       | 1364.87 |
+|   10 | mistral:pixtral-large-latest:text                                  | 1356.32 |
+|   11 | anthropic:claude-3-haiku-20240307:text                             |  1333.6 |
+|   12 | **anthropic:claude-3-sonnet-20240229:vision**                      | 1314.61 |
+|   13 | **together:meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo:vision** | 1269.84 |
+|   14 | anthropic:claude-3-sonnet-20240229:text                            | 1029.31 |
 
 ### Win rate matrix
 
-![Win rate matrix](notebooks/win_rate_matrix.png)
+![Win rate matrix](notebooks/result_matrix.png)
 
 # Explanation
 
-Each player is controlled by an LLM.
+Each player can be controlled by a multimodal model or an text generating model.
+
+### TextRobot
+
 We send to the LLM a text description of the screen. The LLM decide on the next moves its character will make. The next moves depends on its previous moves, the moves of its opponents, its power and health bars.
 
 - Agent based
@@ -67,6 +76,10 @@ We send to the LLM a text description of the screen. The LLM decide on the next 
 - Real time
 
   ![fight3 drawio](https://github.com/OpenGenerativeAI/llm-colosseum/assets/78322686/3a212601-f54c-490d-aeb9-6f7c2401ebe6)
+
+### VisionRobot
+
+We send to the LLM a screenshot of the current state of the game precising which character he is controlling. His decision is only based on this visual information.
 
 # Installation
 
@@ -142,43 +155,52 @@ By default, it runs mistral against mistral. To use other models, you need to ch
 from eval.game import Game, Player1, Player2
 
 def main():
+    # Environment Settings
+
     game = Game(
         render=True,
         save_game=True,
         player_1=Player1(
             nickname="Baby",
-            model="ollama:mistral", # change this
+            model="ollama:mistral",
+            robot_type="text",  # vision or text
+            temperature=0.7,
         ),
         player_2=Player2(
             nickname="Daddy",
-            model="ollama:mistral", # change this
+            model="ollama:mistral",
+            robot_type="text",
+            temperature=0.7,
         ),
     )
+
     game.run()
     return 0
+
+
+if __name__ == "__main__":
+    main()
 ```
 
 The convention we use is `model_provider:model_name`. If you want to use another local model than Mistral, you can do `ollama:some_other_model`
 
 ## How to make my own LLM model play? Can I improve the prompts?
 
-The LLM is called in `Robot.call_llm()` method of the `agent/robot.py` file.
+The LLM is called in `<Text||Vision>Robot.call_llm()` method of the `agent/robot.py` file.
+
+#### TextRobot method:
 
 ```python
     def call_llm(
         self,
-        temperature: float = 0.7,
         max_tokens: int = 50,
         top_p: float = 1.0,
-    ) -> str:
+    ) -> Generator[ChatResponse, None, None]:
         """
         Make an API call to the language model.
 
         Edit this method to change the behavior of the robot!
         """
-        # self.model is a slug like mistral:mistral-small-latest or ollama:mistral
-        provider_name, model_name = get_provider_and_model(self.model)
-        client = get_sync_client(provider_name) # OpenAI client
 
         # Generate the prompts
         move_list = "- " + "\n - ".join([move for move in META_INSTRUCTIONS])
@@ -197,28 +219,76 @@ Example if the opponent is far:
 - Fireball
 - Move closer"""
 
-        # Call the LLM
-        completion = client.chat.completions.create(
-            model=model_name,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": "Your next moves are:"},
-            ],
-            temperature=temperature,
-            max_tokens=max_tokens,
-            top_p=top_p,
-        )
+        start_time = time.time()
 
-        # Return the string to be parsed with regex
-        llm_response = completion.choices[0].message.content.strip()
-        return llm_response
+        client = get_client(self.model, temperature=self.temperature)
+
+        messages = [
+            ChatMessage(role="system", content=system_prompt),
+            ChatMessage(role="user", content="Your next moves are:"),
+        ]
+        resp = client.stream_chat(messages)
+
+        logger.debug(f"LLM call to {self.model}: {system_prompt}")
+        logger.debug(f"LLM call to {self.model}: {time.time() - start_time}s")
+
+        return resp
 ```
 
-To use another model or other prompts, make a call to another client in this function, change the system prompt, or make any fancy stuff.
+#### VisionRobot method:
+
+```python
+def call_llm(
+        self,
+        max_tokens: int = 50,
+        top_p: float = 1.0,
+    ) -> Generator[CompletionResponse, None, None]:
+        """
+        Make an API call to the language model.
+
+        Edit this method to change the behavior of the robot!
+        """
+
+        # Generate the prompts
+        move_list = "- " + "\n - ".join([move for move in META_INSTRUCTIONS])
+        system_prompt = f"""You are the best and most aggressive Street Fighter III 3rd strike player in the world.
+Your character is {self.character}. Your goal is to beat the other opponent. You respond with a bullet point list of moves.
+
+The current state of the game is given in the following image.
+
+The moves you can use are:
+{move_list}
+----
+Reply with a bullet point list of 3 moves. The format should be: `- <name of the move>` separated by a new line.
+Example if the opponent is close:
+- Move closer
+- Medium Punch
+
+Example if the opponent is far:
+- Fireball
+- Move closer"""
+
+        start_time = time.time()
+
+        client = get_client_multimodal(
+            self.model, temperature=self.temperature
+        )  # MultiModalLLM
+
+        resp = client.stream_complete(
+            prompt=system_prompt, image_documents=[self.last_image_to_image_node()]
+        )
+
+        logger.debug(f"LLM call to {self.model}: {system_prompt}")
+        logger.debug(f"LLM call to {self.model}: {time.time() - start_time}s")
+
+        return resp
+```
+
+You can personnalise your prompt in these functions.
 
 ### Submit your model
 
-Create a new class herited from `Robot` that has the changes you want to make and open a PR.
+Create a new class herited from Robot that has the changes you want to make and open a PR.
 
 We'll do our best to add it to the ranking!
 
