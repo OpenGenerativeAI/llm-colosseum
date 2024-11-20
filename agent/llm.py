@@ -1,5 +1,6 @@
 from llama_index.core.llms.function_calling import FunctionCallingLLM
 from llama_index.core.multi_modal_llms.base import MultiModalLLM
+import os
 
 
 def get_client(model_str: str, temperature: float = 0.7) -> FunctionCallingLLM:
@@ -50,6 +51,36 @@ def get_client(model_str: str, temperature: float = 0.7) -> FunctionCallingLLM:
 
         return Gemini(model=model_name, temperature=temperature)
 
+    elif provider == "anyscale":
+        from llama_index.llms.openai import OpenAI
+
+        return OpenAI(
+            model=model_name,
+            temperature=temperature,
+            api_key=os.environ.get("ANYSCALE_API_KEY"),
+            api_base="https://api.endpoints.anyscale.com/v1/",
+        )
+
+    elif provider == "fireworks":
+        from llama_index.llms.openai import OpenAI
+
+        return OpenAI(
+            model=model_name,
+            temperature=temperature,
+            api_key=os.environ.get("FIREWORKS_API_KEY"),
+            api_base="https://api.fireworks.ai/inference/v1/",
+        )
+
+    elif provider == "together":
+        from llama_index.llms.openai import OpenAI
+
+        return OpenAI(
+            model=model_name,
+            temperature=temperature,
+            api_key=os.environ.get("TOGETHER_API_KEY"),
+            api_base="https://api.together.xyz/v1/",
+        )
+
     raise ValueError(f"Provider {provider} not found in models")
 
 
@@ -91,5 +122,35 @@ def get_client_multimodal(model_str: str, temperature: float = 0.7) -> MultiModa
         from llama_index.multi_modal_llms.anthropic import AnthropicMultiModal
 
         return AnthropicMultiModal(model=model_name, temperature=temperature)
+
+    elif provider == "anyscale":
+        from llama_index.multi_modal_llms.openai import OpenAIMultiModal
+
+        return OpenAIMultiModal(
+            model=model_name,
+            temperature=temperature,
+            api_key=os.environ.get("ANYSCALE_API_KEY"),
+            api_base="https://api.endpoints.anyscale.com/v1/",
+        )
+
+    elif provider == "fireworks":
+        from llama_index.multi_modal_llms.openai import OpenAIMultiModal
+
+        return OpenAIMultiModal(
+            model=model_name,
+            temperature=temperature,
+            api_key=os.environ.get("FIREWORKS_API_KEY"),
+            api_base="https://api.fireworks.ai/inference/v1/",
+        )
+
+    elif provider == "together":
+        from llama_index.multi_modal_llms.openai import OpenAIMultiModal
+
+        return OpenAIMultiModal(
+            model=model_name,
+            temperature=temperature,
+            api_key=os.environ.get("TOGETHER_API_KEY"),
+            api_base="https://api.together.xyz/v1/",
+        )
 
     raise ValueError(f"Provider {provider} not found in multimodal models")

@@ -1,5 +1,4 @@
 import sys
-
 from dotenv import load_dotenv
 from eval.game import Game, Player1, Player2
 from loguru import logger
@@ -9,30 +8,38 @@ logger.add(sys.stdout, level="INFO")
 
 load_dotenv()
 
+# List of models Tested for the leaderboards
 li_models = [
+    "anthropic:claude-3-sonnet-20240229",
     "mistral:pixtral-large-latest",
     "mistral:pixtral-12b-2409",
     "anthropic:claude-3-haiku-20240307",
     "openai:gpt-4o",
     "openai:gpt-4o-mini",
+    "anthropic:claude-3-sonnet-20240229",
 ]
 
 
 # Starting with vision tournamennt
-def main(model_1: str, model_2: str, type_1: str = "vision", type_2: str = "vision"):
+def main(
+    model_1: str = "openai:gpt-4o-mini",
+    model_2: str = "anthropic:claude-3-haiku-20240307",
+    type_1: str = "vision",
+    type_2: str = "vision",
+):
     # Environment Settings
     game = Game(
         render=True,
         player_1=Player1(
             nickname="Daddy",
-            model=model_1,
-            robot_type=type_1,  # vision or text
+            model="openai:gpt-4o-mini",
+            robot_type="vision",  # "vision" or "text"
             temperature=0.7,
         ),
         player_2=Player2(
             nickname="Baby",
-            model=model_2,
-            robot_type=type_2,
+            model="anthropic:claude-3-haiku-20240307",
+            robot_type="vision",
             temperature=0.7,
         ),
     )
@@ -40,14 +47,4 @@ def main(model_1: str, model_2: str, type_1: str = "vision", type_2: str = "visi
 
 
 if __name__ == "__main__":
-    for i in range(0, 20):
-        for j in range(0, 30):
-            model_1 = li_models[i % len(li_models)]
-            model_2 = li_models[j % len(li_models)]
-            if model_1 != model_2:
-                main(
-                    model_1=model_1,
-                    model_2=model_2,
-                    type_1="vision" if i % 2 == 1 else "text",
-                    type_2="vision" if j % 2 == 0 else "text",
-                )
+    main()

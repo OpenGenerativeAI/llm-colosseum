@@ -19,12 +19,14 @@ def main():
         player_1=Player1(
             nickname="Baby",
             model="ollama:mistral",
-            # model="ollama:mistral",
+            robot_type="text",  # vision or text
+            temperature=0.7,
         ),
         player_2=Player2(
             nickname="Daddy",
             model="ollama:mistral",
-            # model="ollama:mistral",
+            robot_type="text",
+            temperature=0.7,
         ),
     )
 

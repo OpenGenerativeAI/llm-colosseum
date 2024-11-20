@@ -1,7 +1,16 @@
-|     | Model                             |  Rating |
-| --: | :-------------------------------- | ------: |
-|   3 | openai:gpt-4o-mini                | 1603.73 |
-|   2 | mistral:pixtral-12b-2409          | 1568.49 |
-|   1 | anthropic:claude-3-haiku-20240307 | 1524.71 |
-|   0 | openai:gpt-4o                     | 1524.58 |
-|   4 | mistral:pixtral-large-latest      | 1278.49 |
+| Rank | Model                                                              |  Rating |
+| ---: | :----------------------------------------------------------------- | ------: |
+|    1 | openai:gpt-4o:text                                                 |  1912.5 |
+|    2 | **openai:gpt-4o-mini:vision**                                      | 1835.27 |
+|    3 | openai:gpt-4o-mini:text                                            | 1670.89 |
+|    4 | **openai:gpt-4o:vision**                                           | 1656.93 |
+|    5 | **mistral:pixtral-large-latest:vision**                            | 1654.61 |
+|    6 | **mistral:pixtral-12b-2409:vision**                                | 1590.77 |
+|    7 | mistral:pixtral-12b-2409:text                                      | 1569.03 |
+|    8 | together:meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo:text       | 1441.45 |
+|    9 | **anthropic:claude-3-haiku-20240307:vision**                       | 1364.87 |
+|   10 | mistral:pixtral-large-latest:text                                  | 1356.32 |
+|   11 | anthropic:claude-3-haiku-20240307:text                             |  1333.6 |
+|   12 | **anthropic:claude-3-sonnet-20240229:vision**                      | 1314.61 |
+|   13 | **together:meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo:vision** | 1269.84 |
+|   14 | anthropic:claude-3-sonnet-20240229:text                            | 1029.31 |
