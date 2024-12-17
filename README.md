@@ -8,6 +8,8 @@ Make LLM fight each other in real time in Street Fighter III.
 
 Which LLM will be the best fighter ?
 
+**Demo:** [Try it in your browser right here!](https://llm-colosseum.phospho.ai)
+
 ## Our criterias 🔥
 
 They need to be:
@@ -39,6 +41,8 @@ Our experimentations (546 fights so far) led to the following leaderboard.
 Each LLM has an ELO score based on its results.
 
 ## Ranking
+
+[Huggingface ranking](https://huggingface.co/spaces/junior-labs/llm-colosseum)
 
 ### ELO ranking
 
