@@ -169,7 +169,7 @@ class Robot(metaclass=abc.ABCMeta):
         if os.getenv("DISABLE_LLM", "False") == "True":
             # Choose a random int from the list of moves
             logger.debug("DISABLE_LLM is True, returning a random move")
-            return [random.choice(list(MOVES.values()))]
+            return [random.choice(list(MOVES.keys()))]
 
         while len(valid_moves) == 0:
             llm_stream = self.call_llm()
